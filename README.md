@@ -1,7 +1,7 @@
 # Bettafish Repository for the 2025-2026 Decode Season
 poggers  
 please don't change gradle versions  
-remeber to push your changes after each session  
+remember to push your changes after each session  
 do not edit the same file as someone else  
 <br><br>
 
