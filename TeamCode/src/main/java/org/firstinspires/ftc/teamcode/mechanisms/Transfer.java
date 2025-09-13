@@ -57,14 +57,23 @@ public class Transfer {
         }
     }
 
-    public class Outtake implements Action {
+    public class deposit implements Action {
         public boolean run(@NonNull TelemetryPacket packet) {
             transferMotor.setPower(transferPower);
             return false;
         }
     }
 
-    
+    public class outtake implements Action {
+        public boolean run(@NonNull TelemetryPacket packet) {
+            transferMotor.setPower(-transferPower);
+            return false;
+        }
+    }
+
+
+
+
     public class Stop implements Action {
 
         @Override
