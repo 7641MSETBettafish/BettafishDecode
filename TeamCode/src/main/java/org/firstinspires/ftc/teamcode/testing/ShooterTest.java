@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@TeleOp(name="B - ShooterTest")
+@TeleOp(name="ShooterTest", group="Testing")
 public class ShooterTest extends LinearOpMode {
 
     public static double motorTicksPerDegree = 103.8;
