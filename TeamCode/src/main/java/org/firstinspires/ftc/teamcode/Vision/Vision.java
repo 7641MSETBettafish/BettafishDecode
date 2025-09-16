@@ -11,7 +11,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @TeleOp
-public class Vision extends LinearOpMode{
+public class  Vision extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException {
