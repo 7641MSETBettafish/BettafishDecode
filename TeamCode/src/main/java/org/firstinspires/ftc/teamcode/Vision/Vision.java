@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Vision;
 
 import android.util.Size;
 
@@ -33,10 +33,10 @@ public class  Vision extends LinearOpMode{
         waitForStart();
 
         while(!isStopRequested() && opModeIsActive()){
-
-            if(tagProcessor.getDetections().size() > 0) {
-                AprilTagDetection tag = tagProcessor.getDetections().get(0);
-
+            AprilTagDetection tag;
+            if(!tagProcessor.getDetections().isEmpty()) {
+                tag = tagProcessor.getDetections().get(0);
+                telemetry.addData("id", tag.metadata.id);
                 telemetry.addData("x", tag.ftcPose.x);
                 telemetry.addData("y", tag.ftcPose.y);
                 telemetry.addData("z", tag.ftcPose.z);
@@ -47,6 +47,8 @@ public class  Vision extends LinearOpMode{
             }
 
             telemetry.update();
+
+
         }
 
     }
