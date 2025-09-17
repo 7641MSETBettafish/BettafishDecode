@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +23,25 @@ import java.util.List;
 public class Teleop extends LinearOpMode {
 
     MecanumDrive drive;
+    Intake intake;
+    Transfer transfer;
+    Shooter shooter;
+
 
     FtcDashboard dash = FtcDashboard.getInstance();
     List<Action> runningActions = new ArrayList<>();
+
+    double ballls = 0;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        intake = new Intake(hardwareMap);
+        transfer = new Transfer(hardwareMap);
+        shooter = new Shooter(hardwareMap);
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
@@ -37,12 +51,19 @@ public class Teleop extends LinearOpMode {
 
         Gamepad previousGamepad1 = new Gamepad();
         Gamepad previousGamepad2 = new Gamepad();
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad currentGamepad2 = new Gamepad();
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
+
+            previousGamepad1 = currentGamepad1;
+            previousGamepad2 = currentGamepad2;
+            currentGamepad1 = gamepad1;
+            currentGamepad2 = gamepad2;
 
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x * 1.1;
@@ -59,7 +80,9 @@ public class Teleop extends LinearOpMode {
             drive.rightFront.setPower(RFPower);
             drive.rightBack.setPower(RBPower);
 
-
+            if (currentGamepad1.left_trigger > 0.9 && previousGamepad1.left_trigger < 0.9) {
+                
+            }
 
             List<Action> newActions = new ArrayList<>();
             for (Action action : runningActions) {
@@ -71,9 +94,6 @@ public class Teleop extends LinearOpMode {
             runningActions = newActions;
 
             dash.sendTelemetryPacket(packet);
-
-            previousGamepad1 = gamepad1;
-            previousGamepad2 = gamepad2;
 
             telemetry.update();
 
