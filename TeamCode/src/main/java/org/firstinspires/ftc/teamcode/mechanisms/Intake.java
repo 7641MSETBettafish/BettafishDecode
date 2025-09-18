@@ -18,6 +18,7 @@ public class Intake {
     public static double intakePower;
 
     public DcMotor intakeMotor;
+    public NormalizedColorSensor colorSensor;
 
     public Intake(HardwareMap HWMap) {
         intakeMotor = HWMap.get(DcMotor.class, "intake");
@@ -25,18 +26,17 @@ public class Intake {
 
     public class Run implements Action {
 
-        NormalizedColorSensor colorSensor;
-
-        public Run(NormalizedColorSensor colorSensor) {
-            this.colorSensor = colorSensor;
-        }
+        boolean init = false;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            intakeMotor.setPower(intakePower);
+            if (!init) {
+                intakeMotor.setPower(intakePower);
+                init = true;
+            }
 
             if (colorSensor instanceof DistanceSensor) {
-                if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 3) {
+                if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) <= 3) {
                     intakeMotor.setPower(0);
                     return false;
                 } else {
@@ -48,8 +48,9 @@ public class Intake {
         }
 
     }
-    public Action run(NormalizedColorSensor colorSensor) {
-        return new Run(colorSensor);
+
+    public Action run() {
+        return new Run();
     }
 
     public class Stop implements Action {

@@ -8,65 +8,72 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @Config
 public class Transfer {
     public static double transferPower = 1;
-    public static double detectionDistance = 5; // cm i think
+    public static double detectionDistance = 5;
 
-    private DcMotor transferMotor;
-    private DistanceSensor transferSensor;
+    public DcMotor transferMotor;
+    public DistanceSensor transferSensor;
 
     public Transfer(HardwareMap hwMap) {
         transferMotor = hwMap.get(DcMotor.class, "transfer");
 
+        transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         transferSensor = hwMap.get(DistanceSensor.class, "transferSensor");
     }
 
     public class Run implements Action {
+
+        boolean init = false;
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double dist = transferSensor.getDistance(DistanceUnit.CM);
-            packet.put("transferDist", dist);
+            if (!init) {
+                transferMotor.setPower(transferPower);
+                init = true;
+            }
 
-            if (dist <= detectionDistance) {
+            if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance) {
                 transferMotor.setPower(0);
                 return false;
             } else {
-                transferMotor.setPower(transferPower);
                 return true;
             }
         }
     }
-
-    public class deposit implements Action {
-        public boolean run(@NonNull TelemetryPacket packet) {
-            transferMotor.setPower(transferPower);
-            return false;
-        }
+    public Action run() {
+        return new Run();
     }
 
-    public class outtake implements Action {
-        public boolean run(@NonNull TelemetryPacket packet) {
-            transferMotor.setPower(-transferPower);
-            return false;
-        }
-    }
+    public class Load implements Action {
 
-
-    public class Stop implements Action {
+        boolean init = false;
+        ElapsedTime time = new ElapsedTime();
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            transferMotor.setPower(0);
-            return false;
-        }
+            if (!init) {
+                transferMotor.setPower(transferPower);
+                time.reset();
+            }
 
+            if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance && time.milliseconds() > 750) {
+                transferMotor.setPower(0);
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
-    public Action stop() {
-        return new Transfer.Stop();
+    public Action load() {
+        return new Load();
     }
 }

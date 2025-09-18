@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,6 +23,9 @@ import java.util.List;
 @TeleOp(name="Teleop", group="Teleop")
 public class Teleop extends LinearOpMode {
 
+    public static double startX = 0;
+    public static double startY = 0;
+
     MecanumDrive drive;
     Intake intake;
     Transfer transfer;
@@ -31,12 +35,13 @@ public class Teleop extends LinearOpMode {
     FtcDashboard dash = FtcDashboard.getInstance();
     List<Action> runningActions = new ArrayList<>();
 
-    double ballls = 0;
-
+    double balls = 0;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         intake = new Intake(hardwareMap);
@@ -53,6 +58,7 @@ public class Teleop extends LinearOpMode {
         Gamepad previousGamepad2 = new Gamepad();
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
+
 
         waitForStart();
         if (isStopRequested()) return;
@@ -81,7 +87,19 @@ public class Teleop extends LinearOpMode {
             drive.rightBack.setPower(RBPower);
 
             if (currentGamepad1.left_trigger > 0.9 && previousGamepad1.left_trigger < 0.9) {
-                
+                if (balls < 3) {
+                    runningActions.add(intake.run());
+                    balls++;
+                }
+            }
+
+            if (currentGamepad1.right_trigger > 0.9 && previousGamepad1.right_trigger < 0.9) {
+                if (balls > 0) {
+                    runningActions.add(new SequentialAction(
+                            //shooter.powerUp(),
+                            transfer.load()
+                    ));
+                }
             }
 
             List<Action> newActions = new ArrayList<>();
