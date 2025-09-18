@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auton;
 
 import android.graphics.Color;
 
@@ -31,9 +31,10 @@ import org.firstinspires.ftc.teamcode.mechanisms.SweeperSample;
 @Autonomous(preselectTeleOp = "ABlueTeleop")
 public class Auto2025 extends LinearOpMode {
 
-    public static double startPosX = 10;
-    public static double startPosY = 10;
-    public static double targetPos = 10;
+    //public static double startPosX = 0;
+    //public static double startPosY = 0;
+    public static double aFarLaunchZoneX = 72;
+    public static double aFarLaunchZoneY = 12;
 
     /*
     public static double apreloadX = -17.97;
@@ -83,8 +84,10 @@ public class Auto2025 extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d StartPose1 = new Pose2d(0, 0, Math.toRadians(0));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, StartPose1);
+        Pose2d startPose1 = new Pose2d(24, 12, Math.PI / 2);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
+
+
 //        SlidesV3 slides = new SlidesV3(hardwareMap, true);
 //        ExtendoV2 extendo = new ExtendoV2(hardwareMap);
 //        Claw claw = new Claw(hardwareMap);
@@ -112,17 +115,17 @@ public class Auto2025 extends LinearOpMode {
          */
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(startPosX, startPosY), Math.toRadians(targetPos));
+                .strafeToConstantHeading(new Vector2d(aFarLaunchZoneX, aFarLaunchZoneY));
 
 
         Action path = path1.build();
 
         waitForStart();
-        Actions.runBlocking(new SequentialAction(
-
-
-                )
-        );
+//        Actions.runBlocking(new SequentialAction(
+//
+//
+//
+//        );
 
         /*
         Actions.runBlocking(new ParallelAction(
