@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.SweeperSample;
 @Autonomous(preselectTeleOp = "ABlueTeleop")
 public class Auto2025 extends LinearOpMode {
 
-    Camera camera = new Camera(hardwareMap);
+    Camera camera;
 
     public static double aFarLaunchZoneX = 72;
     public static double aFarLaunchZoneY = 12;
@@ -88,6 +88,8 @@ public class Auto2025 extends LinearOpMode {
         Pose2d startPose1 = new Pose2d(24, 12, Math.PI / 2);
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
+        camera = new Camera(hardwareMap);
+
 
 //        SlidesV3 slides = new SlidesV3(hardwareMap, true);
 //        ExtendoV2 extendo = new ExtendoV2(hardwareMap);
@@ -103,5 +105,22 @@ public class Auto2025 extends LinearOpMode {
         Action path = path1.build();
 
         waitForStart();
+
+        if(camera.findID() == 21) {
+            // code
+        }
+
+        if(camera.findID() == 22) {
+            // code
+        }
+
+        if(camera.findID() == 23) {
+            // code
+        }
+
+        if(camera.findID() == 24) {
+            // code
+        }
+
 
 }
