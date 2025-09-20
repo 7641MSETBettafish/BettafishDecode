@@ -10,31 +10,35 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.List;
+
 @TeleOp
-public class Vision extends LinearOpMode{
+public class Vision extends LinearOpMode {
+
+    private AprilTagProcessor tagProcessor;
+    private VisionPortal visionPortal;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
+        tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
                 .build();
 
-        VisionPortal visionPortal = new VisionPortal.Builder()
+        visionPortal = new VisionPortal.Builder()
                 .addProcessor(tagProcessor)
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
-                // prob need to change
                 .setCameraResolution(new Size(640, 480))
                 .build();
 
         waitForStart();
 
-        while(!isStopRequested() && opModeIsActive()){
+        while (!isStopRequested() && opModeIsActive()) {
             AprilTagDetection tag;
-            if(!tagProcessor.getDetections().isEmpty()) {
+            if (!tagProcessor.getDetections().isEmpty()) {
                 tag = tagProcessor.getDetections().get(0);
                 telemetry.addData("id", tag.metadata.id);
                 telemetry.addData("x", tag.ftcPose.x);
@@ -43,13 +47,17 @@ public class Vision extends LinearOpMode{
                 telemetry.addData("roll", tag.ftcPose.roll);
                 telemetry.addData("pitch", tag.ftcPose.pitch);
                 telemetry.addData("yaw", tag.ftcPose.yaw);
-
             }
 
             telemetry.update();
-
-
         }
+    }
 
+    public int findID() {
+        List<AprilTagDetection> detections = tagProcessor.getDetections();
+        if (detections != null && !detections.isEmpty()) {
+            return detections.get(0).metadata.id;
+        }
+        return -1;
     }
 }
