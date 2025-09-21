@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Camera;
 @Autonomous(preselectTeleOp = "ABlueTeleop")
 public class Auto2025 extends LinearOpMode {
 
-    public int tagID;
+    public static int tagID;
     Camera camera;
 
 
