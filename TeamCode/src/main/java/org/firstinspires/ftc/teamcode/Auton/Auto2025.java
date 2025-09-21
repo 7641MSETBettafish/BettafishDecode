@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Vision.Vision;
 @Autonomous(preselectTeleOp = "ABlueTeleop")
 public class Auto2025 extends LinearOpMode {
 
-    Vision camera;
+    Camera camera;
 
 
     @Override
@@ -26,7 +26,7 @@ public class Auto2025 extends LinearOpMode {
         Pose2d startPose1 = new Pose2d(24, 12, Math.PI / 2);
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
-        camera = new Vision();
+        camera = new Camera();
 
 
         TrajectoryActionBuilder path1 = drive.actionBuilder(startPose1)
