@@ -29,6 +29,9 @@ public class ShooterTest extends LinearOpMode {
         leftShooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         double lastLeftPosition = 0;
         double lastRightPosition = 0;
         ElapsedTime time = new ElapsedTime();

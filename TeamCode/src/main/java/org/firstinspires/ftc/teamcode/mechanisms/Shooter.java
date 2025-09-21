@@ -45,12 +45,18 @@ public class Shooter {
         }
     }
 
-    public DcMotor shooterMotor1;
-    public DcMotor shooterMotor2;
+    public DcMotor leftShooterMotor;
+    public DcMotor rightShooterMotor;
 
     public Shooter(HardwareMap HWMap) {
-        shooterMotor1 = HWMap.get(DcMotor.class, "shooter1");
-        shooterMotor2 = HWMap.get(DcMotor.class, "shooter2");
+        leftShooterMotor = HWMap.get(DcMotor.class, "leftShooter");
+        rightShooterMotor = HWMap.get(DcMotor.class, "rightShooter");
+
+        leftShooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightShooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public static double calculatePower(double distance) {
@@ -100,13 +106,19 @@ public class Shooter {
             double power = calculatePower(distance);
 
             if (!init) {
-                shooterMotor1.setPower(power);
-                shooterMotor2.setPower(power);
+                leftShooterMotor.setPower(power);
+                rightShooterMotor.setPower(power);
                 time.reset();
                 init = true;
             }
 
             return time.milliseconds() < (RECOVERY_CONSTANT / power) * 1000;
         }
+    }
+    public Action powerUp(double d) {
+        return new PowerUp(d);
+    }
+    public Action powerUp(Distances d) {
+        return new PowerUp(d);
     }
 }
