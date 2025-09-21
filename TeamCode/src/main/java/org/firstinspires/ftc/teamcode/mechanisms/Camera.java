@@ -13,7 +13,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-
+import org.firstinspires.ftc.teamcode.Auton.Auto2025;
 
 
 public class Camera {
@@ -49,8 +49,8 @@ public class Camera {
             }
             if (!tagProcessor.getDetections().isEmpty()) {
                 tag = tagProcessor.getDetections().get(0);
-                tagID = tag.metadata.id;
-                return false; 
+                Auto2025.tagID = tag.metadata.id;
+                return false;
             }
         }
     }
