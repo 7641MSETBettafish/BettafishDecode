@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 
 import android.util.Size;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -13,7 +15,8 @@ public class Camera {
     VisionPortal visionPortal;
     AprilTagProcessor tagProcessor;
 
-    public Camera() {
+
+    public Camera(HardwareMap HWMap) {
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
@@ -31,7 +34,10 @@ public class Camera {
 
     public int findID() {
         AprilTagDetection tag;
-        if(!tagProcessor.getDetections().isEmpty()) {
+        while (tagProcessor.getDetections().isEmpty()) {
+
+        }
+        if (!tagProcessor.getDetections().isEmpty()) {
             tag = tagProcessor.getDetections().get(0);
             return tag.metadata.id;
         }
