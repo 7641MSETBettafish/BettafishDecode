@@ -39,13 +39,18 @@ public class Auto2025 extends LinearOpMode {
 
         int detected = camera.findID();
 
-        if (detected == 21) {
+
+
+        if (detected == 20) {
+            // code
+        } else if (detected == 21) {
             // code
         } else if (detected == 22) {
             // code
         } else if (detected == 23) {
             // code
-        } else if (detected == 24) {
+        }
+        else if (detected == 24) {
             // code
         }
     }
