@@ -1,25 +1,26 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import android.util.Size;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Vision.Vision;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.teamcode.Auton.Auto2025;
+
 
 public class Camera {
 
     VisionPortal visionPortal;
     AprilTagProcessor tagProcessor;
+
 
     public Camera(HardwareMap HWMap) {
         tagProcessor = new AprilTagProcessor.Builder()
@@ -37,13 +38,25 @@ public class Camera {
             .build();
     }
 
-    public int findID() {
-        AprilTagDetection tag;
-        if(!tagProcessor.getDetections().isEmpty()) {
-            tag = tagProcessor.getDetections().get(0);
-            return tag.metadata.id;
+    public class findID implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+            AprilTagDetection tag;
+            while (tagProcessor.getDetections().isEmpty()) {
+
+            }
+            if (!tagProcessor.getDetections().isEmpty()) {
+                tag = tagProcessor.getDetections().get(0);
+                Auto2025.tagID = tag.metadata.id;
+                return false;
+            }
         }
-        return -1;
+    }
+
+    public Action findID(){
+        return new findID();
     }
 
 }
