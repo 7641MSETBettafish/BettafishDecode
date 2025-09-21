@@ -50,7 +50,7 @@ public class Camera {
             if (!tagProcessor.getDetections().isEmpty()) {
                 tag = tagProcessor.getDetections().get(0);
                 tagID = tag.metadata.id;
-                return false;
+                return false; 
             }
         }
     }
