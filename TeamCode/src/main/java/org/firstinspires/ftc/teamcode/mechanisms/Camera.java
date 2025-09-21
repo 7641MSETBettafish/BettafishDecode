@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -9,6 +13,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+
 
 public class Camera {
 
@@ -32,16 +38,25 @@ public class Camera {
             .build();
     }
 
-    public int findID() {
-        AprilTagDetection tag;
-        while (tagProcessor.getDetections().isEmpty()) {
+    public class findID implements Action {
 
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+            AprilTagDetection tag;
+            while (tagProcessor.getDetections().isEmpty()) {
+
+            }
+            if (!tagProcessor.getDetections().isEmpty()) {
+                tag = tagProcessor.getDetections().get(0);
+                tagID = tag.metadata.id;
+                return false;
+            }
         }
-        if (!tagProcessor.getDetections().isEmpty()) {
-            tag = tagProcessor.getDetections().get(0);
-            return tag.metadata.id;
-        }
-        return -1;
+    }
+
+    public Action findID(){
+        return new findID();
     }
 
 }
