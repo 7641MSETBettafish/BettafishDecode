@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.Auton;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -55,25 +57,36 @@ public class Auto2025 extends LinearOpMode {
 
         waitForStart();
 
-        int detected = camera.findID();
-
-
-
-        if (detected == 21) {
-            telemetry.addData("id", detected);
+        if (tagID == 21) {
+            telemetry.addData("id", tagID);
             telemetry.update();
-            Actions.runBlocking(path21);
-        } else if (detected == 22) {
-            telemetry.addData("id", detected);
+            Actions.runBlocking(new ParallelAction(
+                    path21,
+                    camera.findID()
+            ));
+        } else if (tagID == 22) {
+            telemetry.addData("id", tagID);
             telemetry.update();
-            Actions.runBlocking(path22);
-        } else if (detected == 23) {
-            telemetry.addData("id", detected);
+            Actions.runBlocking(new ParallelAction(
+                    path22,
+                    camera.findID()
+            ));
+
+        } else if (tagID == 23) {
+            telemetry.addData("id", tagID);
             telemetry.update();
-            Actions.runBlocking(path23);
+            Actions.runBlocking(new ParallelAction(
+                    path23,
+                    camera.findID()
+            ));
+
         } else {
-            telemetry.addData("id", detected);
+            telemetry.addData("id", tagID);
             telemetry.update();
+            Actions.runBlocking(new ParallelAction(
+                    path23,
+                    camera.findID()
+            ));
             Actions.runBlocking(pathOther);
         }
     }
