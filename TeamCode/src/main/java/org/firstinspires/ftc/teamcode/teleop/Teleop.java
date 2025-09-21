@@ -25,12 +25,14 @@ public class Teleop extends LinearOpMode {
 
     public static double startX = 0;
     public static double startY = 0;
+    public static double startH = 0;
 
     MecanumDrive drive;
     Intake intake;
     Transfer transfer;
     Shooter shooter;
 
+    final Pose2d goalPosition = new Pose2d(-60, 63,0);
 
     FtcDashboard dash = FtcDashboard.getInstance();
     List<Action> runningActions = new ArrayList<>();
@@ -41,9 +43,8 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        drive = new MecanumDrive(hardwareMap, new Pose2d(startX, startY, startH));
 
-
-        drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         intake = new Intake(hardwareMap);
         transfer = new Transfer(hardwareMap);
         shooter = new Shooter(hardwareMap);
