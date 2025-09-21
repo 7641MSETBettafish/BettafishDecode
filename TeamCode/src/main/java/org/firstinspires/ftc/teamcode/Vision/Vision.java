@@ -36,14 +36,16 @@ public class Vision extends LinearOpMode{
             AprilTagDetection tag;
             if(!tagProcessor.getDetections().isEmpty()) {
                 tag = tagProcessor.getDetections().get(0);
-                telemetry.addData("id", tag.metadata.id);
-                telemetry.addData("x", tag.ftcPose.x);
-                telemetry.addData("y", tag.ftcPose.y);
-                telemetry.addData("z", tag.ftcPose.z);
-                telemetry.addData("roll", tag.ftcPose.roll);
-                telemetry.addData("pitch", tag.ftcPose.pitch);
-                telemetry.addData("yaw", tag.ftcPose.yaw);
-
+                if(tag.metadata != null) {
+                    telemetry.addData("id", tag.metadata.id);
+                    telemetry.addData("x", tag.ftcPose.x);
+                    telemetry.addData("y", tag.ftcPose.y);
+                    telemetry.addData("z", tag.ftcPose.z);
+                    telemetry.addData("roll", tag.ftcPose.roll);
+                    telemetry.addData("pitch", tag.ftcPose.pitch);
+                    telemetry.addData("yaw", tag.ftcPose.yaw);
+                }
+                
             }
 
             telemetry.update();
