@@ -33,30 +33,33 @@ public class Camera {
         visionPortal = new VisionPortal.Builder()
             .addProcessor(tagProcessor)
             .setCamera(HWMap.get(WebcamName.class, "Webcam"))
-            // prob need to change
             .setCameraResolution(new Size(640, 480))
             .build();
     }
 
-    public class findID implements Action {
+    public class FindID implements Action {
+
+        AprilTagDetection tag;
+        Integer tagID;
+
+        public FindID(Integer tagID) {
+            this.tagID = tagID;
+        }
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-
-            AprilTagDetection tag;
-            while (tagProcessor.getDetections().isEmpty()) {
-
-            }
-            if (!tagProcessor.getDetections().isEmpty()) {
+            if (tagProcessor.getDetections().isEmpty()) {
+                return true;
+            } else {
                 tag = tagProcessor.getDetections().get(0);
-                Auto2025.tagID = tag.metadata.id;
+                tagID = tag.metadata.id;
                 return false;
             }
         }
     }
 
-    public Action findID(){
-        return new findID();
+    public Action findID(Integer a){
+        return new FindID(a);
     }
 
 }

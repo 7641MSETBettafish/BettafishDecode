@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Camera;
 @Autonomous(preselectTeleOp = "ABlueTeleop")
 public class Auto2025 extends LinearOpMode {
 
-    public static int tagID;
+    public Integer tagID;
     Camera camera;
 
 
@@ -62,14 +62,14 @@ public class Auto2025 extends LinearOpMode {
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
                     path21,
-                    camera.findID()
+                    camera.findID(tagID)
             ));
         } else if (tagID == 22) {
             telemetry.addData("id", tagID);
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
                     path22,
-                    camera.findID()
+                    camera.findID(tagID)
             ));
 
         } else if (tagID == 23) {
@@ -77,7 +77,7 @@ public class Auto2025 extends LinearOpMode {
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
                     path23,
-                    camera.findID()
+                    camera.findID(tagID)
             ));
 
         } else {
@@ -85,7 +85,7 @@ public class Auto2025 extends LinearOpMode {
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
                     path23,
-                    camera.findID()
+                    camera.findID(tagID)
             ));
             Actions.runBlocking(pathOther);
         }
