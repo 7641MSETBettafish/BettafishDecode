@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.practice;
+package org.firstinspires.ftc.teamcode.packages;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -14,7 +14,7 @@ public class Example extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            
+
         }
 
     }
