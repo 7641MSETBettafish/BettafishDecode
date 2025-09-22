@@ -60,7 +60,6 @@ public class Teleop extends LinearOpMode {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
 
-
         waitForStart();
         if (isStopRequested()) return;
 
