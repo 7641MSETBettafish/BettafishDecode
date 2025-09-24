@@ -12,17 +12,25 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(100, 50, Math.toRadians(180), Math.toRadians(180), 16.5)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-58, -55, 45))
-                .strafeToLinearHeading(new Vector2d(-45, -30), 45)
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, -16, 180))
+                .strafeToLinearHeading(new Vector2d(-16, -16), 45)
                 .waitSeconds(1) //launch balls
                 .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-90)), Math.toRadians(-90))
                 .waitSeconds(0.5)
                 .lineToY(-52) //intake balls
                 .setTangent(20)
-                .splineToLinearHeading(new Pose2d(-45, -30, Math.toRadians(45)), Math.toRadians(-90)) //launch balls
+                .splineToLinearHeading(new Pose2d(-16, -16, Math.toRadians(45)), Math.toRadians(-90)) //launch balls
+                .waitSeconds(3) //deposit
+                .setTangent(20)
+                .splineToLinearHeading(new Pose2d(13.5, -30  , Math.toRadians(-90)), Math.toRadians(-90))
+                .lineToY(-52)
+                .waitSeconds(1)//intake balls
+                .setTangent(20)
+                .splineToLinearHeading(new Pose2d(-16, -16, Math.toRadians(45)), Math.toRadians(-90))
+                .waitSeconds(3) // deposit
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)
