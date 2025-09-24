@@ -28,20 +28,37 @@ public class Auto2025 extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(24, 12, Math.PI / 2);
+        Pose2d startPose1 = new Pose2d(-58, -55, Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
         camera = new Camera(hardwareMap);
 
 
-        TrajectoryActionBuilder path1 = drive.actionBuilder(startPose1)
-                .strafeToConstantHeading(new Vector2d(24, 24));
+        TrajectoryActionBuilder path1 = drive.actionBuilder(startPose1) // green purple purple, only for specific cases
+                .strafeToLinearHeading(new Vector2d(-45, -30), 45)
+                .waitSeconds(1) //launch balls
+                .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-90)), Math.toRadians(-90))
+                .waitSeconds(0.5)
+                .lineToY(-52) //intake balls
+                .setTangent(20)
+                .splineToLinearHeading(new Pose2d(-45, -30, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
 
-        TrajectoryActionBuilder path2 = drive.actionBuilder(startPose1)
-                .strafeToConstantHeading(new Vector2d(24, 36));
+        TrajectoryActionBuilder path2 = drive.actionBuilder(startPose1) //purple green purple path
+                .strafeToLinearHeading(new Vector2d(-45, -30), 45)
+                .waitSeconds(1) //launch balls
+                .splineToLinearHeading(new Pose2d(12.5, -30, Math.toRadians(-90)), Math.toRadians(-90))
+                .waitSeconds(0.5)
+                .lineToY(-52) //intake balls
+                .setTangent(20)
+                .splineToLinearHeading(new Pose2d(-45, -30, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
 
-        TrajectoryActionBuilder path3 = drive.actionBuilder(startPose1)
-                .strafeToConstantHeading(new Vector2d(24, 48));
+        TrajectoryActionBuilder path3 = drive.actionBuilder(startPose1) //purple purple green path, preload then intake then go back and launch
+                .strafeToLinearHeading(new Vector2d(-45, -30), 45)
+                .waitSeconds(1) //launch balls
+                .splineToLinearHeading(new Pose2d(-11, -30, Math.toRadians(-90)), Math.toRadians(-90))
+                .waitSeconds(0.5)
+                .lineToY(-52) //intake balls
+                .strafeToLinearHeading(new Vector2d(-45, -30), 45); //launch balls
 
         TrajectoryActionBuilder path4 = drive.actionBuilder(startPose1)
                 .waitSeconds(5)
