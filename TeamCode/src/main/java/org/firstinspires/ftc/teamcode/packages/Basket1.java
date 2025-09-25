@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode.packages;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Basket {
+public class Basket1 {
 
 
         private Servo basketServo;
 
 
-        public Basket(HardwareMap hardwareMap) {
+        public Basket1(HardwareMap hardwareMap) {
            basketServo = hardwareMap.get(Servo.class, "intakeServo");
 
 

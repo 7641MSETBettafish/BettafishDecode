@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.mechanisms.Camera;
 @Autonomous(preselectTeleOp = "ABlueTeleop")
 public class Auto_pathing_far_side extends LinearOpMode {
 
-    public Integer tagID;
     Camera camera;
 
 
@@ -66,20 +65,20 @@ public class Auto_pathing_far_side extends LinearOpMode {
 
         Actions.runBlocking(new ParallelAction(
                 preload1, // actions
-                camera.findID(tagID)
+                camera.findID()
         ));
 
 
-        if (tagID == 21 || tagID == 23) {
-            telemetry.addData("id", tagID);
+        if (camera.id == 21 || camera.id == 23) {
+            telemetry.addData("id", camera.id);
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
                     //actions
                     path21
 
             ));
-        } else if (tagID == 22) {
-            telemetry.addData("id", tagID);
+        } else if (camera.id == 22) {
+            telemetry.addData("id", camera.id);
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
                     //actions

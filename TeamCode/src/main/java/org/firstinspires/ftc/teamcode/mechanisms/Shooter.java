@@ -18,16 +18,16 @@ public class Shooter {
     public static double Far = 0;
 
     // TODO: 0.5 * flywheel mass (kg) * (flywheel radius)^2 (m)
-    double flywheelInertia = 0.5 * 1 * 2 * 2;
+    final static double flywheelInertia = 0.5 * 1 * 2 * 2;
     // TODO: set max motor speed at 12V
-    double motorMaxRPM = 6000;
+    final static double motorMaxRPM = 6000;
     // TODO: how much speed is conserved
-    double gearEfficiency = 1;
+    final static double gearEfficiency = 1;
     // TODO: gear ratio is motor speed / flywheel speed
-    double gearRatio = 3;
+    final static double gearRatio = 3;
     // TODO: set to motor torque (at 12V when stalled)
-    double motorStallTorque = 0.35;
-    double RECOVERY_CONSTANT = (flywheelInertia * motorMaxRPM * 2 * Math.PI / 60.0) / (gearEfficiency * gearRatio * gearRatio * motorStallTorque);
+    final static double motorStallTorque = 0.35;
+    static double RECOVERY_CONSTANT = (flywheelInertia * motorMaxRPM * 2 * Math.PI / 60.0) / (gearEfficiency * gearRatio * gearRatio * motorStallTorque);
 
     public enum Distances {
         CLOSE(Close),
@@ -61,7 +61,7 @@ public class Shooter {
 
     public static double calculatePower(double distance) {
         // TODO: set launch angle
-        double angle = Math.toRadians(0);
+        double angle = Math.toRadians(55);
         // TODO: set target height (meters)
         double targetHeight = 20;
         // TODO: set wheel radius (meters)
@@ -72,7 +72,7 @@ public class Shooter {
         double numerator = 9.81 * distance * distance;
         double denominator = 2 * Math.cos(angle) * Math.cos(angle) * (distance * Math.tan(angle) - targetHeight);
 
-        if (denominator <= 0) return 1; // impossible shot at given angle so just hail mary :p
+        if (denominator <= 0) return 0;
 
         double vIdeal = Math.sqrt(numerator / denominator);
 
@@ -90,6 +90,7 @@ public class Shooter {
         double distance;
         ElapsedTime time;
         boolean init = false;
+        double power = 0;
 
         public PowerUp(double distance) {
             this.distance = distance;
@@ -103,9 +104,9 @@ public class Shooter {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            double power = calculatePower(distance);
 
             if (!init) {
+                power = calculatePower(distance);
                 leftShooterMotor.setPower(power);
                 rightShooterMotor.setPower(power);
                 time.reset();

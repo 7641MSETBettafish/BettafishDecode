@@ -11,9 +11,9 @@ public class horizontalSlides {
 
 
     public horizontalSlides(HardwareMap hardwareMap) {
-        intakeServoUno= hardwareMap.get(Servo.class, "intakeServoUno");
-        intakeServoDos= hardwareMap.get(Servo.class, "intakeServoDos");
-
+        intakeServoUno = hardwareMap.get(Servo.class, "intakeServoUno");
+        intakeServoDos = hardwareMap.get(Servo.class, "intakeServoDos");
 
 
     }
+}

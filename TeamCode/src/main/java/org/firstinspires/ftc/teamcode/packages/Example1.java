@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //ur reference opmode template
 
 @TeleOp
-public class Example extends LinearOpMode {
+public class Example1 extends LinearOpMode {
 
     @Override
     public void runOpMode() {

@@ -19,7 +19,7 @@ public class Camera {
 
     VisionPortal visionPortal;
     AprilTagProcessor tagProcessor;
-
+    public int id = -1;
 
     public Camera(HardwareMap HWMap) {
         tagProcessor = new AprilTagProcessor.Builder()
@@ -39,11 +39,7 @@ public class Camera {
     public class FindID implements Action {
 
         AprilTagDetection tag;
-        Integer tagID;
 
-        public FindID(Integer tagID) {
-            this.tagID = tagID;
-        }
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
@@ -51,14 +47,14 @@ public class Camera {
                 return true;
             } else {
                 tag = tagProcessor.getDetections().get(0);
-                tagID = tag.metadata.id;
+                id = tag.metadata.id;
                 return false;
             }
         }
     }
 
-    public Action findID(Integer a){
-        return new FindID(a);
+    public Action findID(){
+        return new FindID();
     }
 
 }

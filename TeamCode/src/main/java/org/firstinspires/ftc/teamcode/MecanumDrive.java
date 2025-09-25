@@ -331,6 +331,11 @@ public final class MecanumDrive {
                     voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
             ));
 
+            p.put("leftFrontPower", leftFrontPower);
+            p.put("leftBackPower", leftBackPower);
+            p.put("rightFrontPower", rightFrontPower);
+            p.put("rightBackPower", rightBackPower);
+
             leftFront.setPower(leftFrontPower);
             leftBack.setPower(leftBackPower);
             rightBack.setPower(rightBackPower);

@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -18,7 +20,6 @@ import org.firstinspires.ftc.teamcode.mechanisms.Camera;
 @Autonomous(preselectTeleOp = "ABlueTeleop")
 public class Auto_pathing_close_side extends LinearOpMode {
 
-    public Integer tagID;
     Camera camera;
 
 
@@ -70,39 +71,45 @@ public class Auto_pathing_close_side extends LinearOpMode {
 
         waitForStart();
 
-        Actions.runBlocking(new ParallelAction(
+        Actions.runBlocking(new SequentialAction(
                 preload1, // actions
-                camera.findID(tagID)
+                camera.findID(),
+                new SleepAction(0.1)
         ));
 
 
-        if (tagID == 21) {
-            telemetry.addData("id", tagID);
-            telemetry.update();
-            Actions.runBlocking(new ParallelAction(
-                    //actions
-                    path21
+        try {
+            if (camera.id == 21) {
+                telemetry.addData("id", camera.id);
+                telemetry.update();
+                Actions.runBlocking(new ParallelAction(
+                        //actions
+                        path21
 
-            ));
-        } else if (tagID == 22) {
-            telemetry.addData("id", tagID);
-            telemetry.update();
-            Actions.runBlocking(new ParallelAction(
-                    //actions
-                    path22
-            ));
+                ));
+            } else if (camera.id == 22) {
+                telemetry.addData("id", camera.id);
+                telemetry.update();
+                Actions.runBlocking(new ParallelAction(
+                        //actions
+                        path22
+                ));
 
-        } else if (tagID == 23) {
-            telemetry.addData("id", tagID);
-            telemetry.update();
-            Actions.runBlocking(new ParallelAction(
-                    //actions
-                    path23
-            ));
+            } else if (camera.id == 23) {
+                telemetry.addData("id", camera.id);
+                telemetry.update();
+                Actions.runBlocking(new ParallelAction(
+                        //actions
+                        path23
+                ));
 
-        } else {
+            } else {
+                Actions.runBlocking(new ParallelAction(
+                        path23
+                ));
+            }
+        } catch (NullPointerException e) {
             Actions.runBlocking(new ParallelAction(
-                    //actions
                     path23
             ));
         }

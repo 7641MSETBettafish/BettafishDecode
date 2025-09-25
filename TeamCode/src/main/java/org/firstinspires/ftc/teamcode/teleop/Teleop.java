@@ -60,6 +60,8 @@ public class Teleop extends LinearOpMode {
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
 
+        double goalDistance = 0;
+
         waitForStart();
         if (isStopRequested()) return;
 
@@ -70,6 +72,8 @@ public class Teleop extends LinearOpMode {
             previousGamepad2 = currentGamepad2;
             currentGamepad1 = gamepad1;
             currentGamepad2 = gamepad2;
+
+            goalDistance = Math.sqrt(Math.pow(drive.localizer.getPose().position.x - goalPosition.position.x, 2) + Math.pow(drive.localizer.getPose().position.y - goalPosition.position.y, 2));
 
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x * 1.1;
@@ -96,7 +100,7 @@ public class Teleop extends LinearOpMode {
             if (currentGamepad1.right_trigger > 0.9 && previousGamepad1.right_trigger < 0.9) {
                 if (balls > 0) {
                     runningActions.add(new SequentialAction(
-                            //shooter.powerUp(),
+                            shooter.powerUp(goalDistance),
                             transfer.load()
                     ));
                 }
@@ -112,6 +116,8 @@ public class Teleop extends LinearOpMode {
             runningActions = newActions;
 
             dash.sendTelemetryPacket(packet);
+
+            drive.updatePoseEstimate();
 
             telemetry.update();
 
