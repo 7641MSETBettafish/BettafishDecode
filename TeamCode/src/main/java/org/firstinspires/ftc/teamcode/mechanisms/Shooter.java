@@ -17,7 +17,7 @@ public class Shooter {
     public static double Middle = 0;
     public static double Far = 0;
 
-    // TODO: 0.5 * flywheel mass (kg) * (flywheel radius)^2 (m)
+    // TODO: 0.5 * flywheel mass (kg) * (flywheel radius)^2 (m) * number of flywheels
     final static double flywheelInertia = 0.5 * 1 * 2 * 2;
     // TODO: set max motor speed at 12V
     final static double motorMaxRPM = 6000;
@@ -27,7 +27,8 @@ public class Shooter {
     final static double gearRatio = 3;
     // TODO: set to motor torque (at 12V when stalled)
     final static double motorStallTorque = 0.35;
-    static double RECOVERY_CONSTANT = (flywheelInertia * motorMaxRPM * 2 * Math.PI / 60.0) / (gearEfficiency * gearRatio * gearRatio * motorStallTorque);
+
+    private static final double OMEGA_NL = motorMaxRPM * 2 * Math.PI / 60.0;
 
     public enum Distances {
         CLOSE(Close),
@@ -85,6 +86,21 @@ public class Shooter {
         return Math.min(power, 1.0);
     }
 
+    public static double spinUpTime(double rpmInitial, double rpmFinal) {
+        if (rpmFinal <= rpmInitial) return 0.0;
+
+        double omegaInitial = rpmInitial * 2 * Math.PI / 60.0;
+        double omegaFinal   = rpmFinal   * 2 * Math.PI / 60.0;
+
+        // avoid invalid log if target speed >= no-load speed
+        if (omegaFinal >= OMEGA_NL) return Double.POSITIVE_INFINITY;
+
+        double factor = (flywheelInertia * OMEGA_NL) / motorStallTorque;
+        double ratio  = (1 - omegaInitial / OMEGA_NL) / (1 - omegaFinal / OMEGA_NL);
+
+        return factor * Math.log(ratio);
+    }
+
     public class PowerUp implements Action {
 
         double distance;
@@ -104,7 +120,6 @@ public class Shooter {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-
             if (!init) {
                 power = calculatePower(distance);
                 leftShooterMotor.setPower(power);
@@ -113,7 +128,7 @@ public class Shooter {
                 init = true;
             }
 
-            return time.milliseconds() < (RECOVERY_CONSTANT / power) * 1000;
+            return time.milliseconds() < spinUpTime(1, 1) * 1000;
         }
     }
     public Action powerUp(double d) {
