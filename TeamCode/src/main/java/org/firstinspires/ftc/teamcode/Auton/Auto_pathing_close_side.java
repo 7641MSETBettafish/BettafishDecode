@@ -26,16 +26,16 @@ public class Auto_pathing_close_side extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(-58, -55, Math.toRadians(45));
+        Pose2d startPose1 = new Pose2d(-52, -50, Math.toRadians(54));
         Pose2d startPose2 = new Pose2d(-24, -16, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
         camera = new Camera(hardwareMap);
 
         TrajectoryActionBuilder preload = drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-45, -30), 45)
+                .strafeToLinearHeading(new Vector2d(-36, -36), Math.toRadians(45))
                 .waitSeconds(1)// launch preload
-                .strafeToLinearHeading(new Vector2d(-34, -16), 0)
+                .strafeToLinearHeading(new Vector2d(-35, -35), Math.toRadians(-20))
                 .waitSeconds(2); //detect motif
 
 
