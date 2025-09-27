@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.testing;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -22,6 +25,7 @@ public class ShooterTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         leftShooterMotor = hardwareMap.get(DcMotor.class, "leftShooter");
         rightShooterMotor = hardwareMap.get(DcMotor.class, "rightShooter");
@@ -31,6 +35,8 @@ public class ShooterTest extends LinearOpMode {
 
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         double lastLeftPosition = 0;
         double lastRightPosition = 0;
@@ -45,8 +51,10 @@ public class ShooterTest extends LinearOpMode {
             leftShooterMotor.setPower(motorPower);
             rightShooterMotor.setPower(motorPower);
 
-            telemetry.addData("leftRPM", (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 60000);
-            telemetry.addData("rightRPM", (rightShooterMotor.getCurrentPosition() - lastRightPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 60000);
+            telemetry.addData("leftRPM", (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 360000);
+            telemetry.addData("rightRPM", (rightShooterMotor.getCurrentPosition() - lastRightPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 360000);
+            telemetry.update();
+
 
             lastLeftPosition = leftShooterMotor.getCurrentPosition();
             lastRightPosition = rightShooterMotor.getCurrentPosition();
