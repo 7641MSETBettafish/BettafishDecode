@@ -39,25 +39,25 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 .waitSeconds(2); //detect motif
 
 
-        TrajectoryActionBuilder path1 = drive.actionBuilder(startPose2) // green purple purple, only for specific cases
-                .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-90)), Math.toRadians(-90))
+        TrajectoryActionBuilder path1 = preload.fresh() // green purple purple, only for specific cases
+                .splineToLinearHeading(new Pose2d(40, -30, Math.toRadians(-90)), Math.toRadians(-90))
                 .waitSeconds(0.5)
                 .lineToY(-52) //intake balls
                 .setTangent(20)
-                .splineToLinearHeading(new Pose2d(-45, -30, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
+                .splineToLinearHeading(new Pose2d(-36, -36, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
 
-        TrajectoryActionBuilder path2 = drive.actionBuilder(startPose2) //purple green purple path
-                .splineToLinearHeading(new Pose2d(12.5, -30, Math.toRadians(-90)), Math.toRadians(-90))
+        TrajectoryActionBuilder path2 = preload.fresh() //purple green purple path
+                .splineToLinearHeading(new Pose2d(16.5, -30, Math.toRadians(-90)), Math.toRadians(-90))
                 .waitSeconds(0.5)
                 .lineToY(-52) //intake balls
                 .setTangent(20)
-                .splineToLinearHeading(new Pose2d(-45, -30, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
+                .splineToLinearHeading(new Pose2d(-36, -36, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
 
-        TrajectoryActionBuilder path3 = drive.actionBuilder(startPose2) //purple purple green path, preload then intake then go back and launch
-                .splineToLinearHeading(new Pose2d(-11, -30, Math.toRadians(-90)), Math.toRadians(-90))
+        TrajectoryActionBuilder path3 = preload.fresh() //purple purple green path, preload then intake then go back and launch
+                .splineToLinearHeading(new Pose2d(-7, -30, Math.toRadians(-90)), Math.toRadians(-90))
                 .waitSeconds(0.5)
                 .lineToY(-52) //intake balls
-                .strafeToLinearHeading(new Vector2d(-45, -30), 45); //launch balls
+                .splineToLinearHeading(new Pose2d(-36, -36, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
 
 
         Action preload1 = preload.build();
@@ -73,8 +73,8 @@ public class Auto_pathing_close_side extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 preload1, // actions
-                camera.findID(),
-                new SleepAction(0.1)
+                camera.findID()
+                // new SleepAction(0.1)
         ));
 
 
