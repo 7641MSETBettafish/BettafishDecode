@@ -49,6 +49,12 @@ public class Shooter {
     public DcMotor leftShooterMotor;
     public DcMotor rightShooterMotor;
 
+    public double lastLeftPosition;
+    public double lastRightPosition;
+
+    public double leftRPM;
+    public double rightRPM;
+
     public Shooter(HardwareMap HWMap) {
         leftShooterMotor = HWMap.get(DcMotor.class, "leftShooter");
         rightShooterMotor = HWMap.get(DcMotor.class, "rightShooter");
@@ -99,6 +105,10 @@ public class Shooter {
         double ratio  = (1 - omegaInitial / OMEGA_NL) / (1 - omegaFinal / OMEGA_NL);
 
         return factor * Math.log(ratio);
+    }
+
+    public void updateRPM() {
+        //leftRPM = leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 60000
     }
 
     public class PowerUp implements Action {
