@@ -22,6 +22,14 @@ public class Intake {
 
     public Intake(HardwareMap HWMap) {
         intakeMotor = HWMap.get(DcMotor.class, "intake");
+        colorSensor = HWMap.get(NormalizedColorSensor.class, "colorSensor");
+        if (!(colorSensor instanceof DistanceSensor)) {
+            colorSensor = null;
+        }
+    }
+
+    public boolean ballSensed() {
+        return ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) <= 3;
     }
 
     public class Run implements Action {
@@ -35,16 +43,13 @@ public class Intake {
                 init = true;
             }
 
-            if (colorSensor instanceof DistanceSensor) {
-                if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) <= 3) {
-                    intakeMotor.setPower(0);
-                    return false;
-                } else {
-                    return true;
-                }
-            } else {
+            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) <= 3) {
+                intakeMotor.setPower(0);
                 return false;
+            } else {
+                return true;
             }
+
         }
 
     }

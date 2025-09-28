@@ -65,7 +65,7 @@ public class Transfer {
                 time.reset();
             }
 
-            if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance && time.milliseconds() > 750) {
+            if ((transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance && time.milliseconds() > 750) || time.milliseconds() > 1250) {
                 transferMotor.setPower(0);
                 return false;
             } else {

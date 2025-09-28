@@ -17,18 +17,34 @@ public class Shooter {
     public static double Middle = 0;
     public static double Far = 0;
 
-    // TODO: 0.5 * flywheel mass (kg) * (flywheel radius)^2 (m) * number of flywheels
-    final static double flywheelInertia = 0.5 * 1 * 2 * 2;
-    // TODO: set max motor speed at 12V
-    final static double motorMaxRPM = 6000;
-    // TODO: how much speed is conserved
-    final static double gearEfficiency = 1;
-    // TODO: gear ratio is motor speed / flywheel speed
-    final static double gearRatio = 3;
-    // TODO: set to motor torque (at 12V when stalled)
-    final static double motorStallTorque = 0.35;
+    private static final double GRAVITY = 386.09; // in/s² (imperial gravity)
+    private static final double LAUNCH_HEIGHT = 12.0; // inches
+    private static final double LAUNCH_ANGLE_RAD = Math.toRadians(54.5);
 
-    private static final double OMEGA_NL = motorMaxRPM * 2 * Math.PI / 60.0;
+    // ---- Goal ----
+    private static final double GOAL_FRONT_HEIGHT = 39.0; // inches
+    private static final double GOAL_BACK_HEIGHT = 54.0;  // inches
+    private static final double GOAL_DEPTH = 18.0;        // inches
+
+    // Aim for middle of the goal
+    private static final double TARGET_DEPTH = GOAL_DEPTH / 2.0;
+    private static final double TARGET_HEIGHT = GOAL_FRONT_HEIGHT
+            + (GOAL_BACK_HEIGHT - GOAL_FRONT_HEIGHT) * (TARGET_DEPTH / GOAL_DEPTH);
+
+    // ---- Ball ----
+    private static final double BALL_MASS = 0.156 * 0.45359237; // lb to kg
+
+    // ---- Flywheels ----
+    private static final double FLYWHEEL_RADIUS = 0.072 / 2.0; //m
+    private static final double FLYWHEEL_MASS = 0.056; // kg
+
+    // ---- Motors ----
+    private static final double motorTicksPerDegree = 103.8;
+    private static final double MOTOR_NO_LOAD_RPM = 1620.0;
+    private static final double GEAR_RATIO = 2; // 1:2 gearing up
+
+    // ---- Conversion ----
+    private static final double INCH_TO_METER = 0.0254;
 
     public enum Distances {
         CLOSE(Close),
@@ -55,6 +71,8 @@ public class Shooter {
     public double leftRPM;
     public double rightRPM;
 
+    public ElapsedTime RPMTimer;
+
     public Shooter(HardwareMap HWMap) {
         leftShooterMotor = HWMap.get(DcMotor.class, "leftShooter");
         rightShooterMotor = HWMap.get(DcMotor.class, "rightShooter");
@@ -64,51 +82,60 @@ public class Shooter {
 
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        RPMTimer.reset();
+        lastLeftPosition = 0;
+        lastRightPosition = 0;
     }
 
     public static double calculatePower(double distance) {
-        // TODO: set launch angle
-        double angle = Math.toRadians(55);
-        // TODO: set target height (meters)
-        double targetHeight = 20;
-        // TODO: set wheel radius (meters)
-        double wheelRadius = 0.5;
-        // TODO: set motor RPM
-        double motorMaxRPM = 6000;
 
-        double numerator = 9.81 * distance * distance;
-        double denominator = 2 * Math.cos(angle) * Math.cos(angle) * (distance * Math.tan(angle) - targetHeight);
+        // Target horizontal distance
+        double x = distance + TARGET_DEPTH;
 
-        if (denominator <= 0) return 0;
+        // Target vertical distance
+        double y = TARGET_HEIGHT - LAUNCH_HEIGHT;
 
-        double vIdeal = Math.sqrt(numerator / denominator);
+        // required launch speed
+        // y = x*tanθ - g*x²/(2*v²*cos²θ)
+        double theta = LAUNCH_ANGLE_RAD;
+        double tanTheta = Math.tan(theta);
+        double cosTheta = Math.cos(theta);
 
-        double k = 0.1; // experimental drag constant for balls
-        double vEff = vIdeal * (1 + k * distance);
+        double numerator = GRAVITY * x * x;
+        double denominator = 2.0 * cosTheta * cosTheta * (x * tanTheta - y);
+        double vRequired_in_per_s = Math.sqrt(numerator / denominator);
 
-        double wheelRPM = (60.0 / (2 * Math.PI * wheelRadius)) * vEff;
+        // convert to m/s
+        double vRequired_m_per_s = vRequired_in_per_s * INCH_TO_METER;
 
-        double power = wheelRPM / motorMaxRPM;
-        return Math.min(power, 1.0);
-    }
+        // ball exit velocity to flywheel rim speed
+        double vRim = vRequired_m_per_s * (BALL_MASS + FLYWHEEL_MASS) / FLYWHEEL_MASS;
 
-    public static double spinUpTime(double rpmInitial, double rpmFinal) {
-        if (rpmFinal <= rpmInitial) return 0.0;
+        // rim speed to flywheel rpm
+        double flywheelRPM = (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0;
 
-        double omegaInitial = rpmInitial * 2 * Math.PI / 60.0;
-        double omegaFinal   = rpmFinal   * 2 * Math.PI / 60.0;
+        // flywheel to motor rpm
+        double motorRPM = flywheelRPM / GEAR_RATIO;
 
-        // avoid invalid log if target speed >= no-load speed
-        if (omegaFinal >= OMEGA_NL) return Double.POSITIVE_INFINITY;
+        // convert to power fraction
+        double power = motorRPM / MOTOR_NO_LOAD_RPM;
+        if (power > 1.0) power = 1.0; // clamp
 
-        double factor = (flywheelInertia * OMEGA_NL) / motorStallTorque;
-        double ratio  = (1 - omegaInitial / OMEGA_NL) / (1 - omegaFinal / OMEGA_NL);
-
-        return factor * Math.log(ratio);
+        return power;
     }
 
     public void updateRPM() {
-        //leftRPM = leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 60000
+        leftRPM = (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / RPMTimer.milliseconds() / (motorTicksPerDegree * 360) * GEAR_RATIO * 60000;
+        rightRPM = (rightShooterMotor.getCurrentPosition() - lastRightPosition) / RPMTimer.milliseconds() / (motorTicksPerDegree * 360) * GEAR_RATIO * 60000;
+        RPMTimer.reset();
+        lastLeftPosition = leftShooterMotor.getCurrentPosition();
+        lastRightPosition = rightShooterMotor.getCurrentPosition();
+    }
+
+    public void setPower(double p) {
+        leftShooterMotor.setPower(p);
+        rightShooterMotor.setPower(p);
     }
 
     public class PowerUp implements Action {
@@ -138,7 +165,9 @@ public class Shooter {
                 init = true;
             }
 
-            return time.milliseconds() < spinUpTime(1, 1) * 1000;
+            updateRPM();
+
+            return time.milliseconds() > 75 && leftRPM > (power * MOTOR_NO_LOAD_RPM) - (MOTOR_NO_LOAD_RPM * 0.05) && leftRPM < (power * MOTOR_NO_LOAD_RPM) + (MOTOR_NO_LOAD_RPM * 0.1) && rightRPM > power * MOTOR_NO_LOAD_RPM - (MOTOR_NO_LOAD_RPM * 0.05) && rightRPM < power * MOTOR_NO_LOAD_RPM + (MOTOR_NO_LOAD_RPM * 0.1);
         }
     }
     public Action powerUp(double d) {
