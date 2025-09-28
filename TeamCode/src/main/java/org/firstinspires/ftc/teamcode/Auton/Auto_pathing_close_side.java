@@ -53,6 +53,7 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 .setTangent(20)
                 .splineToLinearHeading(new Pose2d(-36, -36, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
 
+
         TrajectoryActionBuilder path3 = preload.fresh() //purple purple green path, preload then intake then go back and launch
                 .splineToLinearHeading(new Pose2d(-7, -30, Math.toRadians(-90)), Math.toRadians(-90))
                 .waitSeconds(0.5)
