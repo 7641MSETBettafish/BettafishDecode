@@ -18,7 +18,7 @@ public class ShooterTest extends LinearOpMode {
 
     public static double motorTicksPerDegree = 103.8;
     public static double motorPower = 0;
-    public static double gearRatio = 1 / 1.5;
+    public static double gearRatio = 2;
 
     DcMotor leftShooterMotor;
     DcMotor rightShooterMotor;
@@ -51,8 +51,8 @@ public class ShooterTest extends LinearOpMode {
             leftShooterMotor.setPower(motorPower);
             rightShooterMotor.setPower(motorPower);
 
-            telemetry.addData("leftRPM", (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 360000);
-            telemetry.addData("rightRPM", (rightShooterMotor.getCurrentPosition() - lastRightPosition) / time.milliseconds() / motorTicksPerDegree / 360 * gearRatio * 360000);
+            telemetry.addData("leftRPM", (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / (motorTicksPerDegree * 360) * gearRatio * 60000);
+            telemetry.addData("rightRPM", (rightShooterMotor.getCurrentPosition() - lastRightPosition) / time.milliseconds() / (motorTicksPerDegree * 360) * gearRatio * 60000);
             telemetry.update();
 
 

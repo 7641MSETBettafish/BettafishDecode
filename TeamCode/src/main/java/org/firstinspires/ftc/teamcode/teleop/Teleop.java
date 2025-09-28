@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -10,8 +11,10 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Control;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
@@ -33,15 +36,15 @@ public class Teleop extends LinearOpMode {
     Shooter shooter;
 
     final Pose2d goalPosition = new Pose2d(-60, 63,0);
+    enum IntakeState {ON, OFF}
+    enum ShooterState {ON, OFF}
 
     FtcDashboard dash = FtcDashboard.getInstance();
     List<Action> runningActions = new ArrayList<>();
 
-    double balls = 0;
-
-
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(startX, startY, startH));
 
@@ -56,24 +59,35 @@ public class Teleop extends LinearOpMode {
         }
 
         Gamepad previousGamepad1 = new Gamepad();
-        Gamepad previousGamepad2 = new Gamepad();
+        //Gamepad previousGamepad2 = new Gamepad();
         Gamepad currentGamepad1 = new Gamepad();
-        Gamepad currentGamepad2 = new Gamepad();
+        //Gamepad currentGamepad2 = new Gamepad();
 
         double goalDistance = 0;
+        double balls = 0;
+        boolean lastSense = false;
+
+        ElapsedTime time = new ElapsedTime();
+
+        IntakeState intakeState = IntakeState.OFF;
+        ShooterState shooterState = ShooterState.OFF;
+
+        Control shooterControl = new Control();
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
+            time.reset();
 
             previousGamepad1 = currentGamepad1;
-            previousGamepad2 = currentGamepad2;
+            //previousGamepad2 = currentGamepad2;
             currentGamepad1 = gamepad1;
-            currentGamepad2 = gamepad2;
+            //currentGamepad2 = gamepad2;
 
             goalDistance = Math.sqrt(Math.pow(drive.localizer.getPose().position.x - goalPosition.position.x, 2) + Math.pow(drive.localizer.getPose().position.y - goalPosition.position.y, 2));
+
 
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x * 1.1;
@@ -90,21 +104,53 @@ public class Teleop extends LinearOpMode {
             drive.rightFront.setPower(RFPower);
             drive.rightBack.setPower(RBPower);
 
-            if (currentGamepad1.left_trigger > 0.9 && previousGamepad1.left_trigger < 0.9) {
-                if (balls < 3) {
-                    runningActions.add(intake.run());
-                    balls++;
-                }
+            boolean leftTriggerPressed = currentGamepad1.left_trigger > 0.9 && previousGamepad1.left_trigger < 0.9;
+
+            switch (intakeState) {
+                case OFF:
+                    if (leftTriggerPressed) {
+                        intake.intakeMotor.setPower(Intake.intakePower);
+                        intakeState = IntakeState.ON;
+                    }
+                    break;
+                case ON:
+                    if (intake.ballSensed() && !lastSense) {
+                        if (balls < 1) {
+                            runningActions.add(transfer.run());
+                        }
+                        balls++;
+                    }
+                    if (balls >= 3 || leftTriggerPressed) {
+                        intake.intakeMotor.setPower(0);
+                        intakeState = IntakeState.OFF;
+                    }
+                    break;
             }
 
-            if (currentGamepad1.right_trigger > 0.9 && previousGamepad1.right_trigger < 0.9) {
-                if (balls > 0) {
-                    runningActions.add(new SequentialAction(
-                            shooter.powerUp(goalDistance),
-                            transfer.load()
-                    ));
-                }
+            lastSense = intake.ballSensed();
+
+            boolean rightTriggerHeld = currentGamepad1.right_trigger > 0.9;
+
+            switch (shooterState) {
+                case OFF:
+                    if (rightTriggerHeld && balls > 0) {
+                        runningActions.add(new SequentialAction(
+                                shooterControl.start(),
+                                shooter.powerUp(goalDistance),
+                                transfer.load(),
+                                shooterControl.end()
+                        ));
+                        shooterState = ShooterState.ON;
+                    }
+                    break;
+                case ON:
+                    if (shooterControl.isFinished()) {
+                        balls--;
+                        if (balls == 0) shooter.setPower(0);
+                        shooterState = ShooterState.OFF;
+                    }
             }
+
 
             List<Action> newActions = new ArrayList<>();
             for (Action action : runningActions) {
@@ -119,6 +165,17 @@ public class Teleop extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
+            telemetry.addData("robot X", drive.localizer.getPose().position.x);
+            telemetry.addData("robot Y", drive.localizer.getPose().position.y);
+            telemetry.addData("robot H", drive.localizer.getPose().heading.toDouble());
+            telemetry.addData("goal distance", goalDistance);
+            telemetry.addData("balls", balls);
+            telemetry.addData("left flywheel RPM", shooter.leftRPM);
+            telemetry.addData("right flywheel RPM", shooter.rightRPM);
+            telemetry.addData("intake state", intakeState.toString());
+            telemetry.addData("shooter state", shooterState.toString());
+            telemetry.addData("shooter busy", shooterControl.isBusy());
+            telemetry.addData("loop time", time.milliseconds());
             telemetry.update();
 
             for (LynxModule hub : allHubs) {
