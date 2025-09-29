@@ -151,6 +151,9 @@ public class Teleop extends LinearOpMode {
                     }
             }
 
+            if (currentGamepad1.b && !previousGamepad1.b) {
+                drive.localizer.setPose(new Pose2d(-48, -36, 0));
+            }
 
             List<Action> newActions = new ArrayList<>();
             for (Action action : runningActions) {

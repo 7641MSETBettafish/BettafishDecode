@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @TeleOp(name="ShooterTest", group="Testing")
 public class ShooterTest extends LinearOpMode {
 
-    public static double motorTicksPerDegree = 103.8;
+    public static double motorTicksPerRevolution = 103.8 * 4;
     public static double motorPower = 0;
     public static double gearRatio = 2;
 
@@ -46,18 +46,20 @@ public class ShooterTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            time.reset();
 
             leftShooterMotor.setPower(motorPower);
             rightShooterMotor.setPower(motorPower);
 
-            telemetry.addData("leftRPM", (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / (motorTicksPerDegree * 360) * gearRatio * 60000);
-            telemetry.addData("rightRPM", (rightShooterMotor.getCurrentPosition() - lastRightPosition) / time.milliseconds() / (motorTicksPerDegree * 360) * gearRatio * 60000);
+            telemetry.addData("leftRPM", (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / motorTicksPerRevolution * gearRatio * 60000);
+            telemetry.addData("left change", (leftShooterMotor.getCurrentPosition() - lastLeftPosition));
+            telemetry.addData("rightRPM", (rightShooterMotor.getCurrentPosition() - lastRightPosition) / time.milliseconds() / motorTicksPerRevolution * gearRatio * 60000);
+            telemetry.addData("time change", time.milliseconds());
             telemetry.update();
 
 
             lastLeftPosition = leftShooterMotor.getCurrentPosition();
             lastRightPosition = rightShooterMotor.getCurrentPosition();
+            time.reset();
         }
 
     }
