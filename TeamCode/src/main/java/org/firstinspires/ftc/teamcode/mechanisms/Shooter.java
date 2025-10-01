@@ -39,7 +39,7 @@ public class Shooter {
     private static final double FLYWHEEL_MASS = 0.056; // kg
 
     // ---- Motors ----
-    private static final double motorTicksPerDegree = 103.8;
+    private static final double motorTicksPerDegree = 103.8 * 4;
     private static final double MOTOR_NO_LOAD_RPM = 1620.0;
     private static final double GEAR_RATIO = 2; // 1:2 gearing up
 
