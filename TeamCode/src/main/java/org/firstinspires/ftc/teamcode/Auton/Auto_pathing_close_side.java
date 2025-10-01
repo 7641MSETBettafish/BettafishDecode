@@ -14,6 +14,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Camera;
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
 
 
 @Config
@@ -22,6 +25,8 @@ public class Auto_pathing_close_side extends LinearOpMode {
 
     Camera camera;
 
+    double distance = 0;
+
 
     @Override
     public void runOpMode() {
@@ -29,6 +34,10 @@ public class Auto_pathing_close_side extends LinearOpMode {
         Pose2d startPose1 = new Pose2d(-52, -50, Math.toRadians(54));
         Pose2d startPose2 = new Pose2d(-24, -16, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
+
+        Shooter shooter = new Shooter(hardwareMap);
+        Intake intake = new Intake(hardwareMap);
+        Transfer transfer = new Transfer(hardwareMap);
 
         camera = new Camera(hardwareMap);
 
@@ -73,7 +82,18 @@ public class Auto_pathing_close_side extends LinearOpMode {
         waitForStart();
 
         Actions.runBlocking(new SequentialAction(
-                preload1, // actions
+                new ParallelAction(
+                        new SequentialAction(
+                                new SleepAction(1),
+                                shooter.powerUp(distance),
+                                transfer.load(),
+                                shooter.stop()
+
+                        ),
+
+                        preload1
+                ),
+
                 camera.findID()
                 // new SleepAction(0.1)
         ));
@@ -84,6 +104,18 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 telemetry.addData("id", camera.id);
                 telemetry.update();
                 Actions.runBlocking(new ParallelAction(
+                        new SequentialAction(
+                                new ParallelAction(
+                                        intake.run(),
+                                        transfer.load(),
+                                        intake.stop()
+                                ),
+
+                                shooter.powerUp(distance),
+                                transfer.load(),
+                                shooter.stop()
+
+                        ),
                         //actions
                         path21
 
@@ -92,7 +124,22 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 telemetry.addData("id", camera.id);
                 telemetry.update();
                 Actions.runBlocking(new ParallelAction(
-                        //actions
+                             new SequentialAction(
+                                     new ParallelAction(
+                                        intake.run(),
+                                        transfer.load(),
+                                        intake.stop()
+                                     ),
+
+                                     shooter.powerUp(distance),
+                                     transfer.load(),
+                                     shooter.stop()
+
+                                     ),                   //intake start //transfer load // intake stop
+                                                             //shooter power up // transfer load //shooter power down
+
+
+
                         path22
                 ));
 
@@ -100,17 +147,53 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 telemetry.addData("id", camera.id);
                 telemetry.update();
                 Actions.runBlocking(new ParallelAction(
-                        //actions
+                        new SequentialAction(
+                                new ParallelAction(
+                                        intake.run(),
+                                        transfer.load(),
+                                        intake.stop()
+                                ),
+
+                                shooter.powerUp(distance),
+                                transfer.load(),
+                                shooter.stop()
+
+                        ),
                         path23
                 ));
 
             } else {
                 Actions.runBlocking(new ParallelAction(
+                        new SequentialAction(
+                                new ParallelAction(
+                                        intake.run(),
+                                        transfer.load(),
+                                        intake.stop()
+                                ),
+
+                                shooter.powerUp(distance),
+                                transfer.load(),
+                                shooter.stop()
+
+                        ),
                         path23
                 ));
             }
         } catch (NullPointerException e) {
             Actions.runBlocking(new ParallelAction(
+                    new SequentialAction(
+                            new ParallelAction(
+                                    intake.run(),
+                                    transfer.load(),
+                                    intake.stop()
+                            ),
+
+                            shooter.powerUp(distance),
+                            transfer.load(),
+                            shooter.stop()
+
+                    ),
+
                     path23
             ));
         }

@@ -170,10 +170,24 @@ public class Shooter {
             return time.milliseconds() > 75 && leftRPM > (power * MOTOR_NO_LOAD_RPM) - (MOTOR_NO_LOAD_RPM * 0.05) && leftRPM < (power * MOTOR_NO_LOAD_RPM) + (MOTOR_NO_LOAD_RPM * 0.1) && rightRPM > power * MOTOR_NO_LOAD_RPM - (MOTOR_NO_LOAD_RPM * 0.05) && rightRPM < power * MOTOR_NO_LOAD_RPM + (MOTOR_NO_LOAD_RPM * 0.1);
         }
     }
+
     public Action powerUp(double d) {
         return new PowerUp(d);
     }
     public Action powerUp(Distances d) {
         return new PowerUp(d);
+    }
+    public class Stop implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            leftShooterMotor.setPower(0);
+            rightShooterMotor.setPower(0);
+            return false;
+        }
+
+    }
+    public Action stop() {
+        return new Shooter.Stop();
     }
 }

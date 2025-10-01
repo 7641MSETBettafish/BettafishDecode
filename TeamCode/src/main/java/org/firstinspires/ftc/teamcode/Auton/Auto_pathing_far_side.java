@@ -13,6 +13,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Camera;
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
 
 
 @Config
@@ -20,6 +23,12 @@ import org.firstinspires.ftc.teamcode.mechanisms.Camera;
 public class Auto_pathing_far_side extends LinearOpMode {
 
     Camera camera;
+    Intake intake = new Intake(hardwareMap);
+    Transfer transfer = new Transfer(hardwareMap);
+
+    double distance = 0;
+
+    Shooter shooter = new Shooter(hardwareMap);
 
 
     @Override
@@ -63,8 +72,14 @@ public class Auto_pathing_far_side extends LinearOpMode {
         waitForStart();
 
         Actions.runBlocking(new SequentialAction(
+
                 camera.findID(),
-                preload1 // action
+                new ParallelAction(
+                        intake.run(),
+                        transfer.load(),
+                        intake.stop(),
+                        preload1
+                )
         ));
 
 
@@ -72,23 +87,53 @@ public class Auto_pathing_far_side extends LinearOpMode {
             telemetry.addData("id", camera.id);
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
-                    //actions
+                    new SequentialAction(
+                            new ParallelAction(
+                                    intake.run(),
+                                    transfer.load(),
+                                    intake.stop()
+                            ),
+
+                            shooter.powerUp(distance),
+                            transfer.load(),
+                            shooter.stop(),
+
                     path21
 
-            ));
+            )));
         } else if (camera.id == 22) {
             telemetry.addData("id", camera.id);
             telemetry.update();
             Actions.runBlocking(new ParallelAction(
-                    //actions
+                    new SequentialAction(
+                            new ParallelAction(
+                                    intake.run(),
+                                    transfer.load(),
+                                    intake.stop()
+                            ),
+
+                            shooter.powerUp(distance),
+                            transfer.load(),
+                            shooter.stop(),
+
                     path22
-            ));
+            )));
 
         } else {
             Actions.runBlocking(new ParallelAction(
-                    //actions
+                    new SequentialAction(
+                            new ParallelAction(
+                                    intake.run(),
+                                    transfer.load(),
+                                    intake.stop()
+                            ),
+
+                            shooter.powerUp(distance),
+                            transfer.load(),
+                            shooter.stop(),
+
                     path21
-            ));
+            )));
         }
     }
 }
