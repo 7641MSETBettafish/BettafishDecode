@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
 @TeleOp(name="IntakeTest2", group="Testing")
@@ -28,24 +31,33 @@ public class TransfertoShooterTest extends LinearOpMode {
         transferMotor = hardwareMap.get(DcMotor.class, "transferMotor");
         leftShooterMotor = hardwareMap.get(DcMotor.class, "leftShooter");
         rightShooterMotor = hardwareMap.get(DcMotor.class, "rightShooter");
-        //transferSensor = hardwareMap.get(DistanceSensor.class, "transferSensor");
+        transferSensor = hardwareMap.get(DistanceSensor.class, "transferSensor");
+        ElapsedTime time = new ElapsedTime();
+        double shootTime = 0;
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            transferMotor.setPower(-motorPower);
-            intakeMotor.setPower(motorPower);
-
-            leftShooterMotor.setPower(shootermotorPower);
-            rightShooterMotor.setPower(-shootermotorPower);
-
-            /*if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance) {
-                transferMotor.setPower(0);
-            } else {
+            time.reset();
+            if (gamepad1.a) {
+                while (transferSensor.getDistance(DistanceUnit.CM) >= detectionDistance) {
+                    intakeMotor.setPower(motorPower);
+                    transferMotor.setPower(-motorPower);
+                }
+                intakeMotor.setPower(0);
+            }
+            if (gamepad1.b) {
+                leftShooterMotor.setPower(shootermotorPower);
+                rightShooterMotor.setPower(-shootermotorPower);
+                shootTime = 0;
+            }
+            if (gamepad1.y && shootTime >= 1000) {
                 intakeMotor.setPower(motorPower);
-                transferMotor.setPower(-motorPower);
-            }*/
+            }
+
+            shootTime += time.milliseconds();
+
 
         }
 

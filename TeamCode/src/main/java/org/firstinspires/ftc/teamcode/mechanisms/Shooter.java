@@ -12,6 +12,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Shooter {
 
+    public static double P = 0;
+    public static double I = 0;
+    public static double D = 0;
+
     // TODO: enter common field distances in inches (for auto)
     public static double Close = 0;
     public static double Middle = 0;
