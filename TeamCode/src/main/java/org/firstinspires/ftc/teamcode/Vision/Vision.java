@@ -26,7 +26,7 @@ public class Vision extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Pose2d startPose = new Pose2d(57, 60.5, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(72, 72, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         tagProcessor = new AprilTagProcessor.Builder()
@@ -56,8 +56,8 @@ public class Vision extends LinearOpMode {
 
                 if(tag.metadata != null) {
 
-                    x = z * Math.sin(Math.toRadians(tag.ftcPose.bearing + 180 - Math.toDegrees(drive.localizer.getPose().heading.toDouble()))) / Math.tan(Math.toRadians(tag.ftcPose.elevation));
-                    y = z * Math.cos(Math.toRadians(tag.ftcPose.bearing + 180 - Math.toDegrees(drive.localizer.getPose().heading.toDouble()))) / Math.tan(Math.toRadians(tag.ftcPose.elevation));
+                    x = z * Math.sin(Math.toRadians(tag.ftcPose.bearing + 180 - Math.toDegrees(drive.localizer.getPose().heading.toDouble()))) / Math.tan(Math.toRadians(tag.ftcPose.elevation)) + 11.3;
+                    y = z * Math.cos(Math.toRadians(tag.ftcPose.bearing + 180 - Math.toDegrees(drive.localizer.getPose().heading.toDouble()))) / Math.tan(Math.toRadians(tag.ftcPose.elevation)) + 11.25;
 
                     telemetry.addData("id", tag.metadata.id);
                     telemetry.addData("roll", tag.ftcPose.roll);
