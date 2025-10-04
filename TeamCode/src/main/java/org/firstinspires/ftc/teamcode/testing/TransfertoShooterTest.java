@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @Config
 @TeleOp(name="IntakeTest2", group="Testing")
 public class TransfertoShooterTest extends LinearOpMode {
@@ -27,25 +29,25 @@ public class TransfertoShooterTest extends LinearOpMode {
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         transferMotor = hardwareMap.get(DcMotor.class, "transferMotor");
         leftShooterMotor = hardwareMap.get(DcMotor.class, "leftShooter");
-        rightShooterMotor = hardwareMap.get(DcMotor.class, "rightShooter");
-        //transferSensor = hardwareMap.get(DistanceSensor.class, "transferSensor");
+        rightShooterMotor = hardwareMap.get(DcMotor.class, "rightShooter"   );
+        transferSensor = hardwareMap.get(DistanceSensor.class, "transferSensor");
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            transferMotor.setPower(-motorPower);
-            intakeMotor.setPower(motorPower);
 
             leftShooterMotor.setPower(shootermotorPower);
             rightShooterMotor.setPower(-shootermotorPower);
 
-            /*if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance) {
-                transferMotor.setPower(0);
-            } else {
+            while (transferSensor.getDistance(DistanceUnit.CM) >= detectionDistance) {
                 intakeMotor.setPower(motorPower);
                 transferMotor.setPower(-motorPower);
-            }*/
+                telemetry.addData("distancesensor", transferSensor.getDistance(DistanceUnit.CM));
+                telemetry.update();
+            }
+            intakeMotor.setPower(0);
+
 
         }
 
