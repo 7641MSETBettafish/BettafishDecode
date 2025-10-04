@@ -1,15 +1,22 @@
 package org.firstinspires.ftc.teamcode.practiceh;
 
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.*;
+
 
 @TeleOp
 public class TeleopRookieProject extends LinearOpMode {
+
+    enum IntakeState {ON, OFF}
+    enum SlidesState {ON, OFF}
+
     @Override
     public void runOpMode() {
-
 
         DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
@@ -19,6 +26,13 @@ public class TeleopRookieProject extends LinearOpMode {
         // Reverse motors??
         // frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         // backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        Intake intake = new Intake(hardwareMap);
+        HorizontalSlides slides = new HorizontalSlides(hardwareMap);
+
+        IntakeState intakeState = IntakeState.OFF;
+        SlidesState slidesState = SlidesState.OFF;
+
 
         waitForStart();
 
@@ -43,6 +57,49 @@ public class TeleopRookieProject extends LinearOpMode {
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
+
+            List<Action> runningActions = new ArrayList<>();
+
+            switch (intakeState) {
+                case OFF:
+                    if(gamepad1.x) {
+                        runningActions.add(new SequentialAction(
+                                intake.new StartIntake()
+                        ));
+                        intakeState = IntakeState.ON;
+                    }
+                    break;
+
+                case ON:
+                    if(gamepad1.x) {
+                        runningActions.add(new SequentialAction(
+                                intake.new StopIntake()
+                        ));
+                        intakeState = IntakeState.OFF;
+                    }
+                    break;
+            }
+
+            switch (slidesState) {
+                case OFF:
+                    if(gamepad1.y) {
+                        runningActions.add(new SequentialAction(
+                                slides.new ExtendSlides()
+                        ));
+                        slidesState = SlidesState.ON;
+
+                    }
+                    break;
+
+                case ON:
+                    if(gamepad1.y) {
+                        runningActions.add(new SequentialAction(
+                                slides.new RetractSlides()
+                        ));
+                        slidesState = slidesState.OFF;
+                    }
+                    break;
+            }
 
         }
     }
