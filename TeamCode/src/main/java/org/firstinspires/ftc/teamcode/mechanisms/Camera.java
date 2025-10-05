@@ -40,7 +40,6 @@ public class Camera {
 
         AprilTagDetection tag;
 
-
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (tagProcessor.getDetections().isEmpty()) {
