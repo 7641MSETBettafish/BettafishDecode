@@ -10,9 +10,11 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Control;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
@@ -176,6 +178,9 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("left flywheel RPM", shooter.leftRPM);
             telemetry.addData("right flywheel RPM", shooter.rightRPM);
             telemetry.addData("intake state", intakeState.toString());
+            telemetry.addData("intake distance", ((DistanceSensor) intake.colorSensor).getDistance(DistanceUnit.CM));
+            telemetry.addData("left transfer distance", transfer.leftTransferSensor.getDistance(DistanceUnit.CM));
+            telemetry.addData("right transfer distance", transfer.rightTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("shooter state", shooterState.toString());
             telemetry.addData("shooter busy", shooterControl.isBusy());
             telemetry.addData("loop time", time.milliseconds());
