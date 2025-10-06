@@ -1,26 +1,22 @@
-package org.firstinspires.ftc.teamcode.packages;
+package org.firstinspires.ftc.robotcontroller.practices;
 
 
-
-import android.transition.Slide;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.practiceh.HorizontalSlides;
-import org.firstinspires.ftc.teamcode.practiceh.Intake;
+
+import org.firstinspires.ftc.robotcontroller.practiceh.HorizontalSlides;
+import org.firstinspires.ftc.robotcontroller.practiceh.Intake;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Disabled
 @TeleOp
 public class TeleOpProject extends LinearOpMode {
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.packages;
+package org.firstinspires.ftc.robotcontroller.practiceh;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //ur reference opmode template
 
 @TeleOp
-public class Example1 extends LinearOpMode {
+public class Example extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -14,7 +14,6 @@ public class Example1 extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-
 
         }
 

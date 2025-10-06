@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.practiceh;
+package org.firstinspires.ftc.robotcontroller.practiceh;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;

@@ -1,14 +1,15 @@
-package org.firstinspires.ftc.teamcode.practiceh;
+package org.firstinspires.ftc.robotcontroller.practiceh;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.*;
 
-
+@Disabled
 @TeleOp
 public class TeleopRookieProject extends LinearOpMode {
 
