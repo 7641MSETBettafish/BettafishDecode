@@ -6,15 +6,20 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 public class Shooter {
 
-    public static double P = 0;
-    public static double I = 0;
-    public static double D = 0;
+    public static double leftP = 0;
+    public static double leftI = 0;
+    public static double leftD = 0;
+
+    public static double rightP = 0;
+    public static double rightI = 0;
+    public static double rightD = 0;
 
     // TODO: enter common field distances in inches (for auto)
     public static double Close = 0;
@@ -32,8 +37,7 @@ public class Shooter {
 
     // Aim for middle of the goal
     private static final double TARGET_DEPTH = GOAL_DEPTH / 2.0;
-    private static final double TARGET_HEIGHT = GOAL_FRONT_HEIGHT
-            + (GOAL_BACK_HEIGHT - GOAL_FRONT_HEIGHT) * (TARGET_DEPTH / GOAL_DEPTH);
+    private static final double TARGET_HEIGHT = GOAL_FRONT_HEIGHT + (GOAL_BACK_HEIGHT - GOAL_FRONT_HEIGHT) * (TARGET_DEPTH / GOAL_DEPTH);
 
     // ---- Ball ----
     private static final double BALL_MASS = 0.156 * 0.45359237; // lb to kg
@@ -87,6 +91,8 @@ public class Shooter {
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         RPMTimer.reset();
         lastLeftPosition = 0;
         lastRightPosition = 0;
@@ -95,7 +101,8 @@ public class Shooter {
     public static double calculatePower(double distance) {
 
         // Target horizontal distance
-        double x = distance + TARGET_DEPTH;
+        double depthSigmoid = TARGET_DEPTH / (1.0 + Math.exp(0.3 * (distance - 40)));
+        double x = distance + depthSigmoid;
 
         // Target vertical distance
         double y = TARGET_HEIGHT - LAUNCH_HEIGHT;
@@ -129,6 +136,10 @@ public class Shooter {
         return power;
     }
 
+    public static boolean RPMInThreshold(double leftRPM, double rightRPM, double power) {
+        return leftRPM > (power * MOTOR_NO_LOAD_RPM) - (MOTOR_NO_LOAD_RPM * 0.05) && leftRPM < (power * MOTOR_NO_LOAD_RPM) + (MOTOR_NO_LOAD_RPM * 0.1) && rightRPM > power * MOTOR_NO_LOAD_RPM - (MOTOR_NO_LOAD_RPM * 0.05) && rightRPM < power * MOTOR_NO_LOAD_RPM + (MOTOR_NO_LOAD_RPM * 0.1);
+    }
+
     public void updateRPM() {
         leftRPM = (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / RPMTimer.milliseconds() / (motorTicksPerDegree * 360) * GEAR_RATIO * 60000;
         rightRPM = (rightShooterMotor.getCurrentPosition() - lastRightPosition) / RPMTimer.milliseconds() / (motorTicksPerDegree * 360) * GEAR_RATIO * 60000;
@@ -141,6 +152,7 @@ public class Shooter {
         leftShooterMotor.setPower(p);
         rightShooterMotor.setPower(p);
     }
+
 
     public class PowerUp implements Action {
 
@@ -171,7 +183,8 @@ public class Shooter {
 
             updateRPM();
 
-            return time.milliseconds() > 75 && leftRPM > (power * MOTOR_NO_LOAD_RPM) - (MOTOR_NO_LOAD_RPM * 0.05) && leftRPM < (power * MOTOR_NO_LOAD_RPM) + (MOTOR_NO_LOAD_RPM * 0.1) && rightRPM > power * MOTOR_NO_LOAD_RPM - (MOTOR_NO_LOAD_RPM * 0.05) && rightRPM < power * MOTOR_NO_LOAD_RPM + (MOTOR_NO_LOAD_RPM * 0.1);
+            return time.milliseconds() > 75 && RPMInThreshold(leftRPM, rightRPM, power);
+
         }
     }
 
@@ -181,6 +194,7 @@ public class Shooter {
     public Action powerUp(Distances d) {
         return new PowerUp(d);
     }
+
     public class Stop implements Action {
 
         @Override
