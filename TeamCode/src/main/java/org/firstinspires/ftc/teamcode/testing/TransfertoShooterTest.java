@@ -91,7 +91,7 @@ public class TransfertoShooterTest extends LinearOpMode {
             telemetry.addData("shooterOn", shooterOn);
             telemetry.addData("intakeOn", intakeOn);
             telemetry.addData("load", load);
-            telemetry.addData("rightRPM", shooter.rightRPM);
+            telemetry.addData("transfer distance", transferSensor.getDistance(DistanceUnit.CM));
         }
 
     }
