@@ -14,16 +14,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Shooter {
 
-    public static double leftP = 0.07;
+    public static double leftP = 0;
     public static double leftI = 0;
     public static double leftD = 0;
 
-    public static double rightP = 0.1;
+    public static double rightP = 0;
     public static double rightI = 0;
     public static double rightD = 0;
 
     public static double targetRPM = 0;
-    public static double RPMAlpha = 0.3;
 
     public static boolean debug = false;
 
@@ -55,7 +54,7 @@ public class Shooter {
     // ---- Motors ----
     public static final double motorTicksPerRevolution = 103.8;
     public static final double MOTOR_NO_LOAD_RPM = 850; //1620.0
-    public static final double GEAR_RATIO = 2.25; // 1:2.25 gearing up
+    public static final double GEAR_RATIO = 1; // 1:2 gearing up
 
 
 
@@ -87,7 +86,6 @@ public class Shooter {
 
     public double leftRPM;
     public double rightRPM;
-    public boolean RPMInit;
 
     public ElapsedTime RPMTimer;
 
@@ -144,8 +142,9 @@ public class Shooter {
         double flywheelRPM = (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0;
 
         // flywheel to motor rpm
-        return flywheelRPM / GEAR_RATIO;
+        double motorRPM = flywheelRPM / GEAR_RATIO;
 
+        return motorRPM;
 
         // convert to power fraction
         //double power = motorRPM / MOTOR_NO_LOAD_RPM;
@@ -159,21 +158,8 @@ public class Shooter {
     }
 
     public void updateRPM() {
-        double currentTime = RPMTimer.milliseconds();
-        double currentLeftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / currentTime);
-        double currentRightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / currentTime);
-
-        //EMA for smoother values
-        if (!RPMInit) {
-            leftRPM = currentLeftRPM;
-            rightRPM = currentRightRPM;
-            RPMInit = true;
-        } else {
-            double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 7)));
-            leftRPM += effectiveAlpha * (currentLeftRPM - leftRPM);
-            rightRPM += effectiveAlpha * (currentRightRPM - rightRPM);
-        }
-
+        leftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / RPMTimer.milliseconds());
+        rightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / RPMTimer.milliseconds());
         RPMTimer.reset();
         lastLeftPosition = leftShooterMotor.getCurrentPosition();
         lastRightPosition = rightShooterMotor.getCurrentPosition();
