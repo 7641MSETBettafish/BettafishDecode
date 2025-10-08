@@ -159,11 +159,9 @@ public class Shooter {
     }
 
     public void updateRPM() {
-        double currentLeftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / RPMTimer.milliseconds());
-        double currentRightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / RPMTimer.milliseconds());
-        RPMTimer.reset();
-        lastLeftPosition = leftShooterMotor.getCurrentPosition();
-        lastRightPosition = rightShooterMotor.getCurrentPosition();
+        double currentTime = RPMTimer.milliseconds();
+        double currentLeftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / currentTime);
+        double currentRightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / currentTime);
 
         //EMA for smoother values
         if (!RPMInit) {
@@ -171,10 +169,14 @@ public class Shooter {
             rightRPM = currentRightRPM;
             RPMInit = true;
         } else {
-            leftRPM += RPMAlpha * (currentLeftRPM - leftRPM);
-            rightRPM += RPMAlpha * (currentRightRPM - rightRPM);
+            double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 7)));
+            leftRPM += effectiveAlpha * (currentLeftRPM - leftRPM);
+            rightRPM += effectiveAlpha * (currentRightRPM - rightRPM);
         }
 
+        RPMTimer.reset();
+        lastLeftPosition = leftShooterMotor.getCurrentPosition();
+        lastRightPosition = rightShooterMotor.getCurrentPosition();
 
         if (debug) {
             leftPID = new PIDController(leftP, leftI, leftD);
