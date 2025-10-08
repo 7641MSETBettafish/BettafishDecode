@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,13 +14,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Shooter {
 
-    public static double leftP = 0;
+    public static double leftP = 0.07;
     public static double leftI = 0;
     public static double leftD = 0;
 
-    public static double rightP = 0;
+    public static double rightP = 0.1;
     public static double rightI = 0;
     public static double rightD = 0;
+
+    public static double targetRPM = 0;
+    public static double RPMAlpha = 0.3;
+
+    public static boolean debug = false;
 
     // TODO: enter common field distances in inches (for auto)
     public static double Close = 0;
@@ -47,12 +53,15 @@ public class Shooter {
     private static final double FLYWHEEL_MASS = 0.056; // kg
 
     // ---- Motors ----
-    private static final double motorTicksPerDegree = 103.8 * 4;
-    private static final double MOTOR_NO_LOAD_RPM = 1620.0;
-    private static final double GEAR_RATIO = 2; // 1:2 gearing up
+    public static final double motorTicksPerRevolution = 103.8;
+    public static final double MOTOR_NO_LOAD_RPM = 850; //1620.0
+    public static final double GEAR_RATIO = 2.25; // 1:2.25 gearing up
+
+
 
     // ---- Conversion ----
     private static final double INCH_TO_METER = 0.0254;
+
 
     public enum Distances {
         CLOSE(Close),
@@ -78,8 +87,12 @@ public class Shooter {
 
     public double leftRPM;
     public double rightRPM;
+    public boolean RPMInit;
 
     public ElapsedTime RPMTimer;
+
+    public PIDController leftPID;
+    public PIDController rightPID;
 
     public Shooter(HardwareMap HWMap) {
         leftShooterMotor = HWMap.get(DcMotor.class, "leftShooter");
@@ -93,12 +106,16 @@ public class Shooter {
 
         leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        RPMTimer = new ElapsedTime();
         RPMTimer.reset();
         lastLeftPosition = 0;
         lastRightPosition = 0;
+
+        leftPID = new PIDController(leftP, leftI, leftD);
+        rightPID = new PIDController(rightP, rightI, rightD);
     }
 
-    public static double calculatePower(double distance) {
+    public static double calculateRPM(double distance) {
 
         // Target horizontal distance
         double depthSigmoid = TARGET_DEPTH / (1.0 + Math.exp(0.3 * (distance - 40)));
@@ -127,30 +144,52 @@ public class Shooter {
         double flywheelRPM = (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0;
 
         // flywheel to motor rpm
-        double motorRPM = flywheelRPM / GEAR_RATIO;
+        return flywheelRPM / GEAR_RATIO;
+
 
         // convert to power fraction
-        double power = motorRPM / MOTOR_NO_LOAD_RPM;
-        if (power > 1.0) power = 1.0; // clamp
+        //double power = motorRPM / MOTOR_NO_LOAD_RPM;
+        //if (power > 1.0) power = 1.0; // clamp
 
-        return power;
+        //return power;
     }
 
-    public static boolean RPMInThreshold(double leftRPM, double rightRPM, double power) {
-        return leftRPM > (power * MOTOR_NO_LOAD_RPM) - (MOTOR_NO_LOAD_RPM * 0.05) && leftRPM < (power * MOTOR_NO_LOAD_RPM) + (MOTOR_NO_LOAD_RPM * 0.1) && rightRPM > power * MOTOR_NO_LOAD_RPM - (MOTOR_NO_LOAD_RPM * 0.05) && rightRPM < power * MOTOR_NO_LOAD_RPM + (MOTOR_NO_LOAD_RPM * 0.1);
+    public static boolean RPMInThreshold(double leftRPM, double rightRPM, double targetRPM) {
+        return leftRPM > targetRPM - (MOTOR_NO_LOAD_RPM * 0.05) && leftRPM < targetRPM + (MOTOR_NO_LOAD_RPM * 0.1) && rightRPM > targetRPM - (MOTOR_NO_LOAD_RPM * 0.05) && rightRPM < targetRPM + (MOTOR_NO_LOAD_RPM * 0.1);
     }
 
     public void updateRPM() {
-        leftRPM = (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / RPMTimer.milliseconds() / (motorTicksPerDegree * 360) * GEAR_RATIO * 60000;
-        rightRPM = (rightShooterMotor.getCurrentPosition() - lastRightPosition) / RPMTimer.milliseconds() / (motorTicksPerDegree * 360) * GEAR_RATIO * 60000;
+        double currentLeftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / RPMTimer.milliseconds());
+        double currentRightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / RPMTimer.milliseconds());
         RPMTimer.reset();
         lastLeftPosition = leftShooterMotor.getCurrentPosition();
         lastRightPosition = rightShooterMotor.getCurrentPosition();
+
+        //EMA for smoother values
+        if (!RPMInit) {
+            leftRPM = currentLeftRPM;
+            rightRPM = currentRightRPM;
+            RPMInit = true;
+        } else {
+            leftRPM += RPMAlpha * (currentLeftRPM - leftRPM);
+            rightRPM += RPMAlpha * (currentRightRPM - rightRPM);
+        }
+
+
+        if (debug) {
+            leftPID = new PIDController(leftP, leftI, leftD);
+            rightPID = new PIDController(rightP, rightI, rightD);
+        }
     }
 
     public void setPower(double p) {
         leftShooterMotor.setPower(p);
         rightShooterMotor.setPower(p);
+    }
+
+    public void updatePID() {
+        leftShooterMotor.setPower(leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM));
+        rightShooterMotor.setPower(rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM));
     }
 
 
@@ -159,7 +198,6 @@ public class Shooter {
         double distance;
         ElapsedTime time;
         boolean init = false;
-        double power = 0;
 
         public PowerUp(double distance) {
             this.distance = distance;
@@ -174,16 +212,15 @@ public class Shooter {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
-                power = calculatePower(distance);
-                leftShooterMotor.setPower(power);
-                rightShooterMotor.setPower(power);
+                targetRPM = calculateRPM(distance);
                 time.reset();
                 init = true;
             }
 
             updateRPM();
+            updatePID();
 
-            return time.milliseconds() > 75 && RPMInThreshold(leftRPM, rightRPM, power);
+            return time.milliseconds() > 75 && RPMInThreshold(leftRPM, rightRPM, targetRPM);
 
         }
     }
