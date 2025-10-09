@@ -11,32 +11,21 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 
 @Config
 @TeleOp(name="ShooterTest", group="Testing")
 public class ShooterTest extends LinearOpMode {
 
-    public static double motorTicksPerRevolution = 103.8 * 4;
     public static double motorPower = 0;
-    public static double gearRatio = 2;
 
-    DcMotor leftShooterMotor;
-    DcMotor rightShooterMotor;
+    Shooter shooter;
 
     @Override
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        leftShooterMotor = hardwareMap.get(DcMotor.class, "leftShooter");
-        rightShooterMotor = hardwareMap.get(DcMotor.class, "rightShooter");
-
-        leftShooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightShooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter = new Shooter(hardwareMap);
 
         double lastLeftPosition = 0;
         double lastRightPosition = 0;
@@ -47,18 +36,19 @@ public class ShooterTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            leftShooterMotor.setPower(motorPower);
-            rightShooterMotor.setPower(motorPower);
+            shooter.updateRPM();
+            Shooter.targetRPM = motorPower * Shooter.MOTOR_NO_LOAD_RPM * Shooter.GEAR_RATIO;
+            shooter.updatePID();
 
-            telemetry.addData("leftRPM", (leftShooterMotor.getCurrentPosition() - lastLeftPosition) / time.milliseconds() / motorTicksPerRevolution * gearRatio * 60000);
-            telemetry.addData("left change", (leftShooterMotor.getCurrentPosition() - lastLeftPosition));
-            telemetry.addData("rightRPM", (rightShooterMotor.getCurrentPosition() - lastRightPosition) / time.milliseconds() / motorTicksPerRevolution * gearRatio * 60000);
+            telemetry.addData("leftRPM", shooter.leftRPM);
+            telemetry.addData("rightRPM", shooter.rightRPM);
+            telemetry.addData("targetRPM", Shooter.targetRPM);
+            telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
+            telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
+            telemetry.addData("targetPower", motorPower);
             telemetry.addData("time change", time.milliseconds());
             telemetry.update();
 
-
-            lastLeftPosition = leftShooterMotor.getCurrentPosition();
-            lastRightPosition = rightShooterMotor.getCurrentPosition();
             time.reset();
         }
 
