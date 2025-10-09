@@ -37,7 +37,7 @@ public class ShooterTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             shooter.updateRPM();
-            Shooter.targetRPM = RPM;
+            shooter.targetRPM = RPM;
             shooter.updatePID();
 
             if (shooter.leftRPM > leftMaxRPM) {
@@ -51,7 +51,7 @@ public class ShooterTest extends LinearOpMode {
             telemetry.addData("rightRPM", shooter.rightRPM);
             telemetry.addData("leftmaxrpm", leftMaxRPM);
             telemetry.addData("rightmaxrpm", rightMaxRPM);
-            telemetry.addData("targetRPM", Shooter.targetRPM);
+            telemetry.addData("targetRPM", shooter.targetRPM);
             telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
             telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
             telemetry.addData("time change", time.milliseconds());

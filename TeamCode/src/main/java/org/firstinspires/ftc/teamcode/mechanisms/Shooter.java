@@ -22,7 +22,7 @@ public class Shooter {
     public static double rightI = 0;
     public static double rightD = 0;
 
-    public static double targetRPM = 0;
+
     public static double RPMAlpha = 0.05;
 
     public static boolean debug = true;
@@ -94,6 +94,8 @@ public class Shooter {
 
     public PIDController leftPID;
     public PIDController rightPID;
+
+    public double targetRPM = 0;
 
     public Shooter(HardwareMap HWMap) {
         leftShooterMotor = HWMap.get(DcMotor.class, "leftShooter");
