@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.testing;
 
+import static org.firstinspires.ftc.teamcode.mechanisms.Shooter.GEAR_RATIO;
+import static org.firstinspires.ftc.teamcode.mechanisms.Shooter.motorTicksPerRevolution;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -13,7 +16,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 @TeleOp(name="ShooterTest", group="Testing")
 public class ShooterTest extends LinearOpMode {
 
-    public static double motorRPM = 0;
+    public static double RPM = 0;
 
     Shooter shooter;
 
@@ -34,7 +37,7 @@ public class ShooterTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             shooter.updateRPM();
-            Shooter.targetRPM = motorRPM * Shooter.GEAR_RATIO;
+            Shooter.targetRPM = RPM;
             shooter.updatePID();
 
             if (shooter.leftRPM > leftMaxRPM) {
@@ -46,6 +49,8 @@ public class ShooterTest extends LinearOpMode {
 
             telemetry.addData("leftRPM", shooter.leftRPM);
             telemetry.addData("rightRPM", shooter.rightRPM);
+            telemetry.addData("leftmaxrpm", leftMaxRPM);
+            telemetry.addData("rightmaxrpm", rightMaxRPM);
             telemetry.addData("targetRPM", Shooter.targetRPM);
             telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
             telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
