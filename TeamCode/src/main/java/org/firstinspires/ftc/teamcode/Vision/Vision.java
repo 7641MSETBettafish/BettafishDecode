@@ -46,6 +46,7 @@ public class Vision extends LinearOpMode {
         double z = 29.5 - 18.5;
         double x;
         double y;
+        double theta;
 
         waitForStart();
 
@@ -55,9 +56,9 @@ public class Vision extends LinearOpMode {
                 tag = tagProcessor.getDetections().get(0);
 
                 if(tag.metadata != null) {
-
-                    x = z * Math.sin(Math.toRadians(tag.ftcPose.bearing + 180 - Math.toDegrees(drive.localizer.getPose().heading.toDouble()))) / Math.tan(Math.toRadians(tag.ftcPose.elevation)) + 11.3;
-                    y = z * Math.cos(Math.toRadians(tag.ftcPose.bearing + 180 - Math.toDegrees(drive.localizer.getPose().heading.toDouble()))) / Math.tan(Math.toRadians(tag.ftcPose.elevation)) + 11.25;
+                    theta = 36 - tag.ftcPose.bearing + tag.ftcPose.yaw;
+                    x = Math.sqrt(Math.pow(tag.ftcPose.range, 2) - Math.pow(z, 2)) * Math.cos(theta) + 11.3;
+                    y = Math.sqrt(Math.pow(tag.ftcPose.range, 2) - Math.pow(z, 2)) * Math.sin(theta) + 11.25;
 
                     telemetry.addData("id", tag.metadata.id);
                     telemetry.addData("roll", tag.ftcPose.roll);
@@ -65,6 +66,10 @@ public class Vision extends LinearOpMode {
                     telemetry.addData("yaw", tag.ftcPose.yaw);
                     telemetry.addData("bearing", tag.ftcPose.bearing);
                     telemetry.addData("elevation", tag.ftcPose.elevation);
+                    telemetry.addData("range", tag.ftcPose.range);
+                    telemetry.addData("x", tag.ftcPose.x);
+                    telemetry.addData("y", tag.ftcPose.y);
+                    telemetry.addData("z", tag.ftcPose.z);
                     telemetry.addData("Expected X", x);
                     telemetry.addData("Expected Y", y);
                 }
