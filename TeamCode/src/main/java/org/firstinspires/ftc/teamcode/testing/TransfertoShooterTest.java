@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -18,7 +19,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 public class TransfertoShooterTest extends LinearOpMode {
 
     public static double motorPower = 0.85;
-    public static double shootermotorPower = 0.65;
+    public static double motorfeedpower = 0.7;
+    public static double RPM = 2000;
     public static int detectionDistance = 3;
     public static int loadDistance = 200;
 
@@ -46,22 +48,31 @@ public class TransfertoShooterTest extends LinearOpMode {
         boolean transferOn = false;
         boolean intakeOn = false;
         boolean load = false;
+        Gamepad previousGamepad1 = new Gamepad();
+        Gamepad currentGamepad1 = new Gamepad();
 
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+            previousGamepad1 = currentGamepad1;
+            currentGamepad1 = gamepad1;
+            shooter.targetRPM = RPM;
+
             if (gamepad1.a) {
                 if (transferSensor.getDistance(DistanceUnit.CM) >= detectionDistance) {
                     transferOn = true;
-                } else {
+                }
+                if (!transferOn) {
                     intakeOn = !intakeOn;
                 }
+
             }
 
             if (transferOn) {
                 intakeMotor.setPower(motorPower);
                 transferMotor.setPower(motorPower);
+                intakeOn = true;
 
                 if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance) {
                     transferOn = false;
@@ -83,8 +94,9 @@ public class TransfertoShooterTest extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            if (gamepad1.y && Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shootermotorPower)) {
-                transferMotor.setPower(motorPower);
+            if (gamepad1.y && Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
+                transferMotor.setPower(motorfeedpower);
+                intakeMotor.setPower(motorfeedpower);
                 load = true;
                 transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -101,11 +113,14 @@ public class TransfertoShooterTest extends LinearOpMode {
 
             telemetry.addData("leftRPM", shooter.leftRPM);
             telemetry.addData("rightRPM", shooter.rightRPM);
+            telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
+            telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
             telemetry.addData("shooterOn", shooterOn);
             telemetry.addData("intakeOn", intakeOn);
             telemetry.addData("transferOn", transferOn);
             telemetry.addData("load", load);
             telemetry.addData("transfer distance", transferSensor.getDistance(DistanceUnit.CM));
+            telemetry.update();
         }
 
     }

@@ -14,14 +14,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Shooter {
 
-    public static double leftP = 0.007;
+    public static double leftP = 0.001;
     public static double leftI = 0;
-    public static double leftD = 0;
+    public static double leftD = 0.05;
 
-    public static double rightP = 0.004;
+    public static double rightP = 0.001;
     public static double rightI = 0;
     public static double rightD = 0;
 
+    public static double kF = 0.05;
 
     public static double RPMAlpha = 0.05;
 
@@ -34,7 +35,7 @@ public class Shooter {
     public static double Far = 0;
 
     private static final double GRAVITY = 386.09; // in/s² (imperial gravity)
-    private static final double LAUNCH_HEIGHT = 12.0; // inches
+    private static final double LAUNCH_HEIGHT = 13.5; // inches
     private static final double LAUNCH_ANGLE_RAD = Math.toRadians(54.5);
 
     // ---- Goal ----
@@ -122,7 +123,7 @@ public class Shooter {
     public static double calculateRPM(double distance) {
 
         // Target horizontal distance
-        double depthSigmoid = TARGET_DEPTH / (1.0 + Math.exp(0.3 * (distance - 40)));
+        double depthSigmoid = TARGET_DEPTH / (1.0 + Math.exp(0.4 * (distance - 50)));
         double x = distance + depthSigmoid;
 
         // Target vertical distance
@@ -145,12 +146,10 @@ public class Shooter {
         double vRim = vRequired_m_per_s * (BALL_MASS + FLYWHEEL_MASS) / FLYWHEEL_MASS;
 
         // rim speed to flywheel rpm
-        double flywheelRPM = (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0;
+        return (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0 / 2;
 
         // flywheel to motor rpm
-        return flywheelRPM / GEAR_RATIO;
-
-
+        //flywheelRPM / GEAR_RATIO
         // convert to power fraction
         //double power = motorRPM / MOTOR_NO_LOAD_RPM;
         //if (power > 1.0) power = 1.0; // clamp
@@ -159,7 +158,9 @@ public class Shooter {
     }
 
     public static boolean RPMInThreshold(double leftRPM, double rightRPM, double targetRPM) {
-        return leftRPM > targetRPM - (MOTOR_NO_LOAD_RPM * 0.05) && leftRPM < targetRPM + (MOTOR_NO_LOAD_RPM * 0.1) && rightRPM > targetRPM - (MOTOR_NO_LOAD_RPM * 0.05) && rightRPM < targetRPM + (MOTOR_NO_LOAD_RPM * 0.1);
+        double hightol = 25;
+        double lowtol = 25;
+        return leftRPM > targetRPM - lowtol && leftRPM < targetRPM + hightol && rightRPM > targetRPM - lowtol && rightRPM < targetRPM + hightol;
     }
 
     public void updateRPM() {
@@ -205,8 +206,16 @@ public class Shooter {
     }
 
     public void updatePID() {
-        leftShooterMotor.setPower(leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM));
-        rightShooterMotor.setPower(rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM));
+        leftShooterMotor.setPower(leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM) + FF(leftRPM));
+        //rightShooterMotor.setPower(rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM) + FF(rightRPM));
+    }
+
+    public double FF(double RPM) {
+        if (Math.abs(RPM - targetRPM) > 450) {
+            return kF * (targetRPM - RPM);
+        } else {
+            return 0;
+        }
     }
 
 

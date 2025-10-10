@@ -52,6 +52,8 @@ public class ShooterTest extends LinearOpMode {
             telemetry.addData("leftmaxrpm", leftMaxRPM);
             telemetry.addData("rightmaxrpm", rightMaxRPM);
             telemetry.addData("targetRPM", shooter.targetRPM);
+            telemetry.addData("left PID output", shooter.leftPID.calculate(shooter.leftRPM,shooter.targetRPM));
+            telemetry.addData("left FF", shooter.FF(shooter.leftRPM));
             telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
             telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
             telemetry.addData("time change", time.milliseconds());
