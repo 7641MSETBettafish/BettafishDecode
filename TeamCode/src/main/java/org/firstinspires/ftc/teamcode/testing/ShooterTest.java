@@ -1,22 +1,23 @@
 package org.firstinspires.ftc.teamcode.testing;
 
-import static org.firstinspires.ftc.teamcode.mechanisms.Shooter.GEAR_RATIO;
-import static org.firstinspires.ftc.teamcode.mechanisms.Shooter.motorTicksPerRevolution;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 
 @Config
 @TeleOp(name="ShooterTest", group="Testing")
 public class ShooterTest extends LinearOpMode {
 
-    public static double RPM = 0;
+    public static double motorPower = 0;
 
     Shooter shooter;
 
@@ -26,10 +27,9 @@ public class ShooterTest extends LinearOpMode {
 
         shooter = new Shooter(hardwareMap);
 
+        double lastLeftPosition = 0;
+        double lastRightPosition = 0;
         ElapsedTime time = new ElapsedTime();
-        double leftMaxRPM = 0;
-        double rightMaxRPM = 0;
-
 
         waitForStart();
         if (isStopRequested()) return;
@@ -37,25 +37,15 @@ public class ShooterTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             shooter.updateRPM();
-            shooter.targetRPM = RPM;
+            Shooter.targetRPM = motorPower * Shooter.MOTOR_NO_LOAD_RPM * Shooter.GEAR_RATIO;
             shooter.updatePID();
-
-            if (shooter.leftRPM > leftMaxRPM) {
-                leftMaxRPM = shooter.leftRPM;
-            }
-            if (shooter.rightRPM > rightMaxRPM) {
-                rightMaxRPM = shooter.rightRPM;
-            }
 
             telemetry.addData("leftRPM", shooter.leftRPM);
             telemetry.addData("rightRPM", shooter.rightRPM);
-            telemetry.addData("leftmaxrpm", leftMaxRPM);
-            telemetry.addData("rightmaxrpm", rightMaxRPM);
-            telemetry.addData("targetRPM", shooter.targetRPM);
-            telemetry.addData("left PID output", shooter.leftPID.calculate(shooter.leftRPM,shooter.targetRPM));
-            telemetry.addData("left FF", shooter.FF(shooter.leftRPM));
+            telemetry.addData("targetRPM", Shooter.targetRPM);
             telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
             telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
+            telemetry.addData("targetPower", motorPower);
             telemetry.addData("time change", time.milliseconds());
             telemetry.update();
 
