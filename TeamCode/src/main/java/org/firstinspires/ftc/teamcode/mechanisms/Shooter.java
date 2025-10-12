@@ -97,6 +97,7 @@ public class Shooter {
     public PIDController rightPID;
 
     public double targetRPM = 0;
+    public double lastTarget;
 
     public Shooter(HardwareMap HWMap) {
         leftShooterMotor = HWMap.get(DcMotor.class, "leftShooter");
@@ -184,6 +185,7 @@ public class Shooter {
             leftPID = new PIDController(leftP, leftI, leftD);
             rightPID = new PIDController(rightP, rightI, rightD);
         }
+
     }
 
     public void smoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime) {
@@ -206,16 +208,15 @@ public class Shooter {
     }
 
     public void updatePID() {
-        leftShooterMotor.setPower(leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM) + FF(leftRPM));
-        //rightShooterMotor.setPower(rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM) + FF(rightRPM));
+        boolean targetChanged = targetRPM != lastTarget;
+        leftShooterMotor.setPower(leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM) + (targetChanged ? FF(leftRPM) : 0));
+        rightShooterMotor.setPower(rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM) + (targetChanged ? FF(rightRPM) : 0));
+
+        lastTarget = targetRPM;
     }
 
     public double FF(double RPM) {
-        if (Math.abs(RPM - targetRPM) > 450) {
-            return kF * (targetRPM - RPM);
-        } else {
-            return 0;
-        }
+        return kF * (targetRPM - RPM);
     }
 
 
