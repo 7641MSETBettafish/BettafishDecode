@@ -22,7 +22,7 @@ public class Intake {
 
     public Intake(HardwareMap HWMap) {
         intakeMotor = HWMap.get(DcMotor.class, "intake");
-        colorSensor = HWMap.get(NormalizedColorSensor.class, "colorSensor");
+        colorSensor = HWMap.get(NormalizedColorSensor.class, "intakeSensor");
         if (!(colorSensor instanceof DistanceSensor)) {
             colorSensor = null;
         }
