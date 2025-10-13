@@ -15,8 +15,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Config
 public class Transfer {
+    //how fast we want the transfer to run when we run it
     public static double transferPower = 1;
+    //how close the distance sensor needs to sense for it to stop the transfer
     public static double detectionDistance = 3;
+    //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
     public static double loadDistance = 100;
 
     public DcMotor transferMotor;
@@ -24,8 +27,10 @@ public class Transfer {
     public DistanceSensor rightTransferSensor;
 
     public Transfer(HardwareMap hwMap) {
+        //initialize transfer motor
         transferMotor = hwMap.get(DcMotor.class, "transfer");
 
+        //reset 
         transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
