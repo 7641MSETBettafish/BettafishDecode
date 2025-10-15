@@ -15,13 +15,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Shooter {
 
     //left and right shooter motor PID weights
-    public static double leftP = 0.001;
-    public static double leftI = 0;
-    public static double leftD = 0.05;
-
-    public static double rightP = 0.001;
-    public static double rightI = 0;
-    public static double rightD = 0;
+//    public static double leftP = 0.001;
+//    public static double leftI = 0;
+//    public static double leftD = 0.05;
+//
+//    public static double rightP = 0.001;
+//    public static double rightI = 0;
+//    public static double rightD = 0;
 
     //FF weight
     public static double kF = 0.05;
@@ -38,6 +38,8 @@ public class Shooter {
     public static double Close = 0;
     public static double Middle = 0;
     public static double Far = 0;
+
+    public static double hysteresis = 150;
 
     private static final double GRAVITY = 386.09; // in/s² (imperial gravity)
     private static final double LAUNCH_HEIGHT = 13.5; // inches
@@ -106,6 +108,37 @@ public class Shooter {
 
     public double targetRPM = 0;
     public double lastTarget;
+    private double maxPower = 0.8;
+    private double minPower = -0.;
+
+
+    public void update() {
+
+        double leftError = targetRPM - leftRPM;
+        double rightError =  targetRPM - rightRPM;
+
+        if (leftError > hysteresis) {
+            leftShooterMotor.setPower(minPower);
+        }
+        else if (leftError < -hysteresis) {
+            leftShooterMotor.setPower(maxPower);
+        }
+        else {
+            leftShooterMotor.setPower(0);
+        }
+
+        if (rightError > hysteresis) {
+            rightShooterMotor.setPower(maxPower);
+        }
+        else if (rightError < -hysteresis) {
+            rightShooterMotor.setPower(minPower);
+        }
+
+        else {
+
+            rightShooterMotor.setPower(0);
+        }
+    }
 
     //shooter constructor
     public Shooter(HardwareMap HWMap) {
@@ -131,8 +164,8 @@ public class Shooter {
         lastRightPosition = 0;
         RPMInit = false;
 
-        leftPID = new PIDController(leftP, leftI, leftD);
-        rightPID = new PIDController(rightP, rightI, rightD);
+//        leftPID = new PIDController(leftP, leftI, leftD);
+//        rightPID = new PIDController(rightP, rightI, rightD);
     }
 
     //calculates RPM based on function (current not working)
@@ -239,12 +272,21 @@ public class Shooter {
         leftShooterMotor.setPower(leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM) + (targetChanged ? FF(leftRPM) : 0));
         rightShooterMotor.setPower(rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM) + (targetChanged ? FF(rightRPM) : 0));
 
+        if (leftRPM == targetRPM - 150){
+            leftShooterMotor.setPower(0);
+        }
+
+        if(rightRPM == targetRPM - 150) {
+            rightShooterMotor.setPower(0);
+        }
+
         //store target RPM into the last target RPM for the next loop
         lastTarget = targetRPM;
     }
 
     //A little kick when the target changes to get the inital rpm a bit closer
     public double FF(double RPM) {
+
         return kF * (targetRPM - RPM);
     }
 

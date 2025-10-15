@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -15,21 +16,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 public class Intake {
 
-    public static double intakePower;
+    public static double intakePower = 0.85;
+
+    public static double detectionintake = 6.5;
 
     public DcMotor intakeMotor;
-    public NormalizedColorSensor colorSensor;
+    public DistanceSensor intakeSensor;
 
     public Intake(HardwareMap HWMap) {
         intakeMotor = HWMap.get(DcMotor.class, "intake");
-        colorSensor = HWMap.get(NormalizedColorSensor.class, "intakeSensor");
-        if (!(colorSensor instanceof DistanceSensor)) {
-            colorSensor = null;
-        }
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeSensor = HWMap.get(DistanceSensor.class, "intakeSensor");
+
     }
 
     public boolean ballSensed() {
-        return ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) <= 3;
+        return intakeSensor.getDistance(DistanceUnit.CM) <= detectionintake;
     }
 
     public class Run implements Action {
@@ -43,7 +45,7 @@ public class Intake {
                 init = true;
             }
 
-            if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) <= 3) {
+            if (intakeSensor.getDistance(DistanceUnit.CM) <= 3) {
                 intakeMotor.setPower(0);
                 return false;
             } else {

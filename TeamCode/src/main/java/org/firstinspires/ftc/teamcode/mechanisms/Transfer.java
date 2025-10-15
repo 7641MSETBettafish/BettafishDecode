@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 public class Transfer {
     //how fast we want the transfer to run when we run it
-    public static double transferPower = 1;
+    public static double transferPower = 0.7;
     //how close the distance sensor needs to sense for it to stop the transfer
     public static double detectionDistance = 3;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
