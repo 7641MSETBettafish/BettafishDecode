@@ -83,9 +83,9 @@ public class Teleop extends LinearOpMode {
             TelemetryPacket packet = new TelemetryPacket();
             time.reset();
 
-            previousGamepad1 = currentGamepad1;
+            previousGamepad1.copy(currentGamepad1);
             //previousGamepad2 = currentGamepad2;
-            currentGamepad1 = gamepad1;
+            currentGamepad1.copy(gamepad1);
             //currentGamepad2 = gamepad2;
 
             goalDistance = Math.sqrt(Math.pow(drive.localizer.getPose().position.x - goalPosition.position.x, 2) + Math.pow(drive.localizer.getPose().position.y - goalPosition.position.y, 2));
@@ -112,6 +112,7 @@ public class Teleop extends LinearOpMode {
                 case OFF:
                     if (leftTriggerPressed) {
                         intake.intakeMotor.setPower(Intake.intakePower);
+                        //transfer.transferMotor.setPower(Transfer.transferPower);
                         intakeState = IntakeState.ON;
                     }
                     break;
@@ -178,12 +179,18 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("left flywheel RPM", shooter.leftRPM);
             telemetry.addData("right flywheel RPM", shooter.rightRPM);
             telemetry.addData("intake state", intakeState.toString());
-            telemetry.addData("intake distance", ((DistanceSensor) intake.colorSensor).getDistance(DistanceUnit.CM));
+            telemetry.addData("intake distance", (intake.intakeSensor).getDistance(DistanceUnit.CM));
             telemetry.addData("left transfer distance", transfer.leftTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("right transfer distance", transfer.rightTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("shooter state", shooterState.toString());
             telemetry.addData("shooter busy", shooterControl.isBusy());
             telemetry.addData("loop time", time.milliseconds());
+            telemetry.addData("intake balls sensed", intake.ballSensed());
+            telemetry.addData("last sensed", lastSense);
+//            telemetry.addData("left trigger" , currentGamepad1.left_trigger);
+//            telemetry.addData("right trigger" , currentGamepad1.right_trigger);
+//            telemetry.addData("left on", leftTriggerPressed);
+//            telemetry.addData("previous left trigger", previousGamepad1.left_trigger);
             telemetry.update();
 
             for (LynxModule hub : allHubs) {
