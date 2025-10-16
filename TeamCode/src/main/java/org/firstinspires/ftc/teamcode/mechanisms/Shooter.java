@@ -125,7 +125,7 @@ public class Shooter {
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //make sure both spin in the same direction
-        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //initialize instance variables
         RPMTimer = new ElapsedTime();
