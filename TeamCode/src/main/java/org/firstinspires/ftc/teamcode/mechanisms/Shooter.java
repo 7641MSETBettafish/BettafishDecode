@@ -14,14 +14,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Shooter {
 
-    //left and right shooter motor PID weights
-//    public static double leftP = 0.001;
-//    public static double leftI = 0;
-//    public static double leftD = 0.05;
+   // left and right shooter motor PID weights
+    public static double leftP = 0.001;
+    public static double leftI = 0;
+    public static double leftD = 0.05;
 //
-//    public static double rightP = 0.001;
-//    public static double rightI = 0;
-//    public static double rightD = 0;
+    public static double rightP = 0.001;
+    public static double rightI = 0;
+    public static double rightD = 0;
 
     //FF weight
     public static double kF = 0.05;
@@ -124,7 +124,8 @@ public class Shooter {
             leftShooterMotor.setPower(maxPower);
         }
         else {
-            leftShooterMotor.setPower(0);
+            leftPID = new PIDController(leftP, leftI, leftD);
+            rightPID = new PIDController(rightP, rightI, rightD);
         }
 
         if (rightError > hysteresis) {
@@ -136,7 +137,8 @@ public class Shooter {
 
         else {
 
-            rightShooterMotor.setPower(0);
+            leftPID = new PIDController(leftP, leftI, leftD);
+            rightPID = new PIDController(rightP, rightI, rightD);
         }
     }
 
@@ -164,8 +166,8 @@ public class Shooter {
         lastRightPosition = 0;
         RPMInit = false;
 
-//        leftPID = new PIDController(leftP, leftI, leftD);
-//        rightPID = new PIDController(rightP, rightI, rightD);
+        leftPID = new PIDController(leftP, leftI, leftD);
+       rightPID = new PIDController(rightP, rightI, rightD);
     }
 
     //calculates RPM based on function (current not working)
@@ -236,10 +238,10 @@ public class Shooter {
         lastRightPosition = rightShooterMotor.getCurrentPosition();
 
         //debugging tool that constantly updates the P, I, and D tuning weights so that you can tune in real time
-        if (debug) {
-            leftPID = new PIDController(leftP, leftI, leftD);
-            rightPID = new PIDController(rightP, rightI, rightD);
-        }
+//        if (debug) {
+//            leftPID = new PIDController(leftP, leftI, leftD);
+//            rightPID = new PIDController(rightP, rightI, rightD);
+//        }
 
     }
 
