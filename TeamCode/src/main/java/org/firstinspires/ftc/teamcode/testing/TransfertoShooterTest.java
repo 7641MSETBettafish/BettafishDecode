@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooterv2;
 
@@ -26,6 +25,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
     DcMotor intakeMotor;
     DcMotor transferMotor;
+
     Shooterv2 shooter;
 
     public DistanceSensor transferSensor;
@@ -94,7 +94,7 @@ public class TransfertoShooterTest extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            if (gamepad1.y && Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
+            if (gamepad1.y && Shooterv2.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
                 transferMotor.setPower(motorfeedpower);
                 intakeMotor.setPower(motorfeedpower);
                 load = true;
