@@ -24,12 +24,15 @@ public class Shooter {
     public static double rightD = 0;
 
     //FF weight
+
+
     public static double kF = 0.05;
 
     //constant used in smoothing RPM. lower value more smooth but less responsive. higher value less smooth but more responsive
     public static double RPMAlpha = 0.05;
 
     //so that you can turn debugging on and off in ftc dashboard
+    public static double RPM_JITTER = 30;
     public static boolean debug = true;
     public static boolean debugEMA = true;
 
@@ -125,7 +128,7 @@ public class Shooter {
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //make sure both spin in the same direction
-        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //initialize instance variables
         RPMTimer = new ElapsedTime();
@@ -157,6 +160,27 @@ public class Shooter {
         }
     }
 
+    public void verySmoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime) {
+        if (!RPMInit) {
+            leftRPM = currentLeftRPM;
+            rightRPM = currentRightRPM;
+            RPMInit = true;
+        } else {
+            double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 10)));
+            //this is jitter REJECTION
+            double leftDelta = currentLeftRPM - leftRPM;
+            double rightDelta = currentRightRPM - rightRPM;
+
+            if (Math.abs(leftDelta) > RPM_JITTER) {
+                leftRPM += effectiveAlpha * leftDelta;
+
+            }
+
+            if (Math.abs(rightDelta) > RPM_JITTER) {
+                rightRPM += effectiveAlpha * rightDelta;
+            }
+        }
+    }
 
 
     //calculates RPM based on function (current not working)
