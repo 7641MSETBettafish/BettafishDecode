@@ -9,9 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooterv2;
 
 @Config
 @TeleOp(name="ShooterTest", group="Testing")
@@ -19,13 +18,13 @@ public class ShooterTest extends LinearOpMode {
 
     public static double RPM = 0;
 
-    Shooter shooter;
+    Shooterv2 shooter;
 
     @Override
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        shooter = new Shooter(hardwareMap);
+        shooter = new Shooterv2(hardwareMap);
 
         double lastLeftPosition = 0;
         double lastRightPosition = 0;

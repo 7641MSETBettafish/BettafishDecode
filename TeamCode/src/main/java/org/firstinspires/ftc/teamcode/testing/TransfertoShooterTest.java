@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooterv2;
 
 @Config
 @TeleOp(name="TransfertoShooterTest", group="Testing")
@@ -26,7 +26,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
     DcMotor intakeMotor;
     DcMotor transferMotor;
-    Shooter shooter;
+    Shooterv2 shooter;
 
     public DistanceSensor transferSensor;
 
@@ -36,7 +36,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
         transferMotor = hardwareMap.get(DcMotor.class, "transfer");
-        shooter = new Shooter(hardwareMap);
+        shooter = new Shooterv2(hardwareMap);
         transferSensor = hardwareMap.get(DistanceSensor.class, "rightTransferSensor");
 
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
