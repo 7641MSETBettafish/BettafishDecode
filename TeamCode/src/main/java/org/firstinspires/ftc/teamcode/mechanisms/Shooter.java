@@ -160,15 +160,13 @@ public class Shooter {
         }
     }
 
-    public void verySmoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime){
-        if(!RPMInit) {
+    public void verySmoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime) {
+        if (!RPMInit) {
             leftRPM = currentLeftRPM;
             rightRPM = currentRightRPM;
             RPMInit = true;
-        }
-
-        else {
-            double effectiveAlpha = Math.min(1.0, Math.max(0.0,RPMAlpha * (currentTime / 10)));
+        } else {
+            double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 10)));
             //this is jitter REJECTION
             double leftDelta = currentLeftRPM - leftRPM;
             double rightDelta = currentRightRPM - rightRPM;
@@ -176,10 +174,12 @@ public class Shooter {
             if (Math.abs(leftDelta) > RPM_JITTER) {
                 leftRPM += effectiveAlpha * leftDelta;
 
-        }
+            }
 
             if (Math.abs(rightDelta) > RPM_JITTER) {
                 rightRPM += effectiveAlpha * rightDelta;
+            }
+        }
     }
 
 
