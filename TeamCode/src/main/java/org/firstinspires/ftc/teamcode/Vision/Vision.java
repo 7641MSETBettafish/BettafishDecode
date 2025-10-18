@@ -30,11 +30,11 @@ public class Vision extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         tagProcessor = new AprilTagProcessor.Builder()
+               
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
-                .setLensIntrinsics(698.891,698.891,610.023,386.808)
                 .build();
 
         visionPortal = new VisionPortal.Builder()
