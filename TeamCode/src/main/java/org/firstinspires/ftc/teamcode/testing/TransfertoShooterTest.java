@@ -89,12 +89,12 @@ public class TransfertoShooterTest extends LinearOpMode {
             }
 
             if (shooterOn) {
-                shooter.updateBang();
+                shooter.updatePID();
             } else {
                 shooter.setPower(0);
             }
 
-            if (gamepad1.y && Shooterv2.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
+            if (gamepad1.y && shooter.RPMInThreshold()) {
                 transferMotor.setPower(motorfeedpower);
                 intakeMotor.setPower(motorfeedpower);
                 load = true;
@@ -111,8 +111,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
             shooter.updateRPM();
 
-            telemetry.addData("leftRPM", shooter.leftRPM);
-            telemetry.addData("rightRPM", shooter.rightRPM);
+            telemetry.addData("RPM", shooter.RPM);
             telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
             telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
             telemetry.addData("shooterOn", shooterOn);
