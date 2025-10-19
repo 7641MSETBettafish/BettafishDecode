@@ -94,7 +94,7 @@ public class TransfertoShooterTest extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            if (gamepad1.y && shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
+            if (gamepad1.y && Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
                 transferMotor.setPower(motorfeedpower);
                 intakeMotor.setPower(motorfeedpower);
                 load = true;

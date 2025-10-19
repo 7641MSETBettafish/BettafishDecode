@@ -20,17 +20,15 @@ public class Shooterv2 {
     public static double D = 0.05;
 
     //FF weight
-
-
     public static double kF = 0.05;
 
     //constant used in smoothing RPM. lower value more smooth but less responsive. higher value less smooth but more responsive
     public static double RPMAlpha = 0.05;
+    public static double RPM_JITTER_LOW_BOUND = 30;
+    public static double RPM_JITTER_HIGH_BOUND = 30;
 
     //so that you can turn debugging on and off in ftc dashboard
-    public static double RPM_JITTER = 30;
     public static boolean debug = true;
-    public static boolean debugEMA = true;
 
     // TODO: enter common field distances in inches (for auto)
     //common field distances
@@ -97,16 +95,16 @@ public class Shooterv2 {
     public double lastLeftPosition;
     public double lastRightPosition;
 
-    public double leftRPM;
-    public double rightRPM;
+    public double RPM;
+    public double lastRPM;
+    public double smoothRPM;
     public boolean RPMInit;
 
     public ElapsedTime RPMTimer;
 
-    public PIDController pid;
+    public PIDController PID;
 
     public double targetRPM = 0;
-    public double lastTarget;
 
     //shooter constructor
     public Shooterv2(HardwareMap HWMap) {
@@ -131,23 +129,22 @@ public class Shooterv2 {
         lastLeftPosition = 0;
         lastRightPosition = 0;
         RPMInit = false;
+        RPM = 0;
 
-        pid = new PIDController(P, I, D);
+        PID = new PIDController(P, I, D);
 
     }
 
+    //DEPRECIATED
     public void updateBang() {
-        double avgRPM = (leftRPM + rightRPM) / 2.0;
-        double error = targetRPM - avgRPM;
+        double error = targetRPM - RPM;
         double power = leftShooterMotor.getPower();
 
         if (error > bangTolerance) {
-
             power += bangPower;
         } else if (error < -bangTolerance) {
             power -= bangPower;
         }
-
 
         power = Math.max(0.0, Math.min(1.0, power));
 
@@ -155,24 +152,17 @@ public class Shooterv2 {
     }
 
 
-    public void verySmoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime) {
+    public void verySmoothRPM(double currentRPM, double currentTime) {
         if (!RPMInit) {
-            leftRPM = currentLeftRPM;
-            rightRPM = currentRightRPM;
+            smoothRPM = currentRPM;
             RPMInit = true;
         } else {
             double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 10)));
             //this is jitter REJECTION
-            double leftDelta = currentLeftRPM - leftRPM;
-            double rightDelta = currentRightRPM - rightRPM;
+            double delta = currentRPM - RPM;
 
-            if (Math.abs(leftDelta) > RPM_JITTER) {
-                leftRPM += effectiveAlpha * leftDelta;
-
-            }
-
-            if (Math.abs(rightDelta) > RPM_JITTER) {
-                rightRPM += effectiveAlpha * rightDelta;
+            if (Math.abs(delta) < RPM_JITTER_LOW_BOUND || Math.abs(delta) > RPM_JITTER_HIGH_BOUND) {
+                smoothRPM += effectiveAlpha * delta;
             }
         }
     }
@@ -205,22 +195,22 @@ public class Shooterv2 {
         double vRim = vRequired_m_per_s * (BALL_MASS + FLYWHEEL_MASS) / FLYWHEEL_MASS;
 
         // rim speed to flywheel rpm
-        return (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0 / 2;
+        double flywheelRPM = (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0 / 2;
 
-        // flywheel to motor rpm
-        //flywheelRPM / GEAR_RATIO
-        // convert to power fraction
-        //double power = motorRPM / MOTOR_NO_LOAD_RPM;
-        //if (power > 1.0) power = 1.0; // clamp
-
-        //return power;
+        //add constant to account for compression
+        return flywheelRPM + 320;
     }
 
     //checks if the both the left and right RPM are in the threshold based on the hightol (upper bound) and lowtol (lower bound)
-    public static boolean RPMInThreshold(double leftRPM, double rightRPM, double targetRPM) {
+    public boolean RPMInThreshold() {
         double hightol = 25;
         double lowtol = 25;
-        return leftRPM > targetRPM - lowtol && leftRPM < targetRPM + hightol && rightRPM > targetRPM - lowtol && rightRPM < targetRPM + hightol;
+        double deltatol = 30;
+        double delta = smoothRPM - lastRPM;
+        if (delta > deltatol) {
+            return false;
+        }
+        return RPM > targetRPM - lowtol && RPM < targetRPM + hightol;
     }
 
     //updates the current RPM of the shooter motors
@@ -235,34 +225,29 @@ public class Shooterv2 {
         // Average both for a shared feedback
         double avgRPM = (currentLeftRPM + currentRightRPM) / 2.0;
 
-        if (debugEMA) {
-            smoothRPM(currentLeftRPM, currentRightRPM, currentTime);
-        } else {
-            leftRPM = avgRPM;
-            rightRPM = avgRPM;
-        }
+        verySmoothRPM(avgRPM, currentTime);
+        RPM = avgRPM;
 
         RPMTimer.reset();
         lastLeftPosition = leftShooterMotor.getCurrentPosition();
         lastRightPosition = rightShooterMotor.getCurrentPosition();
+        lastRPM = RPM;
 
         if (debug) {
-            pid = new PIDController(P, I, D);
+            PID = new PIDController(P, I, D);
         }
     }
 
+    //DEPRECIATED
     //method that takes in the current RPM and adds it to a moving average so that there are not a lot of large spikes in the RPM (better for PID)
-    public void smoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime) {
+    public void smoothRPM(double currentRPM, double currentTime) {
         //EMA for smoother values
-        double currentAvg = (currentLeftRPM + currentRightRPM) / 2.0;
         if (!RPMInit) {
-
+            RPM = currentRPM;
             RPMInit = true;
         } else {
             double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 10)));
-            double smoothed = leftRPM + effectiveAlpha * (currentAvg - leftRPM);
-            leftRPM = smoothed;
-            rightRPM = smoothed;
+            RPM = RPM + effectiveAlpha * (currentRPM - RPM);
         }
     }
 
@@ -273,22 +258,24 @@ public class Shooterv2 {
     }
 
     public void updatePID() {
-        //detect if the target has changed and we need to use the FF() method
-        boolean targetChanged = targetRPM != lastTarget;
+        double error = targetRPM - RPM;
 
-        double avgRPM = (leftRPM + rightRPM) / 2.0;
         //get the next PID value and add it to the current power
         //(targetChanged ? FF(leftRPM) : 0) is an if statement but with simplified syntax. Search up java ternary operator to understand
-        double power = leftShooterMotor.getPower() + 0.001 * pid.calculate(avgRPM, targetRPM) + (targetChanged ? FF(avgRPM) : 0);
+        double power = leftShooterMotor.getPower() + 0.001 * PID.calculate(RPM, targetRPM);
+
+        if (error > bangTolerance) {
+            power += bangPower;
+        } else if (error < -bangTolerance) {
+            power -= bangPower;
+        }
+
         power = Math.max(0.0, Math.min(1.0, power));
-        leftShooterMotor.setPower(power);
-        rightShooterMotor.setPower(power);
 
-
-        //store target RPM into the last target RPM for the next loop
-        lastTarget = targetRPM;
+        setPower(power);
     }
 
+    //DEPRECIATED
     //A little kick when the target changes to get the inital rpm a bit closer
     public double FF(double RPM) {
         return kF * (targetRPM - RPM);
@@ -332,15 +319,13 @@ public class Shooterv2 {
                 //init true so we know that the next loops are no longer the first loop
                 init = true;
             }
+
             updateRPM();
             updatePID();
-            updateBang();
-
-
 
             //check if the time is over 75 milliseconds (to prevent shooting when the updateRPM() method starts up and returns a weird value)
             //check if the RPM is in threshold (see above method
-            return time.milliseconds() > 75 && RPMInThreshold(leftRPM, rightRPM, targetRPM);
+            return time.milliseconds() > 75 && RPMInThreshold();
 
         }
     }
