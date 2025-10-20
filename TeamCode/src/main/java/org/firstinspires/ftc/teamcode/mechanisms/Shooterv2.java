@@ -36,12 +36,12 @@ public class Shooterv2 {
     public static double Middle = 0;
     public static double Far = 0;
 
-    public static double bangTolerance = 150;
+    public static double bangTolerance = 500;
     public static double bangPower = 0.05;
 
     private static final double GRAVITY = 386.09; // in/s² (imperial gravity)
     private static final double LAUNCH_HEIGHT = 13.5; // inches
-    private static final double LAUNCH_ANGLE_RAD = Math.toRadians(54.5);
+    private static final double LAUNCH_ANGLE_RAD = Math.toRadians(50);
 
     // ---- Goal ----
     private static final double GOAL_FRONT_HEIGHT = 39.0; // inches
@@ -172,7 +172,7 @@ public class Shooterv2 {
     public static double calculateRPM(double distance) {
 
         // Target horizontal distance
-        double depthSigmoid = TARGET_DEPTH / (1.0 + Math.exp(0.4 * (distance - 50)));
+        double depthSigmoid = GOAL_DEPTH / (1.0 + Math.exp(0.3 * (distance - 46)));
         double x = distance + depthSigmoid;
 
         // Target vertical distance
@@ -198,7 +198,7 @@ public class Shooterv2 {
         double flywheelRPM = (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0 / 2;
 
         //add constant to account for compression
-        return flywheelRPM + 320;
+        return flywheelRPM + 220;
     }
 
     //checks if the both the left and right RPM are in the threshold based on the hightol (upper bound) and lowtol (lower bound)
