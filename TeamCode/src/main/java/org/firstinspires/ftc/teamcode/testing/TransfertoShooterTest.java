@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.mechanisms.Shooterv2;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 
 @Config
 @TeleOp(name="TransfertoShooterTest", group="Testing")
@@ -26,7 +26,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
     DcMotor intakeMotor;
     DcMotor transferMotor;
-    Shooterv2 shooter;
+    Shooter shooter;
 
     public DistanceSensor transferSensor;
 
@@ -36,7 +36,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
         transferMotor = hardwareMap.get(DcMotor.class, "transfer");
-        shooter = new Shooterv2(hardwareMap);
+        shooter = new Shooter(hardwareMap);
         transferSensor = hardwareMap.get(DistanceSensor.class, "rightTransferSensor");
 
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -71,7 +71,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
             if (transferOn) {
                 intakeMotor.setPower(motorPower);
-                transferMotor.setPower(motorPower);
+                transferMotor.setPower(-motorPower);
                 intakeOn = true;
 
                 if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance) {
@@ -94,8 +94,8 @@ public class TransfertoShooterTest extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            if (gamepad1.y && shooter.RPMInThreshold()) {
-                transferMotor.setPower(motorfeedpower);
+            if (gamepad1.y && Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
+                transferMotor.setPower(-motorfeedpower);
                 intakeMotor.setPower(motorfeedpower);
                 load = true;
                 transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -111,7 +111,8 @@ public class TransfertoShooterTest extends LinearOpMode {
 
             shooter.updateRPM();
 
-            telemetry.addData("rightRPM", shooter.RPM);
+            telemetry.addData("leftRPM", shooter.leftRPM);
+            telemetry.addData("rightRPM", shooter.rightRPM);
             telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
             telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
             telemetry.addData("shooterOn", shooterOn);

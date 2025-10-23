@@ -15,9 +15,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Shooter {
 
     //left and right shooter motor PID weights
-    public static double leftP = 0.001;
+    public static double leftP = 0.002;
     public static double leftI = 0;
-    public static double leftD = 0.05;
+    public static double leftD = 0.0001;
 
     public static double rightP = 0.001;
     public static double rightI = 0;
@@ -29,10 +29,10 @@ public class Shooter {
     public static double kF = 0.05;
 
     //constant used in smoothing RPM. lower value more smooth but less responsive. higher value less smooth but more responsive
-    public static double RPMAlpha = 0.05;
+    public static double RPMAlpha = 0.4;
 
     //so that you can turn debugging on and off in ftc dashboard
-    public static double RPM_JITTER = 30;
+    public static double RPM_JITTER = 100;
     public static boolean debug = true;
     public static boolean debugEMA = true;
 
@@ -43,7 +43,7 @@ public class Shooter {
     public static double Far = 0;
 
     public static double bangTolerance = 150;
-    public static double bangPower = 0.05;
+    public static double bangPower = 0.02;
 
     private static final double GRAVITY = 386.09; // in/s² (imperial gravity)
     private static final double LAUNCH_HEIGHT = 13.5; // inches

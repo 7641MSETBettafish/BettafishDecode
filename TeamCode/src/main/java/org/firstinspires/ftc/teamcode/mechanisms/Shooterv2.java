@@ -203,9 +203,9 @@ public class Shooterv2 {
 
     //checks if the both the left and right RPM are in the threshold based on the hightol (upper bound) and lowtol (lower bound)
     public boolean RPMInThreshold() {
-        double hightol = 25;
-        double lowtol = 25;
-        double deltatol = 30;
+        double hightol = 150;
+        double lowtol = 150;
+        double deltatol = 150;
         double delta = smoothRPM - lastRPM;
         if (delta > deltatol) {
             return false;
