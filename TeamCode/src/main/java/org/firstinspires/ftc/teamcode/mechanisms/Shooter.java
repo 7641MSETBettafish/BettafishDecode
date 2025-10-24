@@ -141,46 +141,7 @@ public class Shooter {
         rightPID = new PIDController(rightP, rightI, rightD);
     }
 
-    public void updateBang() {
-        double leftError = targetRPM - leftRPM;
-        double rightError =  targetRPM - rightRPM;
 
-        if (leftError > bangTolerance) {
-            leftShooterMotor.setPower(leftShooterMotor.getPower() + bangPower);
-        }
-        else if (leftError < -bangTolerance) {
-            leftShooterMotor.setPower(leftShooterMotor.getPower() - bangPower);
-        }
-
-        if (rightError > bangTolerance) {
-            rightShooterMotor.setPower(rightShooterMotor.getPower() + bangPower);
-        }
-        else if (rightError < -bangTolerance) {
-            rightShooterMotor.setPower(rightShooterMotor.getPower() - bangPower);
-        }
-    }
-
-    public void verySmoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime) {
-        if (!RPMInit) {
-            leftRPM = currentLeftRPM;
-            rightRPM = currentRightRPM;
-            RPMInit = true;
-        } else {
-            double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 10)));
-            //this is jitter REJECTION
-            double leftDelta = currentLeftRPM - leftRPM;
-            double rightDelta = currentRightRPM - rightRPM;
-
-            if (Math.abs(leftDelta) > RPM_JITTER) {
-                leftRPM += effectiveAlpha * leftDelta;
-
-            }
-
-            if (Math.abs(rightDelta) > RPM_JITTER) {
-                rightRPM += effectiveAlpha * rightDelta;
-            }
-        }
-    }
 
 
     //calculates RPM based on function (current not working)
@@ -236,6 +197,8 @@ public class Shooter {
         double currentLeftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / currentTime);
         double currentRightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / currentTime);
 
+
+
         //debugging tool to test smoothing the RPM vs not
         if (debugEMA) {
             smoothRPM(currentLeftRPM, currentRightRPM, currentTime);
@@ -284,9 +247,31 @@ public class Shooter {
 
         //get the next PID value and add it to the current power
         //(targetChanged ? FF(leftRPM) : 0) is an if statement but with simplified syntax. Search up java ternary operator to understand
-        leftShooterMotor.setPower(leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM) + (targetChanged ? FF(leftRPM) : 0));
-        rightShooterMotor.setPower(rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM) + (targetChanged ? FF(rightRPM) : 0));
+        double leftpower = leftShooterMotor.getPower() + 0.001 * leftPID.calculate(leftRPM, targetRPM) + (targetChanged ? FF(leftRPM) : 0);
+        double rightpower = rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM) + (targetChanged ? FF(rightRPM) : 0);
 
+        double leftError = targetRPM - leftRPM;
+        double rightError =  targetRPM - rightRPM;
+
+        if (leftError > bangTolerance) {
+            leftpower += bangPower;
+        }
+        else if (leftError < -bangTolerance) {
+            leftpower -= bangPower;
+        }
+
+        if (rightError > bangTolerance) {
+            rightpower += bangPower;
+        }
+        else if (rightError < -bangTolerance) {
+            rightpower -= bangPower;
+        }
+
+        leftpower = Math.max(0.0, Math.min(1.0, leftpower));
+        rightpower = Math.max(0.0, Math.min(1.0, rightpower));
+
+        leftShooterMotor.setPower(leftpower);
+        rightShooterMotor.setPower(rightpower);
         //store target RPM into the last target RPM for the next loop
         lastTarget = targetRPM;
     }
