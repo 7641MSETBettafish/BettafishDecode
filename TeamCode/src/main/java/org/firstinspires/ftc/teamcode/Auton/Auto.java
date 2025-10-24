@@ -58,7 +58,7 @@ public class Auto extends LinearOpMode {
                 // third set
                 .strafeToLinearHeading(new Vector2d(-15,-30) , Math.toRadians(90))
                 .lineToY(-52)
-                .strafeToLinearHeading(new Vector2d(-16,-16) , Math.toRadians((90));
+                .strafeToLinearHeading(new Vector2d(-16,-16) , Math.toRadians(90));
 
         Action path1 = preload.build();
 

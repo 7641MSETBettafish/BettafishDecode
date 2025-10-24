@@ -89,7 +89,7 @@ public class TransfertoShooterTest extends LinearOpMode {
             }
 
             if (shooterOn) {
-                shooter.updateBang();
+                shooter.updatePID();
             } else {
                 shooter.setPower(0);
             }
