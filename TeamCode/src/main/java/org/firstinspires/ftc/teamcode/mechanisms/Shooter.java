@@ -43,6 +43,7 @@ public class Shooter {
     public static double Far = 0;
 
     public static double bangTolerance = 150;
+
     public static double bangPower = 0.02;
 
     private static final double GRAVITY = 386.09; // in/s² (imperial gravity)
@@ -141,7 +142,68 @@ public class Shooter {
         rightPID = new PIDController(rightP, rightI, rightD);
     }
 
+    private double lastLeftRPM = 0;
+    private double lastRightRPM = 0;
 
+    public static double shootballtolerance = 400;
+
+    public static double dropline = 100;
+
+    public void updateBang() {
+        double leftError = targetRPM - leftRPM;
+        double rightError = targetRPM - rightRPM;
+
+        if ((leftError > shootballtolerance || rightError > shootballtolerance) && ((targetRPM - leftRPM) < 300)) {
+            if (leftRPM < targetRPM - dropline) {
+                leftShooterMotor.setPower(leftShooterMotor.getPower() + bangPower);
+            } else {
+                leftShooterMotor.setPower(leftShooterMotor.getPower() - bangPower);
+            }
+
+            if (rightRPM < targetRPM - dropline) {
+                rightShooterMotor.setPower(rightShooterMotor.getPower() + bangPower);
+            } else {
+                rightShooterMotor.setPower(rightShooterMotor.getPower() - bangPower);
+            }
+
+        } else {
+            if (leftError > bangTolerance) {
+                leftShooterMotor.setPower(leftShooterMotor.getPower() + bangPower);
+            } else if (leftError < -bangTolerance) {
+                leftShooterMotor.setPower(leftShooterMotor.getPower() - bangPower);
+            }
+
+            if (rightError > bangTolerance) {
+                rightShooterMotor.setPower(rightShooterMotor.getPower() + bangPower);
+            } else if (rightError < -bangTolerance) {
+                rightShooterMotor.setPower(rightShooterMotor.getPower() - bangPower);
+            }
+        }
+    }
+
+
+
+    public void verySmoothRPM(double currentLeftRPM, double currentRightRPM, double currentTime) {
+        if (!RPMInit) {
+            leftRPM = currentLeftRPM;
+            rightRPM = currentRightRPM;
+            RPMInit = true;
+        } else {
+            double effectiveAlpha = Math.min(1.0, Math.max(0.0, RPMAlpha * (currentTime / 10)));
+            //this is jitter REJECTION
+            double leftDelta = currentLeftRPM - leftRPM;
+            double rightDelta = currentRightRPM - rightRPM;
+
+            if (Math.abs(leftDelta) > RPM_JITTER) {
+                leftRPM += effectiveAlpha * leftDelta;
+
+            }
+
+            if (Math.abs(rightDelta) > RPM_JITTER) {
+                rightRPM += effectiveAlpha * rightDelta;
+            }
+        }
+    }
 
 
     //calculates RPM based on function (current not working)
@@ -197,8 +259,6 @@ public class Shooter {
         double currentLeftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / currentTime);
         double currentRightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / currentTime);
 
-
-
         //debugging tool to test smoothing the RPM vs not
         if (debugEMA) {
             smoothRPM(currentLeftRPM, currentRightRPM, currentTime);
@@ -251,27 +311,40 @@ public class Shooter {
         double rightpower = rightShooterMotor.getPower() + 0.001 * rightPID.calculate(rightRPM, targetRPM) + (targetChanged ? FF(rightRPM) : 0);
 
         double leftError = targetRPM - leftRPM;
-        double rightError =  targetRPM - rightRPM;
+        double rightError = targetRPM - rightRPM;
 
-        if (leftError > bangTolerance) {
-            leftpower += bangPower;
-        }
-        else if (leftError < -bangTolerance) {
-            leftpower -= bangPower;
-        }
+        if ((leftError > shootballtolerance || rightError > shootballtolerance) && ((targetRPM - leftRPM) < 300)) {
+            if (leftRPM < targetRPM - dropline) {
+                leftpower += bangPower;
+            } else {
+                leftpower -=bangPower;
+            }
 
-        if (rightError > bangTolerance) {
-            rightpower += bangPower;
-        }
-        else if (rightError < -bangTolerance) {
-            rightpower -= bangPower;
-        }
+            if (rightRPM < targetRPM - dropline) {
+                rightpower += bangPower;
+            } else {
+                rightpower -= bangPower;
+            }
 
+        } else {
+            if (leftError > bangTolerance) {
+                leftpower += bangPower;
+            } else if (leftError < -bangTolerance) {
+                leftpower -=bangPower;
+            }
+
+            if (rightError > bangTolerance) {
+                rightpower += bangPower;
+            } else if (rightError < -bangTolerance) {
+                rightpower -= bangPower;
+            }
+        }
         leftpower = Math.max(0.0, Math.min(1.0, leftpower));
         rightpower = Math.max(0.0, Math.min(1.0, rightpower));
 
         leftShooterMotor.setPower(leftpower);
         rightShooterMotor.setPower(rightpower);
+
         //store target RPM into the last target RPM for the next loop
         lastTarget = targetRPM;
     }
