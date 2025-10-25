@@ -30,7 +30,7 @@ public class Vision extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         tagProcessor = new AprilTagProcessor.Builder()
-                
+                .setLensIntrinsics(1421.04,1421.04,649.331,357.761)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
@@ -40,7 +40,7 @@ public class Vision extends LinearOpMode {
         visionPortal = new VisionPortal.Builder()
                 .addProcessor(tagProcessor)
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(1280, 720))
                 .build();
 
         // inches
