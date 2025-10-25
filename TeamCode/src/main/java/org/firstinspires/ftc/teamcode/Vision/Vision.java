@@ -58,8 +58,8 @@ public class Vision extends LinearOpMode {
 
                 if(tag.metadata != null) {
                     theta = 36 - tag.ftcPose.bearing + tag.ftcPose.yaw;
-                    x = tag.ftcPose.range * Math.cos(theta) + 11.3;
-                    y = tag.ftcPose.range * Math.sin(theta) + 11.25;
+                    x = tag.ftcPose.range * Math.cos(Math.toRadians(theta)) + 11.3;
+                    y = tag.ftcPose.range * Math.sin(Math.toRadians(theta)) + 11.25;
 
                     telemetry.addData("id", tag.metadata.id);
                     telemetry.addData("roll", tag.ftcPose.roll);
