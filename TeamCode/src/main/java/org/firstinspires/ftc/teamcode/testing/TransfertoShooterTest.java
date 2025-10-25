@@ -9,10 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
+import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 @Config
 @TeleOp(name="TransfertoShooterTest", group="Testing")
@@ -110,6 +109,13 @@ public class TransfertoShooterTest extends LinearOpMode {
             }
 
             shooter.updateRPM();
+            telemetry.addData("rightrpmdiffernce", shooter.rightRPMdifference);
+            telemetry.addData("leftrpmdifference", shooter.leftRPMdifference);
+            telemetry.addData("revoveryshot", shooter.recoveryshot);
+            telemetry.addData("targetrpm", shooter.targetRPM);
+            telemetry.addData("bangbangup", shooter.targetRPM + shooter.bangTolerance);
+            telemetry.addData("bangbandown", shooter.targetRPM - shooter.bangTolerance);
+            telemetry.addData("bangbangdropline", shooter.targetRPM - shooter.dropline);
 
             telemetry.addData("leftRPM", shooter.leftRPM);
             telemetry.addData("rightRPM", shooter.rightRPM);
