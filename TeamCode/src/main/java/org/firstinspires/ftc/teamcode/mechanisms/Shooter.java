@@ -25,7 +25,7 @@ public class Shooter {
 
     //FF weight
 
-
+    public boolean recoveryshot = false;
     public static double kF = 0.05;
 
     //constant used in smoothing RPM. lower value more smooth but less responsive. higher value less smooth but more responsive
@@ -105,6 +105,8 @@ public class Shooter {
     public double leftRPM;
     public double rightRPM;
     public boolean RPMInit;
+
+
 
     public ElapsedTime RPMTimer;
 
@@ -321,14 +323,25 @@ public class Shooter {
         double leftError = targetRPM - leftRPM;
         double rightError = targetRPM - rightRPM;
 
+        boolean shotdetected = (Math.abs(lastRightRPM - rightRPM) > shootballtolerance || Math.abs(lastLeftRPM - leftRPM) > shootballtolerance);
 
-        if ((lastRightRPM - rightRPM > shootballtolerance || lastLeftRPM - leftRPM > shootballtolerance)) {
+        if (shotdetected) {
+            recoveryshot = true;
+        }
+
+
+        if (recoveryshot) {
             if (leftRPM > targetRPM - dropline) {
-                leftpower -= bangPower;
+                leftpower -= bangPower*2;
             }
 
             if (rightRPM > targetRPM - dropline) {
-                rightpower += bangPower;
+                rightpower -= bangPower*2;
+            }
+
+
+            if (leftRPM >= targetRPM || rightRPM >= targetRPM) {
+                recoveryshot = false;
             }
 
         } else {
