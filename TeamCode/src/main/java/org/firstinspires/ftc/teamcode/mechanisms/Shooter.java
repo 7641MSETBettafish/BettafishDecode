@@ -252,12 +252,14 @@ public class Shooter {
     }
 
     //updates the current RPM of the shooter motors
+
     public void updateRPM() {
         //get the current time
         double currentTime = RPMTimer.milliseconds();
         //calculate the RPM
         double currentLeftRPM = ((leftShooterMotor.getCurrentPosition() - lastLeftPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000 / currentTime);
         double currentRightRPM = ((rightShooterMotor.getCurrentPosition() - lastRightPosition) / motorTicksPerRevolution) * GEAR_RATIO * (60000  / currentTime);
+
 
         //debugging tool to test smoothing the RPM vs not
         if (debugEMA) {
@@ -272,6 +274,12 @@ public class Shooter {
         //save positions to last positions for next loop
         lastLeftPosition = leftShooterMotor.getCurrentPosition();
         lastRightPosition = rightShooterMotor.getCurrentPosition();
+
+        lastLeftRPM = currentLeftRPM;
+        lastRightRPM = currentRightRPM;
+
+
+
 
         //debugging tool that constantly updates the P, I, and D tuning weights so that you can tune in real time
         if (debug) {
@@ -313,17 +321,14 @@ public class Shooter {
         double leftError = targetRPM - leftRPM;
         double rightError = targetRPM - rightRPM;
 
-        if ((leftError > shootballtolerance || rightError > shootballtolerance) && ((targetRPM - leftRPM) < 300)) {
-            if (leftRPM < targetRPM - dropline) {
-                leftpower += bangPower;
-            } else {
-                leftpower -=bangPower;
+
+        if ((lastRightRPM - rightRPM > shootballtolerance || lastLeftRPM - leftRPM > shootballtolerance)) {
+            if (leftRPM > targetRPM - dropline) {
+                leftpower -= bangPower;
             }
 
-            if (rightRPM < targetRPM - dropline) {
+            if (rightRPM > targetRPM - dropline) {
                 rightpower += bangPower;
-            } else {
-                rightpower -= bangPower;
             }
 
         } else {
