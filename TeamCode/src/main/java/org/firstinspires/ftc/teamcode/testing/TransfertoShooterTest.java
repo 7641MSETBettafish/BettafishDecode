@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.mechanisms.*;
 @TeleOp(name="TransfertoShooterTest", group="Testing")
 public class TransfertoShooterTest extends LinearOpMode {
 
-    public static double motorPower = 0.85;
+    public static double motorPower = 0.7;
     public static double motorfeedpower = 0.7;
-    public static double RPM = 2000;
+    public static double RPM = 1800;
     public static int detectionDistance = 3;
     public static int loadDistance = 200;
 
@@ -94,7 +94,7 @@ public class TransfertoShooterTest extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            if (gamepad1.y && !previousGamepad1.y /*&& Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)*/) {
+            if (gamepad1.y && !previousGamepad1.y && Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
                 transferMotor.setPower(-motorfeedpower);
                 intakeMotor.setPower(motorfeedpower);
                 load = true;
