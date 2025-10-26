@@ -54,11 +54,12 @@ public class TransfertoShooterTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            previousGamepad1 = currentGamepad1;
-            currentGamepad1 = gamepad1;
+
+            previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
             shooter.targetRPM = RPM;
 
-            if (gamepad1.a) {
+            if (gamepad1.a && !previousGamepad1.a) {
                 if (transferSensor.getDistance(DistanceUnit.CM) >= detectionDistance) {
                     transferOn = true;
                 }
@@ -93,7 +94,7 @@ public class TransfertoShooterTest extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            if (gamepad1.y && Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)) {
+            if (gamepad1.y && !previousGamepad1.y /*&& Shooter.RPMInThreshold(shooter.leftRPM, shooter.rightRPM, shooter.targetRPM)*/) {
                 transferMotor.setPower(-motorfeedpower);
                 intakeMotor.setPower(motorfeedpower);
                 load = true;
