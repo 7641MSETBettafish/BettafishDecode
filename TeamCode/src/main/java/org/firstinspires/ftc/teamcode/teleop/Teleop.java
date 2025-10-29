@@ -137,9 +137,18 @@ public class Teleop extends LinearOpMode {
             switch (shooterState) {
                 case OFF:
                     if (rightTriggerHeld && balls > 0) {
+                        Action shotType = shooter.powerUp(goalDistance);
+                        if (Math.abs(goalDistance - Shooter.Close) < 3) {
+                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+                        } else if (Math.abs(goalDistance - Shooter.Middle) < 3) {
+                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+                        } else if (Math.abs(goalDistance - Shooter.Far) < 3) {
+                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+                        }
+
                         runningActions.add(new SequentialAction(
                                 shooterControl.start(),
-                                shooter.powerUp(goalDistance),
+                                shotType,
                                 transfer.load(),
                                 shooterControl.end()
                         ));
@@ -179,7 +188,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("left flywheel RPM", shooter.leftRPM);
             telemetry.addData("right flywheel RPM", shooter.rightRPM);
             telemetry.addData("intake state", intakeState.toString());
-            telemetry.addData("intake distance", (intake.intakeSensor).getDistance(DistanceUnit.CM));
+            telemetry.addData("intake distance", intake.getDistance());
             telemetry.addData("left transfer distance", transfer.leftTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("right transfer distance", transfer.rightTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("shooter state", shooterState.toString());

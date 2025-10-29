@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 @TeleOp(name="ShooterTest", group="Testing")
 public class ShooterTest extends LinearOpMode {
 
-    public static double RPM = 0;
+    public static double distance = 72;
 
     Shooter shooter;
 
@@ -35,7 +35,7 @@ public class ShooterTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             shooter.updateRPM();
-            shooter.targetRPM = RPM;
+            shooter.targetRPM = Shooter.calculateRPM(distance);
             shooter.updatePID();
 
             //telemetry.addData("RPM", shooter.RPM);
