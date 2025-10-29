@@ -119,17 +119,18 @@ public class Teleop extends LinearOpMode {
                 case OFF:
                     if (leftTriggerPressed) {
                         intake.intakeMotor.setPower(Intake.intakePower);
+                        runningActions.add(transfer.run());
                         //transfer.transferMotor.setPower(Transfer.transferPower);
                         intakeState = IntakeState.ON;
                     }
                     break;
                 case ON:
-                    if (intake.ballSensed() && !lastSense) {
-                        if (balls < 1) {
-                            runningActions.add(transfer.run());
-                        }
-                        balls++;
-                    }
+//                    if (intake.ballSensed() && !lastSense) {
+//                        if (balls < 1) {
+//                            runningActions.add(transfer.run());
+//                        }
+//                        balls++;
+//                    }
                     if (balls >= 3 || leftTriggerPressed) {
                         intake.intakeMotor.setPower(0);
                         intakeState = IntakeState.OFF;
@@ -143,19 +144,19 @@ public class Teleop extends LinearOpMode {
 
             switch (shooterState) {
                 case OFF:
-                    if (rightTriggerHeld && balls > 0) {
-                        Action shotType = shooter.powerUp(goalDistance);
-                        if (Math.abs(goalDistance - Shooter.Close) < 3) {
-                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
-                        } else if (Math.abs(goalDistance - Shooter.Middle) < 3) {
-                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
-                        } else if (Math.abs(goalDistance - Shooter.Far) < 3) {
-                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
-                        }
+                    if (rightTriggerHeld /*&& balls > 0*/) {
+//                        Action shotType = shooter.powerUp(goalDistance);
+//                        if (Math.abs(goalDistance - Shooter.Close) < 3) {
+//                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+//                        } else if (Math.abs(goalDistance - Shooter.Middle) < 3) {
+//                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+//                        } else if (Math.abs(goalDistance - Shooter.Far) < 3) {
+//                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+//                        }
 
                         runningActions.add(new SequentialAction(
                                 shooterControl.start(),
-                                shotType,
+                                shooter.powerUp(goalDistance),
                                 transfer.load(),
                                 shooterControl.end()
                         ));
@@ -165,7 +166,8 @@ public class Teleop extends LinearOpMode {
                 case ON:
                     if (shooterControl.isFinished()) {
                         balls--;
-                        if (balls == 0) shooter.setPower(0);
+                        //if (balls == 0) shooter.setPower(0);
+                        if (currentGamepad1.b && !previousGamepad1.b) shooter.setPower(0);
                         shooterState = ShooterState.OFF;
                     }
             }
@@ -203,10 +205,8 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("loop time", time.milliseconds());
             telemetry.addData("intake balls sensed", intake.ballSensed());
             telemetry.addData("last sensed", lastSense);
-//            telemetry.addData("left trigger" , currentGamepad1.left_trigger);
-//            telemetry.addData("right trigger" , currentGamepad1.right_trigger);
-//            telemetry.addData("left on", leftTriggerPressed);
-//            telemetry.addData("previous left trigger", previousGamepad1.left_trigger);
+            telemetry.addData("left stick" , currentGamepad1.left_stick_y);
+            telemetry.addData("right stick" , currentGamepad1.right_stick_y);
             telemetry.update();
 
             for (LynxModule hub : allHubs) {

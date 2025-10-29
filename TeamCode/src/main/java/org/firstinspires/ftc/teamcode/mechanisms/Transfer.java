@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -20,7 +21,7 @@ public class Transfer {
     //how close the distance sensor needs to sense for it to stop the transfer
     public static double detectionDistance = 3;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
-    public static double loadDistance = 100;
+    public static double loadDistance = 120;
 
     public DcMotor transferMotor;
     public DistanceSensor leftTransferSensor;
@@ -33,6 +34,8 @@ public class Transfer {
         //reset 
         transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftTransferSensor = hwMap.get(DistanceSensor.class, "leftTransferSensor");
         rightTransferSensor = hwMap.get(DistanceSensor.class, "rightTransferSensor");
