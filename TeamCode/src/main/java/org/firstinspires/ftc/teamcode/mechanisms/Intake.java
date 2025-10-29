@@ -18,20 +18,26 @@ public class Intake {
 
     public static double intakePower = 0.85;
 
-    public static double detectionintake = 6.5;
+    public static double detectionDistance = 6.5;
 
     public DcMotor intakeMotor;
-    public DistanceSensor intakeSensor;
+    public DistanceSensor leftIntakeSensor;
+    public DistanceSensor rightIntakeSensor;
 
     public Intake(HardwareMap HWMap) {
         intakeMotor = HWMap.get(DcMotor.class, "intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        intakeSensor = HWMap.get(DistanceSensor.class, "intakeSensor");
+        leftIntakeSensor = HWMap.get(DistanceSensor.class, "leftIntakeSensor");
+        rightIntakeSensor = HWMap.get(DistanceSensor.class, "rightIntakeSensor");
 
     }
 
+    public double getDistance() {
+        return Math.min(leftIntakeSensor.getDistance(DistanceUnit.CM), rightIntakeSensor.getDistance(DistanceUnit.CM));
+    }
+
     public boolean ballSensed() {
-        return intakeSensor.getDistance(DistanceUnit.CM) <= detectionintake;
+        return getDistance() <= detectionDistance;
     }
 
     public class Run implements Action {
@@ -45,7 +51,7 @@ public class Intake {
                 init = true;
             }
 
-            if (intakeSensor.getDistance(DistanceUnit.CM) <= 3) {
+            if (ballSensed()) {
                 intakeMotor.setPower(0);
                 return false;
             } else {

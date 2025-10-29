@@ -28,16 +28,19 @@ import java.util.List;
 @TeleOp(name="Teleop", group="Teleop")
 public class Teleop extends LinearOpMode {
 
-    public static double startX = 0;
-    public static double startY = 0;
+    public static double startX = 72 - 8.5;
+    public static double startY = 15.25 / 2;
     public static double startH = 0;
+    //less than 100 is blue
+    //more than 100 is red
+    public static double goalSide = 0;
 
     MecanumDrive drive;
     Intake intake;
     Transfer transfer;
     Shooter shooter;
 
-    final Pose2d goalPosition = new Pose2d(-60, 63,0);
+
     enum IntakeState {ON, OFF}
     enum ShooterState {ON, OFF}
 
@@ -47,6 +50,14 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
+
+        Pose2d goalPosition;
+        if (goalSide < 100) {
+            goalPosition = new Pose2d(-60, -63,0);
+        } else {
+            goalPosition = new Pose2d(-60, 63,0);
+        }
+
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(startX, startY, startH));
 
@@ -61,9 +72,7 @@ public class Teleop extends LinearOpMode {
         }
 
         Gamepad previousGamepad1 = new Gamepad();
-        //Gamepad previousGamepad2 = new Gamepad();
         Gamepad currentGamepad1 = new Gamepad();
-        //Gamepad currentGamepad2 = new Gamepad();
 
         double goalDistance = 0;
         double balls = 0;
@@ -84,9 +93,7 @@ public class Teleop extends LinearOpMode {
             time.reset();
 
             previousGamepad1.copy(currentGamepad1);
-            //previousGamepad2 = currentGamepad2;
             currentGamepad1.copy(gamepad1);
-            //currentGamepad2 = gamepad2;
 
             goalDistance = Math.sqrt(Math.pow(drive.localizer.getPose().position.x - goalPosition.position.x, 2) + Math.pow(drive.localizer.getPose().position.y - goalPosition.position.y, 2));
 
@@ -137,9 +144,18 @@ public class Teleop extends LinearOpMode {
             switch (shooterState) {
                 case OFF:
                     if (rightTriggerHeld && balls > 0) {
+                        Action shotType = shooter.powerUp(goalDistance);
+                        if (Math.abs(goalDistance - Shooter.Close) < 3) {
+                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+                        } else if (Math.abs(goalDistance - Shooter.Middle) < 3) {
+                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+                        } else if (Math.abs(goalDistance - Shooter.Far) < 3) {
+                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
+                        }
+
                         runningActions.add(new SequentialAction(
                                 shooterControl.start(),
-                                shooter.powerUp(goalDistance),
+                                shotType,
                                 transfer.load(),
                                 shooterControl.end()
                         ));
@@ -179,7 +195,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("left flywheel RPM", shooter.leftRPM);
             telemetry.addData("right flywheel RPM", shooter.rightRPM);
             telemetry.addData("intake state", intakeState.toString());
-            telemetry.addData("intake distance", (intake.intakeSensor).getDistance(DistanceUnit.CM));
+            telemetry.addData("intake distance", intake.getDistance());
             telemetry.addData("left transfer distance", transfer.leftTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("right transfer distance", transfer.rightTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("shooter state", shooterState.toString());
