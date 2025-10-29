@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.testing;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,9 +12,13 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+import java.util.*;
+
 @Config
 @TeleOp(name="AutoAlign", group="Testing")
 public class AutoAlign extends LinearOpMode {
+    private FtcDashboard dash = FtcDashboard.getInstance();
+    private List<Action> runningActions = new ArrayList<>();
 
     public static double hPmin = 0.01;
     public static double hPmax = 0.08;
@@ -41,6 +47,7 @@ public class AutoAlign extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            TelemetryPacket packet = new TelemetryPacket();
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
 
@@ -96,6 +103,17 @@ public class AutoAlign extends LinearOpMode {
             drive.leftBack.setPower(LBPower);
             drive.rightFront.setPower(RFPower);
             drive.rightBack.setPower(RBPower);
+
+            List<Action> newActions = new ArrayList<>();
+            for (Action action : runningActions) {
+                action.preview(packet.fieldOverlay());
+                if (action.run(packet)) {
+                    newActions.add(action);
+                }
+            }
+            runningActions = newActions;
+
+            dash.sendTelemetryPacket(packet);
 
             telemetry.addData("Angle Hold (A)", angleHold);
             telemetry.addData("Position Hold (B)", positionHold);
