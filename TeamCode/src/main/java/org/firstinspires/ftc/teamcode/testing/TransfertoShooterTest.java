@@ -71,7 +71,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
             if (transferOn) {
                 intakeMotor.setPower(motorPower);
-                transferMotor.setPower(-motorPower);
+                transferMotor.setPower(motorPower);
                 intakeOn = true;
 
                 if (transferSensor.getDistance(DistanceUnit.CM) <= detectionDistance) {
@@ -95,7 +95,7 @@ public class TransfertoShooterTest extends LinearOpMode {
             }
 
             if (gamepad1.y && shooter.RPMInThreshold()) {
-                transferMotor.setPower(-motorfeedpower);
+                transferMotor.setPower(motorfeedpower);
                 intakeMotor.setPower(motorfeedpower);
                 load = true;
                 transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
