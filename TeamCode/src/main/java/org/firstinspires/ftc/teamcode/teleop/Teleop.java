@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -85,6 +86,9 @@ public class Teleop extends LinearOpMode {
 
         Control shooterControl = new Control();
 
+        boolean shooterOn = false;
+        boolean load = false;
+
         waitForStart();
         if (isStopRequested()) return;
 
@@ -154,23 +158,47 @@ public class Teleop extends LinearOpMode {
 //                            shotType = shooter.powerUp(Shooter.Distances.CLOSE);
 //                        }
 
-                        runningActions.add(new SequentialAction(
-                                shooterControl.start(),
-                                shooter.powerUp(goalDistance),
-                                transfer.load(),
-                                shooterControl.end()
-                        ));
+//                        runningActions.add(new SequentialAction(
+//                                shooterControl.start(),
+//                                shooter.powerUp(goalDistance),
+//                                transfer.load(),
+//                                shooterControl.end()
+//                        ));
+                        shooterOn = true;
                         shooterState = ShooterState.ON;
                     }
                     break;
                 case ON:
-                    if (shooterControl.isFinished()) {
-                        balls--;
-                        //if (balls == 0) shooter.setPower(0);
-                        if (currentGamepad1.b && !previousGamepad1.b) shooter.setPower(0);
+//                    if (shooterControl.isFinished()) {
+//                        balls--;
+//                        if (balls == 0) shooter.setPower(0);
+//                    }
+                    if (currentGamepad1.y && !previousGamepad1.y) {
+                        load = true;
+                        transfer.transferMotor.setPower(Transfer.transferPower);
+                        transfer.transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        transfer.transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    }
+                    if (currentGamepad1.a && !previousGamepad1.a) {
+                        shooterOn = false;
                         shooterState = ShooterState.OFF;
                     }
+
+                    if (load) {
+                        if (transfer.transferMotor.getCurrentPosition() >= Transfer.loadDistance) {
+                            transfer.transferMotor.setPower(0);
+                            load = false;
+                        }
+                    }
+                    break;
             }
+            if (shooterOn) {
+                shooter.updatePID();
+            } else {
+                shooter.setPower(0);
+            }
+            shooter.updateRPM();
+            shooter.targetRPM = 1850;
 
             if (currentGamepad1.b && !previousGamepad1.b) {
                 drive.localizer.setPose(new Pose2d(-48, -36, 0));
@@ -207,6 +235,8 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("last sensed", lastSense);
             telemetry.addData("left stick" , currentGamepad1.left_stick_y);
             telemetry.addData("right stick" , currentGamepad1.right_stick_y);
+
+            telemetry.addData("transfer ticks", transfer.transferMotor.getCurrentPosition());
             telemetry.update();
 
             for (LynxModule hub : allHubs) {

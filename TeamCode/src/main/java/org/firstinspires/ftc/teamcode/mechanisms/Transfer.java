@@ -21,7 +21,7 @@ public class Transfer {
     //how close the distance sensor needs to sense for it to stop the transfer
     public static double detectionDistance = 3;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
-    public static double loadDistance = 120;
+    public static int loadDistance = 250;
 
     public DcMotor transferMotor;
     public DistanceSensor leftTransferSensor;
@@ -78,6 +78,7 @@ public class Transfer {
                 transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 transferMotor.setPower(transferPower);
+                init = true;
             }
 
             return transferMotor.getCurrentPosition() <= loadDistance;
