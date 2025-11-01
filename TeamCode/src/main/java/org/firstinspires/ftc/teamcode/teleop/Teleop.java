@@ -107,10 +107,10 @@ public class Teleop extends LinearOpMode {
             double rx = gamepad1.right_stick_x;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double LFPower = (y + x + rx) / denominator;
-            double LBPower = (y - x + rx) / denominator;
-            double RFPower = (y - x - rx) / denominator;
-            double RBPower = (y + x - rx) / denominator;
+            double LFPower = (y + x + rx) / denominator / 2.7;
+            double LBPower = (y - x + rx) / denominator / 2.7;
+            double RFPower = (y - x - rx) / denominator / 2.7;
+            double RBPower = (y + x - rx) / denominator / 2.7;
 
             drive.leftFront.setPower(LFPower);
             drive.leftBack.setPower(LBPower);
