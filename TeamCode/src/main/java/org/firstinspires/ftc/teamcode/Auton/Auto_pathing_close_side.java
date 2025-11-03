@@ -32,7 +32,7 @@ public class Auto_pathing_close_side extends LinearOpMode {
     public void runOpMode() {
 
         Pose2d startPose1 = new Pose2d(-52, -50, Math.toRadians(54));
-        Pose2d startPose2 = new Pose2d(-24, -16, Math.toRadians(0));
+        //Pose2d startPose2 = new Pose2d(-24, -16, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
         Shooter shooter = new Shooter(hardwareMap);
@@ -104,18 +104,18 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 telemetry.addData("id", camera.id);
                 telemetry.update();
                 Actions.runBlocking(new ParallelAction(
-                        new SequentialAction(
-                                new ParallelAction(
-                                        intake.run(),
-                                        transfer.load(),
-                                        intake.stop()
-                                ),
+                        //new SequentialAction(
+                                //new ParallelAction(
+                                        //intake.run(),
+                                        //transfer.load(),
+                                        //intake.stop()
+                                //),
 
-                                shooter.powerUp(distance),
-                                transfer.load(),
-                                shooter.stop()
+                                //shooter.powerUp(distance),
+                                //transfer.load(),
+                                //shooter.stop()
 
-                        ),
+                        //),
                         //actions
                         path21
 
@@ -124,18 +124,18 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 telemetry.addData("id", camera.id);
                 telemetry.update();
                 Actions.runBlocking(new ParallelAction(
-                             new SequentialAction(
-                                     new ParallelAction(
-                                        intake.run(),
-                                        transfer.load(),
-                                        intake.stop()
-                                     ),
+                             //new SequentialAction(
+                                     //new ParallelAction(
+                                        //intake.run(),
+                                        //transfer.load(),
+                                        //intake.stop()
+                                     //),
 
-                                     shooter.powerUp(distance),
-                                     transfer.load(),
-                                     shooter.stop()
+                                     //shooter.powerUp(distance),
+                                     //transfer.load(),
+                                     //shooter.stop()
 
-                                     ),                   //intake start //transfer load // intake stop
+                                     //),                   //intake start //transfer load // intake stop
                                                              //shooter power up // transfer load //shooter power down
 
 
@@ -147,52 +147,52 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 telemetry.addData("id", camera.id);
                 telemetry.update();
                 Actions.runBlocking(new ParallelAction(
-                        new SequentialAction(
-                                new ParallelAction(
-                                        intake.run(),
-                                        transfer.load(),
-                                        intake.stop()
-                                ),
+                        //new SequentialAction(
+                                //new ParallelAction(
+                                        //intake.run(),
+                                        //transfer.load(),
+                                        //intake.stop()
+                                //),
 
-                                shooter.powerUp(distance),
-                                transfer.load(),
-                                shooter.stop()
+                                //shooter.powerUp(distance),
+                                //transfer.load(),
+                                //shooter.stop()
 
-                        ),
+                        //),
                         path23
                 ));
 
             } else {
                 Actions.runBlocking(new ParallelAction(
-                        new SequentialAction(
-                                new ParallelAction(
-                                        intake.run(),
-                                        transfer.load(),
-                                        intake.stop()
-                                ),
+                        //new SequentialAction(
+                                //new ParallelAction(
+                                        //intake.run(),
+                                        //transfer.load(),
+                                        //intake.stop()
+                                //),
 
-                                shooter.powerUp(distance),
-                                transfer.load(),
-                                shooter.stop()
+                                //shooter.powerUp(distance),
+                                //transfer.load(),
+                                //shooter.stop()
 
-                        ),
+                        //),
                         path23
                 ));
             }
         } catch (NullPointerException e) {
             Actions.runBlocking(new ParallelAction(
-                    new SequentialAction(
-                            new ParallelAction(
-                                    intake.run(),
-                                    transfer.load(),
-                                    intake.stop()
-                            ),
+                    //new SequentialAction(
+                            //new ParallelAction(
+                                    //intake.run(),
+                                    //transfer.load(),
+                                    //intake.stop()
+                            //),
 
-                            shooter.powerUp(distance),
-                            transfer.load(),
-                            shooter.stop()
+                            //shooter.powerUp(distance),
+                            //transfer.load(),
+                            //shooter.stop()
 
-                    ),
+                    //),
 
                     path23
             ));

@@ -64,15 +64,18 @@ public class Auto extends LinearOpMode {
 
         waitForStart();
 
+
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
-                        intake.run(),
-                        transfer.load(),
-                        intake.stop(),
+                        //intake.run(),
+                        //transfer.load(),
+                        //intake.stop(),
                         path1
                 )
 
         ));
+
+
 
 
     }
