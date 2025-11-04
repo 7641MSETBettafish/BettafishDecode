@@ -15,22 +15,18 @@ public class MeepMeepTesting {
                 .setConstraints(100, 50, Math.toRadians(180), Math.toRadians(180), 16.5)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(60, -16, 180))
-                .strafeToLinearHeading(new Vector2d(-16, -16), 45)
-                .waitSeconds(1) //launch balls
-                .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-90)), Math.toRadians(-90))
-                .waitSeconds(0.5)
-                .lineToY(-52) //intake balls
-                .setTangent(20)
-                .splineToLinearHeading(new Pose2d(-16, -16, Math.toRadians(45)), Math.toRadians(-90)) //launch balls
-                .waitSeconds(3) //deposit
-                .setTangent(20)
-                .splineToLinearHeading(new Pose2d(13.5, -30  , Math.toRadians(-90)), Math.toRadians(-90))
-                .lineToY(-52)
-                .waitSeconds(1)//intake balls
-                .setTangent(20)
-                .splineToLinearHeading(new Pose2d(-16, -16, Math.toRadians(45)), Math.toRadians(-90))
-                .waitSeconds(3) // deposit
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-52, -50, Math.toRadians(54)))
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_BLACK)

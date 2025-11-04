@@ -35,37 +35,50 @@ public class Auto_pathing_far_side extends LinearOpMode {
     public void runOpMode() {
 
         Pose2d startPose1 = new Pose2d(60, -16, Math.toRadians(0));
-        Pose2d startPose2 = new Pose2d(-16, -16, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
         camera = new Camera(hardwareMap);
-
-        TrajectoryActionBuilder preload = drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-16, -16), Math.toRadians(45))
-                .waitSeconds(1);// launch preload
+        TrajectoryActionBuilder preload =  drive.actionBuilder(startPose1)
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(0));
 
 
-        TrajectoryActionBuilder path1 =  preload.fresh() // green purple purple, only for specific cases
-                .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-90)), Math.toRadians(-90))
-                .waitSeconds(0.5)
-                .lineToY(-52) //intake balls
-                .setTangent(20)
-                .splineToLinearHeading(new Pose2d(-16, -16, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
+        TrajectoryActionBuilder path2 =  drive.actionBuilder(preload.fresh()) // green purple purple, only for specific cases
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45));
 
-        TrajectoryActionBuilder path2 = preload.fresh() //purple green purple path
-                .splineToLinearHeading(new Pose2d(12.5, -30, Math.toRadians(-90)), Math.toRadians(-90))
-                .waitSeconds(0.5)
-                .lineToY(-52) //intake balls
-                .setTangent(20)
-                .splineToLinearHeading(new Pose2d(-16, -16, Math.toRadians(45)), Math.toRadians(-90)); //launch balls
+        TrajectoryActionBuilder path1 =  drive.actionBuilder(preload.fresh()) // green purple purple, only for specific cases
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45));
 
 
-
-        Action preload1 = preload.build();
 
         Action path21 = path1.build();
 
+
         Action path22 = path2.build();
+
+        Action preload1 = preload.build();
+
 
 
 

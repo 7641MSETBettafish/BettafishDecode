@@ -107,10 +107,10 @@ public class Teleop extends LinearOpMode {
             double rx = gamepad1.right_stick_x;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double LFPower = (y + x + rx) / denominator / 2.7;
-            double LBPower = (y - x + rx) / denominator / 2.7;
-            double RFPower = (y - x - rx) / denominator / 2.7;
-            double RBPower = (y + x - rx) / denominator / 2.7;
+            double LFPower = (y + x + rx) / denominator;
+            double LBPower = (y - x + rx) / denominator;
+            double RFPower = (y - x - rx) / denominator;
+            double RBPower = (y + x - rx) / denominator;
 
             drive.leftFront.setPower(LFPower);
             drive.leftBack.setPower(LBPower);
@@ -129,12 +129,12 @@ public class Teleop extends LinearOpMode {
                     }
                     break;
                 case ON:
-//                    if (intake.ballSensed() && !lastSense) {
-//                        if (balls < 1) {
-//                            runningActions.add(transfer.run());
-//                        }
-//                        balls++;
-//                    }
+                    if (intake.ballSensed() && !lastSense) {
+                        if (balls < 1) {
+                            runningActions.add(transfer.run());
+                        }
+                        balls++;
+                    }
                     if (balls >= 3 || leftTriggerPressed) {
                         intake.intakeMotor.setPower(0);
                         intakeState = IntakeState.OFF;
@@ -198,7 +198,7 @@ public class Teleop extends LinearOpMode {
                 shooter.setPower(0);
             }
             shooter.updateRPM();
-            shooter.targetRPM = 1850;
+            shooter.targetRPM = 3600;
 
             if (currentGamepad1.b && !previousGamepad1.b) {
                 drive.localizer.setPose(new Pose2d(-48, -36, 0));

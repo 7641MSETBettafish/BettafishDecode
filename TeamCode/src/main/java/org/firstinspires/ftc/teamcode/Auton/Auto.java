@@ -37,30 +37,34 @@ public class Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(60, -16, Math.toRadians(0));
-        Pose2d startPose2 = new Pose2d(-16, -16, Math.toRadians(0));
+        Pose2d startPose1 = new Pose2d(-52, -50, Math.toRadians(54));
+
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
 
 
-        TrajectoryActionBuilder preload =  drive.actionBuilder(startPose1)
+        TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
 
-                .lineToX(-16)
-                // first set
-                .strafeToLinearHeading(new Vector2d(38, -30), Math.toRadians(90))
-                .lineToY(-52)
-                .strafeToLinearHeading(new Vector2d(-16, -16), Math.toRadians(0))
-                // second set
-                .strafeToLinearHeading(new Vector2d(11, -30), Math.toRadians(90))
-                .lineToY(-52)
-                .strafeToLinearHeading(new Vector2d(-16, -16), Math.toRadians(90))
-                // third set
-                .strafeToLinearHeading(new Vector2d(-15,-30) , Math.toRadians(90))
-                .lineToY(-52)
-                .strafeToLinearHeading(new Vector2d(-16,-16) , Math.toRadians(90));
-
-        Action path1 = preload.build();
+        Action path2 = path1.build();
 
         waitForStart();
 
@@ -70,7 +74,7 @@ public class Auto extends LinearOpMode {
                         //intake.run(),
                         //transfer.load(),
                         //intake.stop(),
-                        path1
+                        path2
                 )
 
         ));
