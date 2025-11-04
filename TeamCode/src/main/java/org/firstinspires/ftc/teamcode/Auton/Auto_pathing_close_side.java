@@ -31,46 +31,119 @@ public class Auto_pathing_close_side extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(-52, -50, Math.toRadians(54));
+        Pose2d startPose1 = new Pose2d(60, -16, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
-        Shooter shooter = new Shooter(hardwareMap);
-        Intake intake = new Intake(hardwareMap);
-        Transfer transfer = new Transfer(hardwareMap);
-
         camera = new Camera(hardwareMap);
+        TrajectoryActionBuilder preload = drive.actionBuilder(startPose1)
+                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(0));
 
 
+        TrajectoryActionBuilder path2 = drive.actionBuilder(preload.fresh()) // green purple purple, only for specific cases
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(0.2)
+                .lineToY(-30)
+                .waitSeconds(0.1)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(-90))
+                .waitSeconds(1)
+                .lineToY(-50)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
 
-        TrajectoryActionBuilder path3 = drive.actionBuilder(startPose1)//purple purple green path, preload then intake then go back and launch
-                .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
-                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(-90))
+
+        TrajectoryActionBuilder path1 = drive.actionBuilder(preload.fresh()) // purple purple green, only for specific cases
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(-90))
                 .waitSeconds(1)
                 .lineToY(-50)
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(-90))
                 .waitSeconds(1)
                 .lineToY(-50)
-                .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45));
 
+        Action path21 = path1.build();
 
-        Action path23 = path3.build();
+
+        Action path22 = path2.build();
+
+        Action preload1 = preload.build();
 
 
         waitForStart();
 
-
         Actions.runBlocking(new SequentialAction(
-                new ParallelAction(
-                        //intake.run(),
-                        //transfer.load(),
-                        //intake.stop(),
-                        path23
-                )
 
+                camera.findID(),
+                new ParallelAction(
+                        intake.run(),
+                        transfer.load(),
+                        intake.stop(),
+                        preload1
+                )
         ));
+
+
+        if (camera.id == 21 || camera.id == 23) {
+            telemetry.addData("id", camera.id);
+            telemetry.update();
+            Actions.runBlocking(new ParallelAction(
+                    new SequentialAction(
+                            new ParallelAction(
+                                    intake.run(),
+                                    transfer.load(),
+                                    intake.stop()
+                            ),
+
+                            shooter.powerUp(distance),
+                            transfer.load(),
+                            shooter.stop(),
+
+                            path21
+
+                    )));
+        } else if (camera.id == 22) {
+            telemetry.addData("id", camera.id);
+            telemetry.update();
+            Actions.runBlocking(new ParallelAction(
+                    new SequentialAction(
+                            new ParallelAction(
+                                    intake.run(),
+                                    transfer.load(),
+                                    intake.stop()
+                            ),
+
+                            shooter.powerUp(distance),
+                            transfer.load(),
+                            shooter.stop(),
+
+                            path22
+                    )));
+
+        } else {
+            Actions.runBlocking(new ParallelAction(
+                    new SequentialAction(
+                            new ParallelAction(
+                                    intake.run(),
+                                    transfer.load(),
+                                    intake.stop()
+                            ),
+
+                            shooter.powerUp(distance),
+                            transfer.load(),
+                            shooter.stop(),
+
+                            path21
+                    )));
+        }
     }
 }
