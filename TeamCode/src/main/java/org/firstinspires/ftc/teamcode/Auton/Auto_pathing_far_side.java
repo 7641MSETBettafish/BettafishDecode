@@ -11,11 +11,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.mechanisms.Camera;
-import org.firstinspires.ftc.teamcode.mechanisms.Intake;
-import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
-import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
+import org.firstinspires.ftc.teamcode.*;
+import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 
 @Config
@@ -24,11 +21,12 @@ public class Auto_pathing_far_side extends LinearOpMode {
 
     Camera camera;
     Intake intake = new Intake(hardwareMap);
-    Transfer transfer = new Transfer(hardwareMap);
+    Shooter shooter = new Shooter(hardwareMap);
+    Transfer transfer = new Transfer(hardwareMap, shooter);
 
     double distance = 0;
 
-    Shooter shooter = new Shooter(hardwareMap);
+
 
 
     @Override
@@ -42,7 +40,7 @@ public class Auto_pathing_far_side extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(0));
 
 
-        TrajectoryActionBuilder path2 =  drive.actionBuilder(preload.fresh()) // green purple purple, only for specific cases
+        TrajectoryActionBuilder path2 =  drive.actionBuilder(new Pose2d(-10, -10, Math.toRadians(0))) // green purple purple, only for specific cases
                 .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
                 .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(-90))
                 .waitSeconds(1)
@@ -56,7 +54,7 @@ public class Auto_pathing_far_side extends LinearOpMode {
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45));
 
-        TrajectoryActionBuilder path1 =  drive.actionBuilder(preload.fresh()) // green purple purple, only for specific cases
+        TrajectoryActionBuilder path1 =  drive.actionBuilder(new Pose2d(-10, -10, Math.toRadians(0))) // green purple purple, only for specific cases
                 .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
                 .strafeToLinearHeading(new Vector2d(36, -30), Math.toRadians(-90))
                 .waitSeconds(1)

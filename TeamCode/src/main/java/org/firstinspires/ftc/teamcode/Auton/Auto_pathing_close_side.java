@@ -12,11 +12,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.mechanisms.Camera;
-import org.firstinspires.ftc.teamcode.mechanisms.Intake;
-import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
-import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
+import org.firstinspires.ftc.teamcode.*;
+import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 
 @Config
@@ -25,21 +22,25 @@ public class Auto_pathing_close_side extends LinearOpMode {
 
     Camera camera;
 
-    double distance = 0;
-
-
-    @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(60, -16, Math.toRadians(0));
+        Pose2d startPose1 = new Pose2d(-52, -50, Math.toRadians(54));
+
+        Shooter shooter = new Shooter(hardwareMap);
+
+        Intake intake = new Intake(hardwareMap);
+
+        Transfer transfer = new Transfer(hardwareMap, shooter);
+
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
+
 
         camera = new Camera(hardwareMap);
         TrajectoryActionBuilder preload = drive.actionBuilder(startPose1)
                 .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(0));
 
 
-        TrajectoryActionBuilder path2 = drive.actionBuilder(preload.fresh()) // green purple purple, only for specific cases
+        TrajectoryActionBuilder path2 = drive.actionBuilder(new Pose2d(-10, -10, Math.toRadians(0))) // green purple purple, only for specific cases
                 .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(-90))
@@ -54,10 +55,10 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 .waitSeconds(1)
                 .lineToY(-50)
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45));
 
 
-        TrajectoryActionBuilder path1 = drive.actionBuilder(preload.fresh()) // purple purple green, only for specific cases
+        TrajectoryActionBuilder path1 = drive.actionBuilder(new Pose2d(-10, -10, Math.toRadians(0))) // purple purple green, only for specific cases
                 .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(-90))
@@ -104,7 +105,6 @@ public class Auto_pathing_close_side extends LinearOpMode {
                                     intake.stop()
                             ),
 
-                            shooter.powerUp(distance),
                             transfer.load(),
                             shooter.stop(),
 
@@ -122,7 +122,6 @@ public class Auto_pathing_close_side extends LinearOpMode {
                                     intake.stop()
                             ),
 
-                            shooter.powerUp(distance),
                             transfer.load(),
                             shooter.stop(),
 
@@ -138,7 +137,6 @@ public class Auto_pathing_close_side extends LinearOpMode {
                                     intake.stop()
                             ),
 
-                            shooter.powerUp(distance),
                             transfer.load(),
                             shooter.stop(),
 

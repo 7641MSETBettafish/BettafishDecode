@@ -16,11 +16,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.mechanisms.Control;
-import org.firstinspires.ftc.teamcode.mechanisms.Intake;
-import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
-import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
+import org.firstinspires.ftc.teamcode.*;
+import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +60,9 @@ public class Teleop extends LinearOpMode {
         drive = new MecanumDrive(hardwareMap, new Pose2d(startX, startY, startH));
 
         intake = new Intake(hardwareMap);
-        transfer = new Transfer(hardwareMap);
         shooter = new Shooter(hardwareMap);
+        transfer = new Transfer(hardwareMap, shooter);
+
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 

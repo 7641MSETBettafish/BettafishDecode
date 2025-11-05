@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -26,10 +27,12 @@ public class Transfer {
     public DcMotor transferMotor;
     public DistanceSensor leftTransferSensor;
     public DistanceSensor rightTransferSensor;
+    public Shooter shooter;
 
-    public Transfer(HardwareMap hwMap) {
+    public Transfer(HardwareMap hwMap, Shooter shooter) {
         //initialize transfer motor
         transferMotor = hwMap.get(DcMotor.class, "transfer");
+
 
         //reset 
         transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -68,8 +71,8 @@ public class Transfer {
         return new Run();
     }
 
-    public class Load implements Action {
 
+    public class Load implements Action {
         boolean init = false;
 
         @Override
@@ -80,11 +83,15 @@ public class Transfer {
                 transferMotor.setPower(transferPower);
                 init = true;
             }
+                if (transferMotor.getCurrentPosition() >= loadDistance) {
+                    transferMotor.setPower(0);
+                    return false;
+                }
+                else {
+                    return true;
+                }
 
-            return transferMotor.getCurrentPosition() <= loadDistance;
         }
-    }
-    public Action load() {
-        return new Load();
-    }
-}
+    } public Action load()
+    {
+        return new Load(); } }
