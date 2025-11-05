@@ -29,8 +29,8 @@ public class Teleop extends LinearOpMode {
     public static double startX = 72 - 8.5;
     public static double startY = 15.25 / 2;
     public static double startH = 0;
-    //less than 100 is blue
-    //more than 100 is red
+    // <100 is blue
+    // >=100 is red
     public static double goalSide = 0;
 
     MecanumDrive drive;
@@ -220,7 +220,6 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("robot H", drive.localizer.getPose().heading.toDouble());
             telemetry.addData("goal distance", goalDistance);
             telemetry.addData("balls", balls);
-            telemetry.addData("left flywheel RPM", shooter.leftRPM);
             telemetry.addData("right flywheel RPM", shooter.rightRPM);
             telemetry.addData("intake state", intakeState.toString());
             telemetry.addData("intake distance", intake.getDistance());

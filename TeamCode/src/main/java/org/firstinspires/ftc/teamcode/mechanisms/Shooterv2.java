@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
+//DEPRECIATED
 @Config
 public class Shooterv2 {
 

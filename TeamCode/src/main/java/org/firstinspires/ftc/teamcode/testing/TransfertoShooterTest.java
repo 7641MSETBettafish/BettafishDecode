@@ -110,20 +110,14 @@ public class TransfertoShooterTest extends LinearOpMode {
             }
 
             shooter.updateRPM();
-            telemetry.addData("rightrpmdiffernce", shooter.rightRPMdifference);
-            telemetry.addData("leftrpmdifference", shooter.leftRPMdifference);
-            telemetry.addData("revoveryshot", shooter.recoveryshot);
+            telemetry.addData("rightrpmdiffernce", shooter.rightRPMDifference);
+            telemetry.addData("revoveryshot", shooter.recoveryShot);
             telemetry.addData("targetrpm", shooter.targetRPM);
             telemetry.addData("reversepidactive", shooter.tracking);
-            telemetry.addData("minleftrpm", shooter.minLeftRPM);
             telemetry.addData("minrightrpm", shooter.minRightRPM);
 
-            telemetry.addData("leftreversepid", shooter.reverseleftPID.calculate(shooter.leftRPM, shooter.minLeftRPM));
-            telemetry.addData("leftpid", shooter.leftPID.calculate(shooter.leftRPM, shooter.targetRPM));
 
-            telemetry.addData("leftRPM", shooter.leftRPM);
             telemetry.addData("rightRPM", shooter.rightRPM);
-            telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
             telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
             telemetry.addData("shooterOn", shooterOn);
             telemetry.addData("intakeOn", intakeOn);
