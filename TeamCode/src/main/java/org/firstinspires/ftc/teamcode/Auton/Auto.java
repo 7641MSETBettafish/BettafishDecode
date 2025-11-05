@@ -43,23 +43,24 @@ public class Auto extends LinearOpMode {
 
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(35))
-                .waitSeconds(2)
-                .strafeToLinearHeading(new Vector2d(-16.5, -30), Math.toRadians(-90))
-                .waitSeconds(0.3)
-                .lineToY(-50, null, new ProfileAccelConstraint(-30.0, 50.0))
-                .waitSeconds(0.2)
+                .waitSeconds(1.5)
+                .strafeToLinearHeading(new Vector2d(-16.5, -24), Math.toRadians(-90))
+                .waitSeconds(0.1)
+                .lineToY(-52, null, new ProfileAccelConstraint(-30.0, 50.0))
+                .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(35))
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(9, -30), Math.toRadians(-90))
-                .waitSeconds(1)
-                .lineToY(-50)
+                .waitSeconds(0.8)
+                .strafeToLinearHeading(new Vector2d(4, -24), Math.toRadians(-90))
+                .waitSeconds(0.1)
+                .lineToY(-60, null, new ProfileAccelConstraint(-30.0, 50.0))
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(35))
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(30, -30), Math.toRadians(-90))
-                .waitSeconds(1)
-                .lineToY(-50)
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(35));
+                .waitSeconds(1.6)
+                .strafeToLinearHeading(new Vector2d(26, -24), Math.toRadians(-90))
+                .waitSeconds(0.1)
+                .lineToY(-62)
+                .waitSeconds(0.1)
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(35))
+                .waitSeconds(1);
 
         Action path2 = path1.build();
 
@@ -68,13 +69,21 @@ public class Auto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
-                        shooter.run(3150),
+                        shooter.run(3120),
                         new SequentialAction(
-                                new SleepAction(1),
+                                new SleepAction(1.05),
                                 transfer.load(),
-                                new SleepAction(1),
+                                new SleepAction(3.3),
                                 transfer.run(),
-                                new SleepAction(1.2),
+                                new SleepAction(2.5),
+                                transfer.load(),
+                                new SleepAction(2.8),
+                                transfer.run(),
+                                new SleepAction(3.4),
+                                transfer.load(),
+                                new SleepAction(3.3),
+                                transfer.run(),
+                                new SleepAction(3.35),
                                 transfer.load()
 
 

@@ -20,7 +20,7 @@ public class Transfer {
     //how fast we want the transfer to run when we run it
     public static double transferPower = 0.67;
     //how close the distance sensor needs to sense for it to stop the transfer
-    public static double detectionDistance = 7;
+    public static double detectionDistance = 3.5;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
     public static int loadDistance = 1500;
 
@@ -85,7 +85,7 @@ public class Transfer {
             if (!init) {
                 startPos = transferMotor.getCurrentPosition();
                 transferMotor.setPower(transferPower-0.2);
-                intakeMotor.setPower(0.9);
+                intakeMotor.setPower(1);
                 init = true;
             }
 
