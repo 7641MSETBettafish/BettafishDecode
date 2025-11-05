@@ -18,20 +18,22 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 public class Transfer {
     //how fast we want the transfer to run when we run it
-    public static double transferPower = 0.7;
+    public static double transferPower = 0.67;
     //how close the distance sensor needs to sense for it to stop the transfer
     public static double detectionDistance = 7;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
-    public static int loadDistance = 250;
+    public static int loadDistance = 1500;
 
     public DcMotor transferMotor;
     public DistanceSensor leftTransferSensor;
     public DistanceSensor rightTransferSensor;
     public Shooter shooter;
+    public DcMotor intakeMotor;
 
     public Transfer(HardwareMap hwMap, Shooter shooter) {
         //initialize transfer motor
         transferMotor = hwMap.get(DcMotor.class, "transfer");
+        intakeMotor = hwMap.get(DcMotor.class, "intake");
 
 
         //reset 
@@ -67,31 +69,38 @@ public class Transfer {
             }
         }
     }
+
     public Action run() {
         return new Run();
     }
 
 
     public class Load implements Action {
-        boolean init = false;
+
+        private boolean init = false;
+        private int startPos;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
-                transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                transferMotor.setPower(transferPower);
+                startPos = transferMotor.getCurrentPosition();
+                transferMotor.setPower(transferPower-0.2);
+                intakeMotor.setPower(0.9);
                 init = true;
             }
-                if (transferMotor.getCurrentPosition() >= loadDistance) {
-                    transferMotor.setPower(0);
-                    return false;
-                }
-                else {
-                    return true;
-                }
 
+            int movedTicks = Math.abs(transferMotor.getCurrentPosition() - startPos);
+            if (movedTicks >= loadDistance) {
+                transferMotor.setPower(0);
+                init = false;
+                return false;
+            }
+
+            return true;
         }
-    } public Action load()
-    {
-        return new Load(); } }
+    }
+
+    public Action load() {
+        return new Load();
+    }
+}

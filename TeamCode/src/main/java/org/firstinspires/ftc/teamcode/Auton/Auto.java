@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -31,6 +32,7 @@ public class Auto extends LinearOpMode {
         Shooter shooter = new Shooter(hardwareMap);
 
         Transfer transfer = new Transfer(hardwareMap, shooter);
+        Intake intake = new Intake(hardwareMap);
 
 
 
@@ -40,45 +42,49 @@ public class Auto extends LinearOpMode {
 
 
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(45))
-                .waitSeconds(3)
-                .strafeToLinearHeading(new Vector2d(-12, -30), Math.toRadians(-90))
-                .waitSeconds(1)
-                .lineToY(-50)
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(35))
+                .waitSeconds(2)
+                .strafeToLinearHeading(new Vector2d(-16.5, -30), Math.toRadians(-90))
+                .waitSeconds(0.3)
+                .lineToY(-50, null, new ProfileAccelConstraint(-30.0, 50.0))
+                .waitSeconds(0.2)
+                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(35))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(9, -30), Math.toRadians(-90))
                 .waitSeconds(1)
                 .lineToY(-50)
-                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(35))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(30, -30), Math.toRadians(-90))
                 .waitSeconds(1)
                 .lineToY(-50)
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(35));
 
         Action path2 = path1.build();
 
         waitForStart();
 
-        telemetry.addData("transfer ticks", transfer.transferMotor.getCurrentPosition());
-        telemetry.update();
-
 
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
+                        shooter.run(3150),
                         new SequentialAction(
-                                shooter.run(3300),
-                                new SleepAction(0.5),
+                                new SleepAction(1),
+                                transfer.load(),
+                                new SleepAction(1),
+                                transfer.run(),
+                                new SleepAction(1.2),
                                 transfer.load()
+
+
                                 ),
 
                         path2
                 )
 
         ));
+
 
 
 
