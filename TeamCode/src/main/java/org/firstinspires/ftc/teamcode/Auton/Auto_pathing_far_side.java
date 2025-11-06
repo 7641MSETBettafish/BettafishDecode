@@ -40,7 +40,7 @@ public class Auto_pathing_far_side extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(0));
 
 
-        TrajectoryActionBuilder path2 =  drive.actionBuilder(new Pose2d(-10, -10, Math.toRadians(0))) // green purple purple, only for specific cases
+        TrajectoryActionBuilder path2 =  drive.actionBuilder(new Pose2d(56, -16, Math.toRadians(0))) // green purple purple, only for specific cases
                 .strafeToLinearHeading(new Vector2d(-10, -10), Math.toRadians(45))
                 .strafeToLinearHeading(new Vector2d(12, -30), Math.toRadians(-90))
                 .waitSeconds(1)
