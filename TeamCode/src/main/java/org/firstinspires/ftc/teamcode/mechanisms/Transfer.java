@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -22,7 +20,7 @@ public class Transfer {
     //how close the distance sensor needs to sense for it to stop the transfer
     public static double detectionDistance = 3.5;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
-    public static int loadDistance = 1500;
+    public static int loadDistance = 250;
 
     public DcMotor transferMotor;
     public DistanceSensor leftTransferSensor;
@@ -75,7 +73,7 @@ public class Transfer {
     }
 
 
-    public class Load implements Action {
+    public class FullLoad implements Action {
 
         private boolean init = false;
         private int startPos;
@@ -85,6 +83,35 @@ public class Transfer {
             if (!init) {
                 startPos = transferMotor.getCurrentPosition();
                 transferMotor.setPower(transferPower-0.2);
+                intakeMotor.setPower(1);
+                init = true;
+            }
+
+            int movedTicks = Math.abs(transferMotor.getCurrentPosition() - startPos);
+            if (movedTicks >= loadDistance * 3) {
+                transferMotor.setPower(0);
+                init = false;
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public Action fullLoad() {
+        return new FullLoad();
+    }
+
+    public class Load implements Action {
+
+        private boolean init = false;
+        private int startPos;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!init) {
+                startPos = transferMotor.getCurrentPosition();
+                transferMotor.setPower(transferPower);
                 intakeMotor.setPower(1);
                 init = true;
             }
@@ -103,4 +130,5 @@ public class Transfer {
     public Action load() {
         return new Load();
     }
+
 }

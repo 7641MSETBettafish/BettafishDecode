@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -87,7 +86,7 @@ public class Auto_pathing_close_side extends LinearOpMode {
                 camera.findID(),
                 new ParallelAction(
                         intake.run(),
-                        transfer.load(),
+                        transfer.fullLoad(),
                         intake.stop(),
                         preload1
                 )
@@ -101,11 +100,11 @@ public class Auto_pathing_close_side extends LinearOpMode {
                     new SequentialAction(
                             new ParallelAction(
                                     intake.run(),
-                                    transfer.load(),
+                                    transfer.fullLoad(),
                                     intake.stop()
                             ),
 
-                            transfer.load(),
+                            transfer.fullLoad(),
                             shooter.stop(),
 
                             path21
@@ -118,11 +117,11 @@ public class Auto_pathing_close_side extends LinearOpMode {
                     new SequentialAction(
                             new ParallelAction(
                                     intake.run(),
-                                    transfer.load(),
+                                    transfer.fullLoad(),
                                     intake.stop()
                             ),
 
-                            transfer.load(),
+                            transfer.fullLoad(),
                             shooter.stop(),
 
                             path22
@@ -133,11 +132,11 @@ public class Auto_pathing_close_side extends LinearOpMode {
                     new SequentialAction(
                             new ParallelAction(
                                     intake.run(),
-                                    transfer.load(),
+                                    transfer.fullLoad(),
                                     intake.stop()
                             ),
 
-                            transfer.load(),
+                            transfer.fullLoad(),
                             shooter.stop(),
 
                             path21

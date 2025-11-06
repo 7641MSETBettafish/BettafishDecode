@@ -72,19 +72,19 @@ public class Auto extends LinearOpMode {
                         shooter.run(3120),
                         new SequentialAction(
                                 new SleepAction(1.05),
-                                transfer.load(),
+                                transfer.fullLoad(),
                                 new SleepAction(3.3),
                                 transfer.run(),
                                 new SleepAction(2.5),
-                                transfer.load(),
+                                transfer.fullLoad(),
                                 new SleepAction(2.8),
                                 transfer.run(),
                                 new SleepAction(3.4),
-                                transfer.load(),
+                                transfer.fullLoad(),
                                 new SleepAction(3.3),
                                 transfer.run(),
                                 new SleepAction(3.35),
-                                transfer.load()
+                                transfer.fullLoad()
 
 
                                 ),

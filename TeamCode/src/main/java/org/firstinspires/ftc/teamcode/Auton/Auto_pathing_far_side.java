@@ -87,7 +87,7 @@ public class Auto_pathing_far_side extends LinearOpMode {
                 camera.findID(),
                 new ParallelAction(
                         intake.run(),
-                        transfer.load(),
+                        transfer.fullLoad(),
                         intake.stop(),
                         preload1
                 )
@@ -101,12 +101,12 @@ public class Auto_pathing_far_side extends LinearOpMode {
                     new SequentialAction(
                             new ParallelAction(
                                     intake.run(),
-                                    transfer.load(),
+                                    transfer.fullLoad(),
                                     intake.stop()
                             ),
 
                             shooter.powerUp(distance),
-                            transfer.load(),
+                            transfer.fullLoad(),
                             shooter.stop(),
 
                     path21
@@ -119,12 +119,12 @@ public class Auto_pathing_far_side extends LinearOpMode {
                     new SequentialAction(
                             new ParallelAction(
                                     intake.run(),
-                                    transfer.load(),
+                                    transfer.fullLoad(),
                                     intake.stop()
                             ),
 
                             shooter.powerUp(distance),
-                            transfer.load(),
+                            transfer.fullLoad(),
                             shooter.stop(),
 
                     path22
@@ -135,12 +135,12 @@ public class Auto_pathing_far_side extends LinearOpMode {
                     new SequentialAction(
                             new ParallelAction(
                                     intake.run(),
-                                    transfer.load(),
+                                    transfer.fullLoad(),
                                     intake.stop()
                             ),
 
                             shooter.powerUp(distance),
-                            transfer.load(),
+                            transfer.fullLoad(),
                             shooter.stop(),
 
                     path21
