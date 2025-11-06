@@ -112,7 +112,7 @@ public class Transfer {
             if (!init) {
                 startPos = transferMotor.getCurrentPosition();
                 transferMotor.setPower(transferPower);
-                intakeMotor.setPower(1);
+                //intakeMotor.setPower(1);
                 init = true;
             }
 

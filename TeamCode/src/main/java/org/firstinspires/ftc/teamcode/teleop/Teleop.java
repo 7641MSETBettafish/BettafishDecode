@@ -122,9 +122,11 @@ public class Teleop extends LinearOpMode {
                 double rxCmd = kPh * headingError;
                 rxCmd = Math.max(-1, Math.min(1, rxCmd));
 
-                if (Math.abs(headingError) < Math.toRadians(hDeadZone)) angleHold = false;
-
-                rx = rxCmd;
+                if (Math.abs(headingError) < Math.toRadians(hDeadZone)) {
+                    angleHold = false;
+                } else {
+                    rx = rxCmd;
+                }
             }
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
@@ -150,14 +152,8 @@ public class Teleop extends LinearOpMode {
                     }
                     break;
                 case ON:
-                    if (intake.ballSensed() && !lastSense) {
-                        if (balls < 1) {
-                            runningActions.add(transfer.run());
-                        }
-                        balls++;
-                    }
-                    if (balls >= 3 || leftTriggerPressed) {
-                        intake.intakeMotor.setPower(Intake.intakePower * 0.5);
+                    if (leftTriggerPressed) {
+                        intake.intakeMotor.setPower(0);
                         intakeState = IntakeState.OFF;
                     }
                     break;
@@ -182,8 +178,9 @@ public class Teleop extends LinearOpMode {
                     break;
                 case ON:
                     if (shooterControl.isFinished()) {
-                        balls--;
-                        if (balls == 0) shooter.setPower(0);
+                        //balls--;
+                        //if (balls == 0) shooter.setPower(0);
+                        runningActions.add(transfer.run());
                         shooterState = ShooterState.OFF;
                     }
 //                    if (currentGamepad1.y && !previousGamepad1.y) {
@@ -240,7 +237,7 @@ public class Teleop extends LinearOpMode {
 
             telemetry.addData("robot X", drive.localizer.getPose().position.x);
             telemetry.addData("robot Y", drive.localizer.getPose().position.y);
-            telemetry.addData("robot H", drive.localizer.getPose().heading.toDouble());
+            telemetry.addData("robot H", Math.toDegrees(drive.localizer.getPose().heading.toDouble()));
             telemetry.addData("goal distance", goalDistance);
             telemetry.addData("balls", balls);
             telemetry.addData("flywheel RPM", shooter.rightRPM);
