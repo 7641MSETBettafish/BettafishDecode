@@ -22,7 +22,7 @@ public class Auto_pathing_far_side extends LinearOpMode {
     Camera camera;
     Intake intake = new Intake(hardwareMap);
     Shooter shooter = new Shooter(hardwareMap);
-    Transfer transfer = new Transfer(hardwareMap, shooter);
+    Transfer transfer = new Transfer(hardwareMap);
 
     double distance = 0;
 

@@ -16,11 +16,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 public class Transfer {
     //how fast we want the transfer to run when we run it
-    public static double transferPower = 0.67;
+    public static double transferPower = 0.7;
     //how close the distance sensor needs to sense for it to stop the transfer
-    public static double detectionDistance = 3.5;
+    public static double detectionDistance = 5;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
     public static int loadDistance = 250;
+
+    public static int autoloaddistance = 2200;
 
     public DcMotor transferMotor;
     //public DistanceSensor leftTransferSensor;
@@ -28,7 +30,7 @@ public class Transfer {
     public Shooter shooter;
     public DcMotor intakeMotor;
 
-    public Transfer(HardwareMap hwMap, Shooter shooter) {
+    public Transfer(HardwareMap hwMap) {
         //initialize transfer motor
         transferMotor = hwMap.get(DcMotor.class, "transfer");
         intakeMotor = hwMap.get(DcMotor.class, "intake");
@@ -56,7 +58,7 @@ public class Transfer {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
-                transferMotor.setPower(transferPower);
+                transferMotor.setPower(transferPower+0.1);
                 init = true;
             }
 
@@ -89,7 +91,7 @@ public class Transfer {
             }
 
             int movedTicks = Math.abs(transferMotor.getCurrentPosition() - startPos);
-            if (movedTicks >= loadDistance * 3) {
+            if (movedTicks >= autoloaddistance) {
                 transferMotor.setPower(0);
                 init = false;
                 return false;

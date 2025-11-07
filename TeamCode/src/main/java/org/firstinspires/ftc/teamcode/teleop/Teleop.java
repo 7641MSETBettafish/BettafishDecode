@@ -64,7 +64,7 @@ public class Teleop extends LinearOpMode {
 
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
-        transfer = new Transfer(hardwareMap, shooter);
+        transfer = new Transfer(hardwareMap) ;
 
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);

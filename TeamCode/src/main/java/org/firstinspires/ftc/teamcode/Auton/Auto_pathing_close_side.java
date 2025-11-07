@@ -29,7 +29,7 @@ public class Auto_pathing_close_side extends LinearOpMode {
 
         Intake intake = new Intake(hardwareMap);
 
-        Transfer transfer = new Transfer(hardwareMap, shooter);
+        Transfer transfer = new Transfer(hardwareMap);
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 

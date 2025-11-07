@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 @Config
 @Autonomous
-public class Auto extends LinearOpMode {
+public class AutoSplines extends LinearOpMode {
 
 
 
@@ -44,22 +44,22 @@ public class Auto extends LinearOpMode {
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(39))
                 .waitSeconds(1.5)
-                .strafeToLinearHeading(new Vector2d(-16.5, -24), Math.toRadians(-90))
-                .waitSeconds(0.1)
-                .lineToY(-52, null, new ProfileAccelConstraint(-30.0, 50.0))
+                .splineToSplineHeading(new Pose2d(-16.5, -20, Math.toRadians(-90)), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-17.5,-60), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-20, -20), Math.toRadians(-30))
+                .splineToConstantHeading(new Vector2d(-4, -60), Math.toRadians(30))
                 .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(39))
                 .waitSeconds(0.8)
-                .strafeToLinearHeading(new Vector2d(4, -24), Math.toRadians(-90))
-                .waitSeconds(0.1)
-                .lineToY(-60, null, new ProfileAccelConstraint(-30.0, 50.0))
-                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(39))
-                .waitSeconds(1.6)
-                .strafeToLinearHeading(new Vector2d(26, -24), Math.toRadians(-90))
-                .waitSeconds(0.1)
+                .splineToSplineHeading(new Pose2d(1.5, -24, Math.toRadians(-90)), Math.toRadians(-75))
                 .lineToY(-62)
                 .waitSeconds(0.1)
-                .strafeToLinearHeading(new Vector2d(-25, -25), Math.toRadians(39))
+                .splineToSplineHeading(new Pose2d(-30, -25, Math.toRadians(39)), Math.toRadians(-30))
+                .waitSeconds(1.6)
+                .splineToSplineHeading(new Pose2d(23, -24, Math.toRadians(-90)), Math.toRadians(-75))
+                .lineToY(-60)
+                .waitSeconds(0.1)
+                .splineToSplineHeading(new Pose2d(-30, -25, Math.toRadians(39)), Math.toRadians(-75))
                 .waitSeconds(1);
 
         Action path2 = path1.build();
@@ -75,19 +75,18 @@ public class Auto extends LinearOpMode {
                                 transfer.fullLoad(),
                                 new SleepAction(3.3),
                                 transfer.run(),
-                                new SleepAction(2.3),
+                                new SleepAction(3.5),
                                 transfer.fullLoad(),
-                                new SleepAction(2.8),
+                                new SleepAction(2.0),
                                 transfer.run(),
-                                new SleepAction(3),
+                                new SleepAction(3.4),
                                 transfer.fullLoad(),
                                 new SleepAction(3.3),
                                 transfer.run(),
                                 new SleepAction(3.35),
                                 transfer.fullLoad()
 
-
-                                ),
+                        ),
 
                         path2
                 )
