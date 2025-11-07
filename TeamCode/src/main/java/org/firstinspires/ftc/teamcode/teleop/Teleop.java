@@ -33,7 +33,7 @@ public class Teleop extends LinearOpMode {
     // >=100 is red
     public static double goalSide = 0;
 
-    public static double kPh = 0.5;
+    public static double kPh = 0.1;
     public static double hDeadZone = 15;
 
     MecanumDrive drive;
@@ -110,7 +110,7 @@ public class Teleop extends LinearOpMode {
 
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x * 1.1;
-            double rx = gamepad1.right_stick_x;
+            double rx = gamepad1.right_stick_x * 0.9;
 
             if (angleHold) {
                 double dxGoal = goalPosition.position.x - pose.position.x;
@@ -122,7 +122,9 @@ public class Teleop extends LinearOpMode {
                 double rxCmd = kPh * headingError;
                 rxCmd = Math.max(-1, Math.min(1, rxCmd));
 
-                if (Math.abs(headingError) < Math.toRadians(hDeadZone)) {
+                boolean d = headingError < 0 ? headingError > -Math.toRadians(hDeadZone) : headingError < Math.toRadians(hDeadZone);
+
+                if (d) {
                     angleHold = false;
                 } else {
                     rx = rxCmd;
@@ -208,7 +210,7 @@ public class Teleop extends LinearOpMode {
 //                shooter.setPower(0);
 //            }
 
-//            shooter.targetRPM = 3600;
+
 
             if (currentGamepad1.a && !previousGamepad1.a) {
                 angleHold = !angleHold;
@@ -221,6 +223,7 @@ public class Teleop extends LinearOpMode {
             }
 
             shooter.updateRPM();
+            shooter.updatePID();
 
             List<Action> newActions = new ArrayList<>();
             for (Action action : runningActions) {
@@ -233,6 +236,7 @@ public class Teleop extends LinearOpMode {
 
             dash.sendTelemetryPacket(packet);
 
+            shooter.targetRPM = 3500;
             drive.updatePoseEstimate();
 
             telemetry.addData("robot X", drive.localizer.getPose().position.x);
@@ -241,9 +245,11 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("goal distance", goalDistance);
             telemetry.addData("balls", balls);
             telemetry.addData("flywheel RPM", shooter.rightRPM);
+            telemetry.addData("target RPM", shooter.targetRPM);
+
             telemetry.addData("intake state", intakeState.toString());
             telemetry.addData("intake distance", intake.getDistance());
-            telemetry.addData("left transfer distance", transfer.leftTransferSensor.getDistance(DistanceUnit.CM));
+            //telemetry.addData("left transfer distance", transfer.leftTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("right transfer distance", transfer.rightTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("shooter state", shooterState.toString());
             telemetry.addData("shooter busy", shooterControl.isBusy());

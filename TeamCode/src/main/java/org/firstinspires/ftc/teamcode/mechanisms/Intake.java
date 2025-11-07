@@ -22,19 +22,19 @@ public class Intake {
 
     public DcMotor intakeMotor;
     //public DistanceSensor leftIntakeSensor;
-    public DistanceSensor rightIntakeSensor;
+    //public DistanceSensor rightIntakeSensor;
 
     public Intake(HardwareMap HWMap) {
         intakeMotor = HWMap.get(DcMotor.class, "intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         //leftIntakeSensor = HWMap.get(DistanceSensor.class, "leftIntakeSensor");
-        rightIntakeSensor = HWMap.get(DistanceSensor.class, "rightIntakeSensor");
+        //rightIntakeSensor = HWMap.get(DistanceSensor.class, "rightIntakeSensor");
 
     }
 
     public double getDistance() {
         //return Math.min(leftIntakeSensor.getDistance(DistanceUnit.CM), rightIntakeSensor.getDistance(DistanceUnit.CM));
-        return rightIntakeSensor.getDistance(DistanceUnit.CM);
+        return -67;
     }
 
     public boolean ballSensed() {

@@ -23,7 +23,7 @@ public class Transfer {
     public static int loadDistance = 250;
 
     public DcMotor transferMotor;
-    public DistanceSensor leftTransferSensor;
+    //public DistanceSensor leftTransferSensor;
     public DistanceSensor rightTransferSensor;
     public Shooter shooter;
     public DcMotor intakeMotor;
@@ -40,12 +40,13 @@ public class Transfer {
 
         transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftTransferSensor = hwMap.get(DistanceSensor.class, "leftTransferSensor");
+        //leftTransferSensor = hwMap.get(DistanceSensor.class, "leftTransferSensor");
         rightTransferSensor = hwMap.get(DistanceSensor.class, "rightTransferSensor");
     }
 
     public double getDistance() {
-        return Math.min(leftTransferSensor.getDistance(DistanceUnit.CM), rightTransferSensor.getDistance(DistanceUnit.CM));
+        //return Math.min(leftTransferSensor.getDistance(DistanceUnit.CM), rightTransferSensor.getDistance(DistanceUnit.CM));
+        return rightTransferSensor.getDistance(DistanceUnit.CM);
     }
 
     public class Run implements Action {
