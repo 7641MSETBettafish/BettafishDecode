@@ -40,6 +40,7 @@ public class TransfertoShooterTest extends LinearOpMode {
 
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         transferMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -91,7 +92,7 @@ public class TransfertoShooterTest extends LinearOpMode {
             if (shooterOn) {
                 shooter.updatePID();
             } else {
-                shooter.setPower(0);
+                shooter.shooterMotor.setPower(0);
             }
 
             if (gamepad1.y && shooter.RPMInThreshold()) {
@@ -110,20 +111,14 @@ public class TransfertoShooterTest extends LinearOpMode {
             }
 
             shooter.updateRPM();
-            //telemetry.addData("rightrpmdiffernce", shooter.rightRPMDifference);
-            telemetry.addData("revoveryshot", shooter.recoveryshot);
             telemetry.addData("targetrpm", shooter.targetRPM);
-            telemetry.addData("reversepidactive", shooter.tracking);
-            telemetry.addData("minrightrpm", shooter.minRightRPM);
-
-
-            telemetry.addData("rightRPM", shooter.rightRPM);
-            telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
+            telemetry.addData("rightRPM", shooter.RPM);
+            telemetry.addData("rightPower", shooter.shooterMotor.getPower());
             telemetry.addData("shooterOn", shooterOn);
             telemetry.addData("intakeOn", intakeOn);
             telemetry.addData("transferOn", transferOn);
-            telemetry.addData("fullLoad", load);
-            telemetry.addData("transfer dis", transferMotor.getCurrentPosition());
+            telemetry.addData("load", load);
+            telemetry.addData("transfer ticks", transferMotor.getCurrentPosition());
             telemetry.addData("transfer distance", transferSensor.getDistance(DistanceUnit.CM));
             telemetry.update();
         }

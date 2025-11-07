@@ -107,40 +107,26 @@ public class Teleop extends LinearOpMode {
             goalDistance = Math.sqrt(Math.pow(pose.position.x - goalPosition.position.x, 2) + Math.pow(pose.position.y - goalPosition.position.y, 2));
 
 
-
             double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x * 1.1;
-            double rx = gamepad1.right_stick_x * 0.9;
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
 
-            if (angleHold) {
-                double dxGoal = goalPosition.position.x - pose.position.x;
-                double dyGoal = goalPosition.position.y - pose.position.y;
-                double targetAngle = Math.atan2(dyGoal, dxGoal);
-                double headingError = targetAngle - pose.heading.toDouble();
-                headingError = Math.atan2(Math.sin(headingError), Math.cos(headingError));
+            double botHeading = drive.localizer.getPose().heading.toDouble();
 
-                double rxCmd = kPh * headingError;
-                rxCmd = Math.max(-1, Math.min(1, rxCmd));
+            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-                boolean d = headingError < 0 ? headingError > -Math.toRadians(hDeadZone) : headingError < Math.toRadians(hDeadZone);
+            rotX = rotX * 1.1;
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double frontLeftPower = (rotY + rotX + rx) / denominator;
+            double backLeftPower = (rotY - rotX + rx) / denominator;
+            double frontRightPower = (rotY - rotX - rx) / denominator;
+            double backRightPower = (rotY + rotX - rx) / denominator;
 
-                if (d) {
-                    angleHold = false;
-                } else {
-                    rx = rxCmd;
-                }
-            }
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double LFPower = (y + x + rx) / denominator;
-            double LBPower = (y - x + rx) / denominator;
-            double RFPower = (y - x - rx) / denominator;
-            double RBPower = (y + x - rx) / denominator;
-
-            drive.leftFront.setPower(LFPower);
-            drive.leftBack.setPower(LBPower);
-            drive.rightFront.setPower(RFPower);
-            drive.rightBack.setPower(RBPower);
+            drive.leftFront.setPower(frontLeftPower);
+            drive.leftBack.setPower(backLeftPower);
+            drive.rightFront.setPower(frontRightPower);
+            drive.rightBack.setPower(backRightPower);
 
             boolean leftTriggerPressed = currentGamepad1.left_trigger > 0.6 && previousGamepad1.left_trigger < 0.6;
 
@@ -244,7 +230,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("robot H", Math.toDegrees(drive.localizer.getPose().heading.toDouble()));
             telemetry.addData("goal distance", goalDistance);
             telemetry.addData("balls", balls);
-            telemetry.addData("flywheel RPM", shooter.rightRPM);
+            telemetry.addData("flywheel RPM", shooter.RPM);
             telemetry.addData("target RPM", shooter.targetRPM);
 
             telemetry.addData("intake state", intakeState.toString());

@@ -40,8 +40,7 @@ public class ShooterTest extends LinearOpMode {
 
             //telemetry.addData("RPM", shooter.RPM);
             telemetry.addData("targetRPM", shooter.targetRPM);
-            telemetry.addData("leftPower", shooter.leftShooterMotor.getPower());
-            telemetry.addData("rightPower", shooter.rightShooterMotor.getPower());
+            telemetry.addData("power", shooter.shooterMotor.getPower());;
             telemetry.addData("targetRPM", shooter.targetRPM);
             telemetry.addData("time change", time.milliseconds());
             telemetry.update();
