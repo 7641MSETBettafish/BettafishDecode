@@ -22,7 +22,7 @@ public class MeepMeepTesting {
                 .splineToSplineHeading(new Pose2d(-16.5, -20, Math.toRadians(-90)), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(-17.5,-55), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(-20, -20), Math.toRadians(-30))
-                .splineToConstantHeading(new Vector2d(-4, -55), Math.toRadians(30))
+                .splineToConstantHeading(new Vector2d(-4, -55), Math.toRadians(-75))
                 .waitSeconds(0.1)
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(39))
                 .waitSeconds(0.8)

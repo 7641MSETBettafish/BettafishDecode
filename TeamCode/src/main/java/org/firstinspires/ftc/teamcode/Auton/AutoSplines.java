@@ -44,21 +44,18 @@ public class AutoSplines extends LinearOpMode {
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(39))
                 .waitSeconds(1.5)
-                .splineToSplineHeading(new Pose2d(-16.5, -20, Math.toRadians(-90)), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-17.5,-60), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-20, -20), Math.toRadians(-30))
-                .splineToConstantHeading(new Vector2d(-4, -60), Math.toRadians(30))
-                .waitSeconds(0.1)
+                .splineToSplineHeading(new Pose2d(-18.5, -20, Math.toRadians(-90)), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-20,-60), Math.toRadians(90))
+                //.splineToLinearHeading(new Pose2d(-20, -50, Math.toRadians(0)), Math.toRadians(-30), null, new ProfileAccelConstraint(-30.0, 40.0))
+                .strafeToLinearHeading(new Vector2d(-9, -70), Math.toRadians(180))
                 .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(39))
                 .waitSeconds(0.8)
                 .splineToSplineHeading(new Pose2d(1.5, -24, Math.toRadians(-90)), Math.toRadians(-75))
-                .lineToY(-62)
-                .waitSeconds(0.1)
+                .lineToY(-60)
                 .splineToSplineHeading(new Pose2d(-30, -25, Math.toRadians(39)), Math.toRadians(-30))
                 .waitSeconds(1.6)
                 .splineToSplineHeading(new Pose2d(23, -24, Math.toRadians(-90)), Math.toRadians(-75))
                 .lineToY(-60)
-                .waitSeconds(0.1)
                 .splineToSplineHeading(new Pose2d(-30, -25, Math.toRadians(39)), Math.toRadians(-75))
                 .waitSeconds(1);
 
@@ -75,15 +72,15 @@ public class AutoSplines extends LinearOpMode {
                                 transfer.fullLoad(),
                                 new SleepAction(3.3),
                                 transfer.run(),
-                                new SleepAction(3.5),
+                                new SleepAction(5.3),
                                 transfer.fullLoad(),
                                 new SleepAction(2.0),
                                 transfer.run(),
-                                new SleepAction(3.4),
+                                new SleepAction(2.8),
                                 transfer.fullLoad(),
-                                new SleepAction(3.3),
+                                new SleepAction(3),
                                 transfer.run(),
-                                new SleepAction(3.35),
+                                new SleepAction(3),
                                 transfer.fullLoad()
 
                         ),

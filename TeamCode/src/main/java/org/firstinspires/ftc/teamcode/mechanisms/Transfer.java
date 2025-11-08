@@ -58,7 +58,7 @@ public class Transfer {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
-                transferMotor.setPower(transferPower+0.1);
+                transferMotor.setPower(transferPower-0.2);
                 init = true;
             }
 
@@ -85,7 +85,7 @@ public class Transfer {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
                 startPos = transferMotor.getCurrentPosition();
-                transferMotor.setPower(transferPower-0.2);
+                transferMotor.setPower(transferPower);
                 intakeMotor.setPower(1);
                 init = true;
             }
