@@ -19,6 +19,8 @@ public class Shooter {
     public static double kD = 0;
     public static double kF = 0.00027777;
 
+    public static double shootingConstant = 300;
+
     public static double thresholdTol = 65;
 
     // TODO: enter common field distances in inches (for auto)
@@ -101,34 +103,38 @@ public class Shooter {
     }
 
     public static double calculateRPM(double distance) {
+        if (distance < 81) {
+            // Target horizontal distance
+            double depthSigmoid = GOAL_DEPTH / (1.0 + Math.exp(0.3 * (distance - 46)));
+            double x = distance + depthSigmoid;
 
-        // Target horizontal distance
-        double depthSigmoid = GOAL_DEPTH / (1.0 + Math.exp(0.3 * (distance - 46)));
-        double x = distance + depthSigmoid;
+            // Target vertical distance
+            double y = TARGET_HEIGHT - LAUNCH_HEIGHT;
 
-        // Target vertical distance
-        double y = TARGET_HEIGHT - LAUNCH_HEIGHT;
+            // required launch speed
+            // y = x*tanθ - g*x²/(2*v²*cos²θ)
+            double theta = LAUNCH_ANGLE_RAD;
+            double tanTheta = Math.tan(theta);
+            double cosTheta = Math.cos(theta);
 
-        // required launch speed
-        // y = x*tanθ - g*x²/(2*v²*cos²θ)
-        double theta = LAUNCH_ANGLE_RAD;
-        double tanTheta = Math.tan(theta);
-        double cosTheta = Math.cos(theta);
+            double numerator = GRAVITY * x * x;
+            double denominator = 2.0 * cosTheta * cosTheta * (x * tanTheta - y);
+            double vRequired_in_per_s = Math.sqrt(numerator / denominator);
 
-        double numerator = GRAVITY * x * x;
-        double denominator = 2.0 * cosTheta * cosTheta * (x * tanTheta - y);
-        double vRequired_in_per_s = Math.sqrt(numerator / denominator);
+            // convert to m/s
+            double vRequired_m_per_s = vRequired_in_per_s * INCH_TO_METER;
 
-        // convert to m/s
-        double vRequired_m_per_s = vRequired_in_per_s * INCH_TO_METER;
+            // ball exit velocity to flywheel rim speed
+            double vRim = vRequired_m_per_s * (BALL_MASS + FLYWHEEL_MASS) / FLYWHEEL_MASS;
 
-        // ball exit velocity to flywheel rim speed
-        double vRim = vRequired_m_per_s * (BALL_MASS + FLYWHEEL_MASS) / FLYWHEEL_MASS;
+            // rim speed to flywheel rpm
+            double flywheelRPM =  (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0;
 
-        // rim speed to flywheel rpm
-        double flywheelRPM =  (vRim / (2 * Math.PI * FLYWHEEL_RADIUS)) * 60.0;
+            return Math.min(flywheelRPM + shootingConstant, 3650);
+        } else {
+            return -46.20253 * distance + 7392.40506;
+        }
 
-        return flywheelRPM + 300;
     }
 
 
@@ -174,7 +180,7 @@ public class Shooter {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
                 //targetRPM = calculateRPM(distance);
-                targetRPM = 3500;
+                //targetRPM = 3500;
                 time.reset();
                 init = true;
             }
