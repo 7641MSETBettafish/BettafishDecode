@@ -26,7 +26,7 @@ public class Autored extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(-52, 50, Math.toRadians(54));
+        Pose2d startPose1 = new Pose2d(-52, 50, Math.toRadians(-54));
 
         Shooter shooter = new Shooter(hardwareMap);
 
@@ -41,26 +41,26 @@ public class Autored extends LinearOpMode {
 
 
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(295))
+                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(-42))
                 .waitSeconds(0.85)
                 .strafeToLinearHeading(new Vector2d(-30, 20), Math.toRadians(90))
                 .waitSeconds(0.01)
                 .lineToY(45)
                 .waitSeconds(0.01)
                 .strafeToLinearHeading(new Vector2d(-17, 56), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(-30, 25, Math.toRadians(295)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(-30, 25, Math.toRadians(-42)), Math.toRadians(90))
                 .waitSeconds(0.8)
                 .strafeToLinearHeading(new Vector2d(-5, 20), Math.toRadians(90))
                 .waitSeconds(0.01)
                 .lineToY(50)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(295))
+                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(-42))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(15, 20), Math.toRadians(90))
                 .waitSeconds(0.01)
                 .lineToY(50)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(295))
+                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(-42))
                 .waitSeconds(0.4)
                 .strafeToLinearHeading(new Vector2d(10, 30), Math.toRadians(0));
 
