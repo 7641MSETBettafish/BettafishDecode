@@ -86,10 +86,6 @@ public class Auto_pathing_far_side extends LinearOpMode {
 
                 camera.findID(),
                 new ParallelAction(
-                        intake.run(),
-                        transfer.fullLoad(),
-                        intake.stop(),
-                        preload1
                 )
         ));
 
