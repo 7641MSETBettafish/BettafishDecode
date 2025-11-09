@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.mechanisms.*;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
@@ -32,17 +33,17 @@ import java.util.List;
 @TeleOp(name="Teleop", group="Teleop")
 public class Teleop extends LinearOpMode {
 
-    public static double startX = 72 - 8.5;
-    public static double startY = 15.25 / 2;
+    public static double startX = 0;
+    public static double startY = 0
+            ;
     public static double startH = 0;
     // <100 is blue
     // >=100 is red
-    public static double goalSide = 0;
+    public static double goalSide = 1000;
 
     public static double kPh = 0.1;
 
-    public static boolean fieldCentric = false;
-    public static boolean inverted = false;
+    public static boolean fieldCentric = true;
 
     MecanumDrive drive;
     Intake intake;
@@ -79,19 +80,19 @@ public class Teleop extends LinearOpMode {
 
         PIDController headingPID = new PIDController(kPh, 0, 0);
 
-//        tagProcessor = new AprilTagProcessor.Builder()
-//                .setLensIntrinsics(1421.04,1421.04,649.331,357.761)
-//                .setDrawAxes(true)
-//                .setDrawCubeProjection(true)
-//                .setDrawTagID(true)
-//                .setDrawTagOutline(true)
-//                .build();
-//
-//        visionPortal = new VisionPortal.Builder()
-//                .addProcessor(tagProcessor)
-//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
-//                .setCameraResolution(new Size(1280, 720))
-//                .build();
+        tagProcessor = new AprilTagProcessor.Builder()
+                .setLensIntrinsics(1421.04,1421.04,649.331,357.761)
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
+
+        visionPortal = new VisionPortal.Builder()
+                .addProcessor(tagProcessor)
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
+                .setCameraResolution(new Size(1280, 720))
+                .build();
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
@@ -105,6 +106,7 @@ public class Teleop extends LinearOpMode {
         double goalDistance = 0;
 
         boolean angleHold = false;
+        boolean shooterOn = false;
 
         ElapsedTime time = new ElapsedTime();
 
@@ -131,7 +133,7 @@ public class Teleop extends LinearOpMode {
 
 
             double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x * 1.1;
+            double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
             if (angleHold) {
@@ -144,34 +146,69 @@ public class Teleop extends LinearOpMode {
                 telemetry.addData("target angle", Math.toDegrees(targetAngle));
                 telemetry.addData("heading error", Math.toDegrees(headingError));
 
-                rx = headingPID.calculate(headingError, targetAngle);
+                rx = headingPID.calculate(pose.heading.toDouble(), targetAngle);
 
             }
 
+            AprilTagDetection tag;
+            if (!tagProcessor.getDetections().isEmpty()) {
+                tag = tagProcessor.getDetections().get(0);
+
+                if (tag.metadata != null) {
+                    if (tag.id == 20) {
+                        drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(40 - tag.ftcPose.bearing)));
+                    }
+                    if (tag.id == 24) {
+                        drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(-54 - tag.ftcPose.bearing)));
+                    }
+
+                    telemetry.addData("tagID", tag.id);
+                    telemetry.addData("bearing", tag.ftcPose.bearing);
+                }
+
+            }
+
+//            if (fieldCentric) {
+//                double botHeading = pose.heading.toDouble();
+//
+//                x = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+//                y = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+//            }
             if (fieldCentric) {
-                double botHeading = pose.heading.toDouble();
+                double botHeading = drive.localizer.getPose().heading.toDouble() - Math.PI / 2;
 
-                x = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-                y = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+                double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+                rotX = rotX * 1.1;
+
+                double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+                double frontLeftPower = (rotY + rotX + rx) / denominator;
+                double backLeftPower = (rotY - rotX + rx) / denominator;
+                double frontRightPower = (rotY - rotX - rx) / denominator;
+                double backRightPower = (rotY + rotX - rx) / denominator;
+
+                drive.leftFront.setPower(frontLeftPower);
+                drive.leftBack.setPower(backLeftPower);
+                drive.rightFront.setPower(frontRightPower);
+                drive.rightBack.setPower(backRightPower);
+            } else {
+                x = x * 1.1;
+
+                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                double frontLeftPower = (y + x + rx) / denominator;
+                double backLeftPower = (y - x + rx) / denominator;
+                double frontRightPower = (y - x - rx) / denominator;
+                double backRightPower = (y + x - rx) / denominator;
+
+                drive.leftFront.setPower(frontLeftPower);
+                drive.leftBack.setPower(backLeftPower);
+                drive.rightFront.setPower(frontRightPower);
+                drive.rightBack.setPower(backRightPower);
             }
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
 
-            if (inverted) {
-                frontLeftPower = -frontLeftPower;
-                backLeftPower = -backLeftPower;
-                frontRightPower = -frontRightPower;
-                backRightPower = -backRightPower;
-            }
 
-            drive.leftFront.setPower(frontLeftPower);
-            drive.leftBack.setPower(backLeftPower);
-            drive.rightFront.setPower(frontRightPower);
-            drive.rightBack.setPower(backRightPower);
 
             boolean leftTriggerPressed = currentGamepad1.left_trigger > 0.6 && previousGamepad1.left_trigger < 0.6;
 
@@ -198,7 +235,6 @@ public class Teleop extends LinearOpMode {
                     if (rightTriggerHeld) {
                         runningActions.add(new SequentialAction(
                                 shooterControl.start(),
-                                //shooter.powerUp(goalDistance),
                                 transfer.load(),
                                 shooterControl.end()
                         ));
@@ -218,11 +254,25 @@ public class Teleop extends LinearOpMode {
                 angleHold = !angleHold;
             }
 
+            if (currentGamepad1.dpad_down) {
+                transfer.transferMotor.setPower(-1);
+                intake.intakeMotor.setPower(-1);
+            }
+
             if (currentGamepad1.options && !previousGamepad1.options) {
                 drive.localizer.setPose(new Pose2d(-48, -36, 0));
             }
 
-            shooter.targetRPM = Shooter.calculateRPM(goalDistance);
+            if (currentGamepad1.b && !previousGamepad1.b) {
+                shooterOn = !shooterOn;
+            }
+
+            if (shooterOn) {
+                shooter.targetRPM = Shooter.calculateRPM(goalDistance);
+            } else {
+                shooter.targetRPM = 0;
+            }
+
 
             shooter.updateRPM();
             shooter.updatePID();
@@ -263,6 +313,8 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("angle hold", angleHold);
 
             telemetry.addData("loop time", time.milliseconds());
+
+
             telemetry.update();
 
             for (LynxModule hub : allHubs) {
