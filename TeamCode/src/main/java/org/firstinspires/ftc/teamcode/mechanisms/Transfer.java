@@ -20,7 +20,7 @@ public class Transfer {
     //how close the distance sensor needs to sense for it to stop the transfer
     public static double detectionDistance = 5;
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
-    public static int loadDistance = 250;
+    public static int loadDistance = 100;
 
     public static int autoloaddistance = 2200;
 
