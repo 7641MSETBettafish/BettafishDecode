@@ -41,7 +41,7 @@ public class Teleop extends LinearOpMode {
     // >=100 is red
     public static double goalSide = 1000;
 
-    public static double kPh = 0.1;
+    public static double kPh = 0.023;
 
     public static boolean fieldCentric = true;
 
@@ -92,6 +92,7 @@ public class Teleop extends LinearOpMode {
                 .addProcessor(tagProcessor)
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
                 .setCameraResolution(new Size(1280, 720))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .build();
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
@@ -136,20 +137,6 @@ public class Teleop extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            if (angleHold) {
-                double dxGoal = goalPosition.position.x - pose.position.x;
-                double dyGoal = goalPosition.position.y - pose.position.y;
-                double targetAngle = Math.atan2(dyGoal, dxGoal);
-                double headingError = targetAngle - pose.heading.toDouble();
-                headingError = Math.atan2(Math.sin(headingError), Math.cos(headingError));
-
-                telemetry.addData("target angle", Math.toDegrees(targetAngle));
-                telemetry.addData("heading error", Math.toDegrees(headingError));
-
-                rx = headingPID.calculate(pose.heading.toDouble(), targetAngle);
-
-            }
-
             AprilTagDetection tag;
             if (!tagProcessor.getDetections().isEmpty()) {
                 tag = tagProcessor.getDetections().get(0);
@@ -166,6 +153,11 @@ public class Teleop extends LinearOpMode {
                     telemetry.addData("bearing", tag.ftcPose.bearing);
                 }
 
+                if (angleHold) {
+                    if (tag.id == 24) {
+                        rx = headingPID.calculate(tag.ftcPose.bearing, 10);
+                    }
+                }
             }
 
 //            if (fieldCentric) {
