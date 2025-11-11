@@ -16,30 +16,30 @@ public class MeepMeepTesting {
                 .setConstraints(100, 50, Math.toRadians(180), Math.toRadians(180), 16.5)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-50, -54, Math.toRadians(54)))
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-10, -10, Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(-35, -12), Math.toRadians(45))
                 .waitSeconds(0.85)
-                .strafeToLinearHeading(new Vector2d(-37, -20), Math.toRadians(-90))
-                .waitSeconds(0.01)
-                .lineToY(-45)
-                .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-25, -48), Math.toRadians(-150))
-                .waitSeconds(0.01)
-                .splineToLinearHeading(new Pose2d(-30, -20, Math.toRadians(45)), Math.toRadians(45))
-                .waitSeconds(0.8)
                 .strafeToLinearHeading(new Vector2d(-9, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-51)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-35, -12), Math.toRadians(45))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(10, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-53)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
-                .waitSeconds(1.5)
-                .strafeToLinearHeading(new Vector2d(0, -30), Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-35, -12), Math.toRadians(45))
+                .waitSeconds(0.8)
+                .strafeToLinearHeading(new Vector2d(30, -30), Math.toRadians(-20))
+                .strafeToLinearHeading(new Vector2d(35, -50), Math.toRadians(-20))
+                .waitSeconds(0.01)
+                .strafeToLinearHeading(new Vector2d(-35, -12), Math.toRadians(45))
+                .waitSeconds(0.8)
+                .strafeToLinearHeading(new Vector2d(0, -30), Math.toRadians(0));
+
+
+
 
                 .build());
 
