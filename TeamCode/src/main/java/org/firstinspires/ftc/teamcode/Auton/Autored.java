@@ -26,7 +26,7 @@ public class Autored extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(-52, 50, Math.toRadians(-54));
+        Pose2d startPose1 = new Pose2d(-58, 58, Math.toRadians(-52));
 
         Shooter shooter = new Shooter(hardwareMap);
 
@@ -41,28 +41,29 @@ public class Autored extends LinearOpMode {
 
 
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(-42))
+                .strafeToLinearHeading(new Vector2d(-36, 28), Math.toRadians(-53))
                 .waitSeconds(0.85)
-                .strafeToLinearHeading(new Vector2d(-30, 20), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(2, 24), Math.toRadians(90))
                 .waitSeconds(0.01)
-                .lineToY(45)
+                .lineToY(63)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-17, 56), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(-30, 25, Math.toRadians(-42)), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(2, 80), Math.toRadians(180))
+                .waitSeconds(0.01)
+                .splineToLinearHeading(new Pose2d(-36, 28, Math.toRadians(-53)), Math.toRadians(90))
                 .waitSeconds(0.8)
-                .strafeToLinearHeading(new Vector2d(-5, 20), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(24, 35), Math.toRadians(90))
                 .waitSeconds(0.01)
-                .lineToY(50)
+                .lineToY(70)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(-42))
+                .strafeToLinearHeading(new Vector2d(-30, 20), Math.toRadians(-53))
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(15, 20), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(50 , 35), Math.toRadians(90))
                 .waitSeconds(0.01)
-                .lineToY(50)
+                .lineToY(70)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, 25), Math.toRadians(-42))
-                .waitSeconds(0.4)
-                .strafeToLinearHeading(new Vector2d(10, 30), Math.toRadians(0));
+                .strafeToLinearHeading(new Vector2d(-30, 20), Math.toRadians(-53))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(0, 30), Math.toRadians(0));
 
         Action path2 = path1.build();
 
@@ -71,22 +72,22 @@ public class Autored extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
-                        shooter.run(2850),
-                        transfer.run(),
+                        shooter.run(3120),
                         new SequentialAction(
-                                new SleepAction(1.15),
+                                intake.run(),
+                                new SleepAction(1.2),
                                 transfer.fullLoad(),
+                                new SleepAction(2.4),
+                                transfer.run(),
+                                new SleepAction(4.5),
+                                transfer.fullLoad(),
+                                new SleepAction(2.0),
+                                transfer.run(),
                                 new SleepAction(2.8),
-                                transfer.run(),
-                                new SleepAction(5.0),
                                 transfer.fullLoad(),
-                                new SleepAction(2.8),
+                                new SleepAction(2.5),
                                 transfer.run(),
-                                new SleepAction(3),
-                                transfer.fullLoad(),
-                                new SleepAction(3.3),
-                                transfer.run(),
-                                new SleepAction(3),
+                                new SleepAction(3.2),
                                 transfer.fullLoad()
 
 

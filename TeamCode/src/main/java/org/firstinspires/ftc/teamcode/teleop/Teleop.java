@@ -143,10 +143,10 @@ public class Teleop extends LinearOpMode {
 
                 if (tag.metadata != null) {
                     if (tag.id == 20) {
-                        drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(40 - tag.ftcPose.bearing)));
+                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(40 - tag.ftcPose.bearing)));
                     }
                     if (tag.id == 24) {
-                        drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(-54 - tag.ftcPose.bearing)));
+                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(-54 - tag.ftcPose.bearing)));
                     }
 
                     telemetry.addData("tagID", tag.id);
@@ -154,9 +154,24 @@ public class Teleop extends LinearOpMode {
                 }
 
                 if (angleHold) {
-                    if (tag.id == 24) {
+                    if (tag.id == 20 && goalSide < 100) {
+                        rx = headingPID.calculate(tag.ftcPose.bearing, -10);
+                    }
+                    if (tag.id == 24 && goalSide >= 100) {
                         rx = headingPID.calculate(tag.ftcPose.bearing, 10);
                     }
+                }
+            } else {
+                if (angleHold) {
+                    double dxGoal = goalPosition.position.x - pose.position.x;
+                    double dyGoal = goalPosition.position.y - pose.position.y;
+                    double targetAngle = Math.atan2(dyGoal, dxGoal);
+                    if (goalSide < 100) {
+                        rx = headingPID.calculate(Math.toDegrees(pose.heading.toDouble()), Math.toDegrees(targetAngle) - 10);
+                    } else {
+                        rx = headingPID.calculate(Math.toDegrees(pose.heading.toDouble()), Math.toDegrees(targetAngle) + 10);
+                    }
+                    telemetry.addData("target angle", Math.toDegrees(targetAngle));
                 }
             }
 
