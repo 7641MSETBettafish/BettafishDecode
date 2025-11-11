@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.mechanisms.*;
@@ -166,11 +167,11 @@ public class Teleop extends LinearOpMode {
                     double dxGoal = goalPosition.position.x - pose.position.x;
                     double dyGoal = goalPosition.position.y - pose.position.y;
                     double targetAngle = Math.atan2(dyGoal, dxGoal);
-                    if (goalSide < 100) {
-                        rx = headingPID.calculate(Math.toDegrees(pose.heading.toDouble()), Math.toDegrees(targetAngle) - 10);
-                    } else {
-                        rx = headingPID.calculate(Math.toDegrees(pose.heading.toDouble()), Math.toDegrees(targetAngle) + 10);
-                    }
+                    double currentHeadingDeg = Math.toDegrees(pose.heading.toDouble());
+                    double targetHeadingDeg = Math.toDegrees(targetAngle) + (goalSide < 100 ? -10 : 10);
+
+                    double error = AngleUnit.normalizeDegrees(targetHeadingDeg - currentHeadingDeg);
+                    rx = headingPID.calculate(0, error);
                     telemetry.addData("target angle", Math.toDegrees(targetAngle));
                 }
             }
