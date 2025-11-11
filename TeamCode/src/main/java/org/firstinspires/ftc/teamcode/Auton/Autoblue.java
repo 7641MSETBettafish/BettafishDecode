@@ -41,28 +41,29 @@ public class Autoblue extends LinearOpMode {
 
 
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(42))
+                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
                 .waitSeconds(0.85)
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-37, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-45)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-17, -56), Math.toRadians(-180))
-                .splineToLinearHeading(new Pose2d(-30, -25, Math.toRadians(41)), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-25, -48), Math.toRadians(-150))
+                .waitSeconds(0.01)
+                .splineToLinearHeading(new Pose2d(-30, -20, Math.toRadians(45)), Math.toRadians(45))
                 .waitSeconds(0.8)
-                .strafeToLinearHeading(new Vector2d(-5, -20), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-9, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
-                .lineToY(-50)
+                .lineToY(-51)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(42))
+                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(15, -20), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(10, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
-                .lineToY(-50)
+                .lineToY(-53)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, -25), Math.toRadians(42))
-                .waitSeconds(0.4)
-                .strafeToLinearHeading(new Vector2d(10, -30), Math.toRadians(0));
+                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
+                .waitSeconds(1.5)
+                .strafeToLinearHeading(new Vector2d(0, -30), Math.toRadians(0));
 
         Action path2 = path1.build();
 
@@ -71,22 +72,22 @@ public class Autoblue extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
-                        shooter.run(2850),
-                        transfer.run(),
+                        shooter.run(3120),
                         new SequentialAction(
-                                new SleepAction(1.15),
+                                intake.run(),
+                                new SleepAction(1.2),
                                 transfer.fullLoad(),
-                                new SleepAction(2.8),
+                                new SleepAction(2.4),
                                 transfer.run(),
-                                new SleepAction(5.0),
+                                new SleepAction(4.1),
                                 transfer.fullLoad(),
-                                new SleepAction(2.8),
+                                new SleepAction(2.0),
                                 transfer.run(),
-                                new SleepAction(3),
+                                new SleepAction(2.6),
                                 transfer.fullLoad(),
-                                new SleepAction(3.3),
+                                new SleepAction(2.5),
                                 transfer.run(),
-                                new SleepAction(3),
+                                new SleepAction(3.2),
                                 transfer.fullLoad()
 
 

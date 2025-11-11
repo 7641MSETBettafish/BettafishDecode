@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Config
 public class Intake {
 
-    public static double intakePower = 0.85;
+    public static double intakePower = 1;
 
     public static double detectionDistance = 6.5;
 
@@ -47,17 +47,8 @@ public class Intake {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (!init) {
                 intakeMotor.setPower(intakePower);
-                init = true;
-            }
-
-            if (ballSensed()) {
-                intakeMotor.setPower(0);
-                return false;
-            } else {
-                return true;
-            }
+            return false;
 
         }
 

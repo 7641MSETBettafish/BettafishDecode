@@ -14,12 +14,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Shooter {
 
-    public static double kP = 0.001;
+    public static double kP = 0.002;
     public static double kI = 0;
     public static double kD = 0;
     public static double kF = 0.00027777;
 
-    public static double shootingConstant = 300;
+    public static double shootingConstant = 280;
 
     public static double thresholdTol = 65;
 
@@ -103,13 +103,14 @@ public class Shooter {
     }
 
     public static double calculateRPM(double distance) {
-        if (distance < 81) {
+        if (distance < 90) {
             // Target horizontal distance
             double depthSigmoid = GOAL_DEPTH / (1.0 + Math.exp(0.3 * (distance - 46)));
             double x = distance + depthSigmoid;
 
             // Target vertical distance
-            double y = TARGET_HEIGHT - LAUNCH_HEIGHT;
+            //double y = TARGET_HEIGHT - LAUNCH_HEIGHT;
+            double y = 28;
 
             // required launch speed
             // y = x*tanθ - g*x²/(2*v²*cos²θ)
@@ -132,7 +133,7 @@ public class Shooter {
 
             return Math.min(flywheelRPM + shootingConstant, 3650);
         } else {
-            return -46.20253 * distance + 7392.40506;
+            return -51.58571 * distance + 8253.71429;
         }
 
     }
