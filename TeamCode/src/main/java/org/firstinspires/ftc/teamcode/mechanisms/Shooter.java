@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Shooter {
 
-    public static double kP = 0.002;
+    public static double kP = 0.003;
     public static double kI = 0;
     public static double kD = 0;
     public static double kF = 0.00027777;

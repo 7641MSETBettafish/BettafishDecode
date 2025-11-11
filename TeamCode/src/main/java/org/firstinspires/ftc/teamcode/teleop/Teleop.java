@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -61,12 +63,8 @@ public class Teleop extends LinearOpMode {
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
 
-    public void setContext(double robotx, double roboty, double roboth, double goalside) {
-        startX = robotx;
-        startY = roboty;
-        startH = roboth;
-        goalSide = goalside;
-    }
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -171,12 +169,6 @@ public class Teleop extends LinearOpMode {
                 }
             }
 
-//            if (fieldCentric) {
-//                double botHeading = pose.heading.toDouble();
-//
-//                x = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-//                y = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-//            }
             if (fieldCentric) {
                 double botHeading = drive.localizer.getPose().heading.toDouble() - Math.PI / 2;
 

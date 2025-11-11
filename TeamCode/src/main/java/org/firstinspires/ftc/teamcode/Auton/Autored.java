@@ -76,6 +76,7 @@ public class Autored extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
                         shooter.run(3175),
+                        Context.updatePosition(drive, 0),
                         new SequentialAction(
                                 intake.run(),
                                 new SleepAction(1.2),

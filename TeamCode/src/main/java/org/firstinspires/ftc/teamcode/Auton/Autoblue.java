@@ -35,7 +35,7 @@ public class Autoblue extends LinearOpMode {
 
 
 
-
+        Context context = new Context();
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
 
 
@@ -70,9 +70,11 @@ public class Autoblue extends LinearOpMode {
         waitForStart();
 
 
+
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
                         shooter.run(3120),
+                        Context.updatePosition(drive, 0),
                         new SequentialAction(
                                 intake.run(),
                                 new SleepAction(1.2),
