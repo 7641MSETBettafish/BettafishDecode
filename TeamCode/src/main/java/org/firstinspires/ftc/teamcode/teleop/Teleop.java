@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.mechanisms.*;
@@ -59,6 +60,13 @@ public class Teleop extends LinearOpMode {
 
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
+
+    public void setContext(double robotx, double roboty, double roboth, double goalside) {
+        startX = robotx;
+        startY = roboty;
+        startH = roboth;
+        goalSide = goalside;
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -160,18 +168,6 @@ public class Teleop extends LinearOpMode {
                     if (tag.id == 24 && goalSide >= 100) {
                         rx = headingPID.calculate(tag.ftcPose.bearing, 10);
                     }
-                }
-            } else {
-                if (angleHold) {
-                    double dxGoal = goalPosition.position.x - pose.position.x;
-                    double dyGoal = goalPosition.position.y - pose.position.y;
-                    double targetAngle = Math.atan2(dyGoal, dxGoal);
-                    if (goalSide < 100) {
-                        rx = headingPID.calculate(Math.toDegrees(pose.heading.toDouble()), Math.toDegrees(targetAngle) - 10);
-                    } else {
-                        rx = headingPID.calculate(Math.toDegrees(pose.heading.toDouble()), Math.toDegrees(targetAngle) + 10);
-                    }
-                    telemetry.addData("target angle", Math.toDegrees(targetAngle));
                 }
             }
 

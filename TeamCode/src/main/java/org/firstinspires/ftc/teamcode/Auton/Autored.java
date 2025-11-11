@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.mechanisms.*;
 
+import java.util.Vector;
+
 
 @Config
 @Autonomous
@@ -41,29 +43,30 @@ public class Autored extends LinearOpMode {
 
 
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-36, 28), Math.toRadians(-53))
+                .strafeToLinearHeading(new Vector2d(-32, 20), Math.toRadians(-53))
                 .waitSeconds(0.85)
-                .strafeToLinearHeading(new Vector2d(2, 24), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(0, 28), Math.toRadians(90))
                 .waitSeconds(0.01)
-                .lineToY(63)
+                .lineToY(67)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(2, 80), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(0, 80), Math.toRadians(180))
                 .waitSeconds(0.01)
-                .splineToLinearHeading(new Pose2d(-36, 28, Math.toRadians(-53)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(-32, 20, Math.toRadians(-53)), Math.toRadians(-10))
                 .waitSeconds(0.8)
-                .strafeToLinearHeading(new Vector2d(24, 35), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(25, 35), Math.toRadians(90))
                 .waitSeconds(0.01)
                 .lineToY(70)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, 20), Math.toRadians(-53))
+                .splineToLinearHeading(new Pose2d(-32, 20, Math.toRadians(-53)), Math.toRadians(135))
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(50 , 35), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(50, 35), Math.toRadians(90))
                 .waitSeconds(0.01)
                 .lineToY(70)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, 20), Math.toRadians(-53))
-                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-32, 20), Math.toRadians(-53))
+                .waitSeconds(1.5)
                 .strafeToLinearHeading(new Vector2d(0, 30), Math.toRadians(0));
+
 
         Action path2 = path1.build();
 
@@ -72,18 +75,18 @@ public class Autored extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 new ParallelAction(
-                        shooter.run(3120),
+                        shooter.run(3175),
                         new SequentialAction(
                                 intake.run(),
                                 new SleepAction(1.2),
                                 transfer.fullLoad(),
                                 new SleepAction(2.4),
                                 transfer.run(),
-                                new SleepAction(4.5),
+                                new SleepAction(4),
                                 transfer.fullLoad(),
                                 new SleepAction(2.0),
                                 transfer.run(),
-                                new SleepAction(2.8),
+                                new SleepAction(3.0),
                                 transfer.fullLoad(),
                                 new SleepAction(2.5),
                                 transfer.run(),
