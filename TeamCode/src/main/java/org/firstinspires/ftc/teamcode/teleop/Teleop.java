@@ -61,6 +61,13 @@ public class Teleop extends LinearOpMode {
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
 
+    public void setContext(double robotx, double roboty, double roboth, double goalside) {
+        startX = robotx;
+        startY = roboty;
+        startH = roboth;
+        goalSide = goalside;
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
@@ -161,18 +168,6 @@ public class Teleop extends LinearOpMode {
                     if (tag.id == 24 && goalSide >= 100) {
                         rx = headingPID.calculate(tag.ftcPose.bearing, 10);
                     }
-                }
-            } else {
-                if (angleHold) {
-                    double dxGoal = goalPosition.position.x - pose.position.x;
-                    double dyGoal = goalPosition.position.y - pose.position.y;
-                    double targetAngle = Math.atan2(dyGoal, dxGoal);
-                    double currentHeadingDeg = Math.toDegrees(pose.heading.toDouble());
-                    double targetHeadingDeg = Math.toDegrees(targetAngle) + (goalSide < 100 ? -10 : 10);
-
-                    double error = AngleUnit.normalizeDegrees(targetHeadingDeg - currentHeadingDeg);
-                    rx = headingPID.calculate(0, error);
-                    telemetry.addData("target angle", Math.toDegrees(targetAngle));
                 }
             }
 
