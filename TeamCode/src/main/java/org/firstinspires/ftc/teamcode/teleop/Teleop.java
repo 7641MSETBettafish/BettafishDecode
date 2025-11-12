@@ -64,8 +64,6 @@ public class Teleop extends LinearOpMode {
     private VisionPortal visionPortal;
 
 
-
-
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
@@ -86,20 +84,20 @@ public class Teleop extends LinearOpMode {
 
         PIDController headingPID = new PIDController(kPh, 0, 0);
 
-        tagProcessor = new AprilTagProcessor.Builder()
-                .setLensIntrinsics(1421.04,1421.04,649.331,357.761)
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .build();
-
-        visionPortal = new VisionPortal.Builder()
-                .addProcessor(tagProcessor)
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
-                .setCameraResolution(new Size(1280, 720))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .build();
+//        tagProcessor = new AprilTagProcessor.Builder()
+//                .setLensIntrinsics(1421.04,1421.04,649.331,357.761)
+//                .setDrawAxes(true)
+//                .setDrawCubeProjection(true)
+//                .setDrawTagID(true)
+//                .setDrawTagOutline(true)
+//                .build();
+//
+//        visionPortal = new VisionPortal.Builder()
+//                .addProcessor(tagProcessor)
+//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
+//                .setCameraResolution(new Size(1280, 720))
+//                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+//                .build();
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
@@ -108,12 +106,16 @@ public class Teleop extends LinearOpMode {
         }
 
         Gamepad previousGamepad1 = new Gamepad();
+        Gamepad previousGamepad2 = new Gamepad();
         Gamepad currentGamepad1 = new Gamepad();
+        Gamepad currentGamepad2 = new Gamepad();
 
         double goalDistance = 0;
 
         boolean angleHold = false;
         boolean shooterOn = false;
+
+        int shootRPM = 0;
 
         ElapsedTime time = new ElapsedTime();
 
@@ -134,7 +136,10 @@ public class Teleop extends LinearOpMode {
             Pose2d pose = drive.localizer.getPose();
 
             previousGamepad1.copy(currentGamepad1);
+            previousGamepad2.copy(currentGamepad2);
+
             currentGamepad1.copy(gamepad1);
+            currentGamepad2.copy(gamepad2);
 
             goalDistance = Math.sqrt(Math.pow(pose.position.x - goalPosition.position.x, 2) + Math.pow(pose.position.y - goalPosition.position.y, 2));
 
@@ -143,34 +148,40 @@ public class Teleop extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            AprilTagDetection tag;
-            if (!tagProcessor.getDetections().isEmpty()) {
-                tag = tagProcessor.getDetections().get(0);
-
-                if (tag.metadata != null) {
-                    if (tag.id == 20) {
-                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(40 - tag.ftcPose.bearing)));
-                    }
-                    if (tag.id == 24) {
-                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(-54 - tag.ftcPose.bearing)));
-                    }
-
-                    telemetry.addData("tagID", tag.id);
-                    telemetry.addData("bearing", tag.ftcPose.bearing);
-                }
-
-                if (angleHold) {
-                    if (tag.id == 20 && goalSide < 100) {
-                        rx = headingPID.calculate(tag.ftcPose.bearing, -10);
-                    }
-                    if (tag.id == 24 && goalSide >= 100) {
-                        rx = headingPID.calculate(tag.ftcPose.bearing, 10);
-                    }
-                }
-            }
+//            AprilTagDetection tag;
+//            if (!tagProcessor.getDetections().isEmpty()) {
+//                tag = tagProcessor.getDetections().get(0);
+//
+//                if (tag.metadata != null) {
+//                    if (tag.id == 20) {
+//                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(40 - tag.ftcPose.bearing)));
+//                    }
+//                    if (tag.id == 24) {
+//                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(-54 - tag.ftcPose.bearing)));
+//                    }
+//
+//                    telemetry.addData("tagID", tag.id);
+//                    telemetry.addData("bearing", tag.ftcPose.bearing);
+//                }
+//
+//                if (angleHold) {
+//                    if (tag.id == 20 && goalSide < 100) {
+//                        rx = headingPID.calculate(tag.ftcPose.bearing, 10);
+//                    }
+//                    if (tag.id == 24 && goalSide >= 100) {
+//                        rx = headingPID.calculate(tag.ftcPose.bearing, 10);
+//                    }
+//                    if (Math.abs(10 -tag.ftcPose.bearing) < 1.5) angleHold = false;
+//                }
+//            }
 
             if (fieldCentric) {
-                double botHeading = drive.localizer.getPose().heading.toDouble() - Math.PI / 2;
+                double botHeading;
+                if (goalSide < 100) {
+                    botHeading = drive.localizer.getPose().heading.toDouble() + Math.PI / 2;
+                } else {
+                    botHeading = drive.localizer.getPose().heading.toDouble() - Math.PI / 2;
+                }
 
                 double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                 double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
@@ -255,17 +266,50 @@ public class Teleop extends LinearOpMode {
             }
 
             if (currentGamepad1.options && !previousGamepad1.options) {
-                drive.localizer.setPose(new Pose2d(-48, -36, 0));
+                if (goalSide >= 100) {
+                    drive.localizer.setPose(new Pose2d(54 + 17.0625, -24.625 - 7.75, 0));
+                } else {
+                    drive.localizer.setPose(new Pose2d(54 + 17.0625, 24.625 + 7.75, 0));
+                }
             }
 
             if (currentGamepad1.b && !previousGamepad1.b) {
                 shooterOn = !shooterOn;
+                if (shooterOn) {
+                    shootRPM = 1;
+                } else {
+                    shootRPM = 0;
+                }
             }
 
-            if (shooterOn) {
-                shooter.targetRPM = Shooter.calculateRPM(goalDistance);
-            } else {
-                shooter.targetRPM = 0;
+            if (currentGamepad2.x && !previousGamepad2.x) {
+                shootRPM = 0;
+            }
+
+            if (currentGamepad2.a && !previousGamepad2.a) {
+                shootRPM = 3;
+            }
+
+            if (currentGamepad2.b && !previousGamepad2.b) {
+                shootRPM = 4;
+            }
+
+            switch (shootRPM) {
+                case 0:
+                    shooter.targetRPM = 0;
+                    break;
+                case 1:
+                    shooter.targetRPM = Shooter.calculateRPM(goalDistance);
+                    break;
+                case 2:
+                    shooter.targetRPM = 3000;
+                    break;
+                case 3:
+                    shooter.targetRPM = 3300;
+                    break;
+                case 4:
+                    shooter.targetRPM = 3650;
+                    break;
             }
 
 
@@ -308,7 +352,6 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("angle hold", angleHold);
 
             telemetry.addData("loop time", time.milliseconds());
-
 
             telemetry.update();
 

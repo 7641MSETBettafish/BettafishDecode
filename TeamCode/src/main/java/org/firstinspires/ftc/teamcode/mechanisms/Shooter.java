@@ -9,17 +9,18 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
 public class Shooter {
 
-    public static double kP = 0.003;
+    public static double kP = 0.0009;
     public static double kI = 0;
     public static double kD = 0;
-    public static double kF = 0.00027777;
+    public static double kF = 0.00025777;
 
-    public static double shootingConstant = 280;
+    public static double shootingConstant = 320;
 
     public static double thresholdTol = 65;
 
@@ -81,6 +82,7 @@ public class Shooter {
     public double lastPosition;
     public double RPM;
 
+    VoltageSensor batteryVoltageSensor;
 
     public ElapsedTime RPMTimer;
 
@@ -98,6 +100,8 @@ public class Shooter {
         shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         RPMTimer = new ElapsedTime();
         RPMTimer.reset();
+
+        batteryVoltageSensor = HWMap.voltageSensor.iterator().next();
 
         PIDF = new PIDFController(kP, kI, kD, kF);
     }
@@ -158,7 +162,7 @@ public class Shooter {
     }
 
     public void updatePID() {
-        shooterMotor.setPower(PIDF.calculate(RPM, targetRPM));
+        shooterMotor.setPower((13.0 / batteryVoltageSensor.getVoltage()) * PIDF.calculate(RPM, targetRPM));
     }
 
     public class PowerUp implements Action {

@@ -19,7 +19,7 @@ import java.util.Vector;
 
 
 @Config
-@Autonomous
+@Autonomous(preselectTeleOp = "Teleop")
 public class Autored extends LinearOpMode {
 
 
@@ -87,7 +87,7 @@ public class Autored extends LinearOpMode {
                                 transfer.fullLoad(),
                                 new SleepAction(2.0),
                                 transfer.run(),
-                                new SleepAction(3.0),
+                                new SleepAction(3.3),
                                 transfer.fullLoad(),
                                 new SleepAction(2.5),
                                 transfer.run(),

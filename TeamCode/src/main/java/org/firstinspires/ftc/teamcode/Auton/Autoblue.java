@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.*;
 
 
 @Config
-@Autonomous
+@Autonomous(preselectTeleOp = "Teleop")
 public class Autoblue extends LinearOpMode {
 
 
