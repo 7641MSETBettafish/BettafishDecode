@@ -41,7 +41,7 @@ public class Autoblue extends LinearOpMode {
 
 
         TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(42))
                 .waitSeconds(0.85)
                 .strafeToLinearHeading(new Vector2d(-37, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
@@ -49,19 +49,19 @@ public class Autoblue extends LinearOpMode {
                 .waitSeconds(0.01)
                 .strafeToLinearHeading(new Vector2d(-25, -48), Math.toRadians(-150))
                 .waitSeconds(0.01)
-                .splineToLinearHeading(new Pose2d(-30, -20, Math.toRadians(45)), Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(-30, -20, Math.toRadians(42)), Math.toRadians(45))
                 .waitSeconds(0.8)
-                .strafeToLinearHeading(new Vector2d(-9, -20), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-10, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-51)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(42))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(10, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-53)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(42))
                 .waitSeconds(1.5)
                 .strafeToLinearHeading(new Vector2d(0, -30), Math.toRadians(0));
 
@@ -77,19 +77,19 @@ public class Autoblue extends LinearOpMode {
                         Context.updatePosition(drive, 0),
                         new SequentialAction(
                                 intake.run(),
-                                new SleepAction(1.2),
+                                new SleepAction(1.3),
                                 transfer.fullLoad(),
                                 new SleepAction(2.4),
                                 transfer.run(),
-                                new SleepAction(4.1),
+                                new SleepAction(4.3),
                                 transfer.fullLoad(),
                                 new SleepAction(2.0),
                                 transfer.run(),
-                                new SleepAction(2.6),
+                                new SleepAction(2.7),
                                 transfer.fullLoad(),
                                 new SleepAction(2.5),
                                 transfer.run(),
-                                new SleepAction(3.2),
+                                new SleepAction(3.7),
                                 transfer.fullLoad()
 
 

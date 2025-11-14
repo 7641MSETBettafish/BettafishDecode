@@ -28,6 +28,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.*;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import com.qualcomm.hardware.lynx.LynxModule;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +54,11 @@ public class Teleop extends LinearOpMode {
     Intake intake;
     Transfer transfer;
     Shooter shooter;
+
+
+    LynxModule myRevHub;
+    double totalCurrent;
+
 
 
     enum IntakeState {ON, OFF}
@@ -81,7 +88,9 @@ public class Teleop extends LinearOpMode {
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
         transfer = new Transfer(hardwareMap);
+        myRevHub = hardwareMap.get(LynxModule.class, "Control Hub");
 
+        totalCurrent = myRevHub.getCurrent(CurrentUnit.AMPS);
         PIDController headingPID = new PIDController(kPh, 0, 0);
 
 //        tagProcessor = new AprilTagProcessor.Builder()
@@ -128,96 +137,52 @@ public class Teleop extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            TelemetryPacket packet = new TelemetryPacket();
-            time.reset();
-
-            headingPID.setPID(kPh, 0, 0);
-
-            Pose2d pose = drive.localizer.getPose();
-
-            previousGamepad1.copy(currentGamepad1);
-            previousGamepad2.copy(currentGamepad2);
-
-            currentGamepad1.copy(gamepad1);
-            currentGamepad2.copy(gamepad2);
-
-            goalDistance = Math.sqrt(Math.pow(pose.position.x - goalPosition.position.x, 2) + Math.pow(pose.position.y - goalPosition.position.y, 2));
 
 
-            double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-//            AprilTagDetection tag;
-//            if (!tagProcessor.getDetections().isEmpty()) {
-//                tag = tagProcessor.getDetections().get(0);
-//
-//                if (tag.metadata != null) {
-//                    if (tag.id == 20) {
-//                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(40 - tag.ftcPose.bearing)));
-//                    }
-//                    if (tag.id == 24) {
-//                        //drive.localizer.setPose(new Pose2d(pose.position.x, pose.position.y, Math.toRadians(-54 - tag.ftcPose.bearing)));
-//                    }
-//
-//                    telemetry.addData("tagID", tag.id);
-//                    telemetry.addData("bearing", tag.ftcPose.bearing);
-//                }
-//
-//                if (angleHold) {
-//                    if (tag.id == 20 && goalSide < 100) {
-//                        rx = headingPID.calculate(tag.ftcPose.bearing, 10);
-//                    }
-//                    if (tag.id == 24 && goalSide >= 100) {
-//                        rx = headingPID.calculate(tag.ftcPose.bearing, 10);
-//                    }
-//                    if (Math.abs(10 -tag.ftcPose.bearing) < 1.5) angleHold = false;
-//                }
-//            }
-
-            if (fieldCentric) {
-                double botHeading;
-                if (goalSide < 100) {
-                    botHeading = drive.localizer.getPose().heading.toDouble() + Math.PI / 2;
-                } else {
-                    botHeading = drive.localizer.getPose().heading.toDouble() - Math.PI / 2;
-                }
-
-                double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-                double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-                rotX = rotX * 1.1;
-
-                double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-                double frontLeftPower = (rotY + rotX + rx) / denominator;
-                double backLeftPower = (rotY - rotX + rx) / denominator;
-                double frontRightPower = (rotY - rotX - rx) / denominator;
-                double backRightPower = (rotY + rotX - rx) / denominator;
-
-                drive.leftFront.setPower(frontLeftPower);
-                drive.leftBack.setPower(backLeftPower);
-                drive.rightFront.setPower(frontRightPower);
-                drive.rightBack.setPower(backRightPower);
-            } else {
-                x = x * 1.1;
-
-                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-                double frontLeftPower = (y + x + rx) / denominator;
-                double backLeftPower = (y - x + rx) / denominator;
-                double frontRightPower = (y - x - rx) / denominator;
-                double backRightPower = (y + x - rx) / denominator;
-
-                drive.leftFront.setPower(frontLeftPower);
-                drive.leftBack.setPower(backLeftPower);
-                drive.rightFront.setPower(frontRightPower);
-                drive.rightBack.setPower(backRightPower);
+            for (LynxModule hub : allHubs) {
+                hub.clearBulkCache();
             }
 
 
+            Pose2d pose = drive.localizer.getPose();
+            TelemetryPacket packet = new TelemetryPacket();
+
+
+            previousGamepad1.copy(currentGamepad1);
+            previousGamepad2.copy(currentGamepad2);
+            currentGamepad1.copy(gamepad1);
+            currentGamepad2.copy(gamepad2);
+//
+//            goalDistance = Math.hypot(pose.position.x - goalPosition.position.x,
+//                    pose.position.y - goalPosition.position.y);
+
+            double y = -currentGamepad1.left_stick_y;
+            double x = currentGamepad1.left_stick_x;
+            double rx = currentGamepad1.right_stick_x;
+
+            if (fieldCentric) {
+                double botHeading = pose.heading.toDouble() +
+                        (goalSide < 100 ? Math.PI / 2 : -Math.PI / 2);
+                double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+                rotX *= 1.1;
+
+                double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+                drive.leftFront.setPower((rotY + rotX + rx) / denominator);
+                drive.leftBack.setPower((rotY - rotX + rx) / denominator);
+                drive.rightFront.setPower((rotY - rotX - rx) / denominator);
+                drive.rightBack.setPower((rotY + rotX - rx) / denominator);
+            } else {
+                x *= 1.1;
+                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                drive.leftFront.setPower((y + x + rx) / denominator);
+                drive.leftBack.setPower((y - x + rx) / denominator);
+                drive.rightFront.setPower((y - x - rx) / denominator);
+                drive.rightBack.setPower((y + x - rx) / denominator);
+            }
 
 
             boolean leftTriggerPressed = currentGamepad1.left_trigger > 0.6 && previousGamepad1.left_trigger < 0.6;
-
             switch (intakeState) {
                 case OFF:
                     if (leftTriggerPressed) {
@@ -234,8 +199,8 @@ public class Teleop extends LinearOpMode {
                     break;
             }
 
-            boolean rightTriggerHeld = currentGamepad1.right_trigger > 0.6;
 
+            boolean rightTriggerHeld = currentGamepad1.right_trigger > 0.6;
             switch (shooterState) {
                 case OFF:
                     if (rightTriggerHeld) {
@@ -252,19 +217,17 @@ public class Teleop extends LinearOpMode {
                         runningActions.add(transfer.run());
                         shooterState = ShooterState.OFF;
                     }
-
                     break;
             }
 
-            if (currentGamepad1.a && !previousGamepad1.a) {
-                angleHold = !angleHold;
-            }
+
+            if (currentGamepad1.a && !previousGamepad1.a) angleHold = !angleHold;
+
 
             if (currentGamepad1.dpad_down) {
                 transfer.transferMotor.setPower(-1);
                 intake.intakeMotor.setPower(-1);
             }
-
             if (currentGamepad1.options && !previousGamepad1.options) {
                 if (goalSide >= 100) {
                     drive.localizer.setPose(new Pose2d(54 + 17.0625, -24.625 - 7.75, 0));
@@ -272,27 +235,10 @@ public class Teleop extends LinearOpMode {
                     drive.localizer.setPose(new Pose2d(54 + 17.0625, 24.625 + 7.75, 0));
                 }
             }
+            if (currentGamepad2.x && !previousGamepad2.x) shootRPM = 0;
+            if (currentGamepad2.a && !previousGamepad2.a) shootRPM = 3;
+            if (currentGamepad2.b && !previousGamepad2.b) shootRPM = 4;
 
-            if (currentGamepad1.b && !previousGamepad1.b) {
-                shooterOn = !shooterOn;
-                if (shooterOn) {
-                    shootRPM = 1;
-                } else {
-                    shootRPM = 0;
-                }
-            }
-
-            if (currentGamepad2.x && !previousGamepad2.x) {
-                shootRPM = 0;
-            }
-
-            if (currentGamepad2.a && !previousGamepad2.a) {
-                shootRPM = 3;
-            }
-
-            if (currentGamepad2.b && !previousGamepad2.b) {
-                shootRPM = 4;
-            }
 
             switch (shootRPM) {
                 case 0:
@@ -332,32 +278,19 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("robot X", drive.localizer.getPose().position.x);
             telemetry.addData("robot Y", drive.localizer.getPose().position.y);
             telemetry.addData("robot H", Math.toDegrees(pose.heading.toDouble()));
-            telemetry.addData("goal distance", goalDistance);
-
             telemetry.addData("flywheel RPM", shooter.RPM);
             telemetry.addData("target RPM", shooter.targetRPM);
-
             telemetry.addData("intake state", intakeState.toString());
-            telemetry.addData("intake distance", intake.getDistance());
-
             telemetry.addData("right transfer distance", transfer.rightTransferSensor.getDistance(DistanceUnit.CM));
             telemetry.addData("transfer ticks", transfer.transferMotor.getCurrentPosition());
-
             telemetry.addData("shooter state", shooterState.toString());
             telemetry.addData("shooter busy", shooterControl.isBusy());
-
-            telemetry.addData("left stick" , currentGamepad1.left_stick_y);
-            telemetry.addData("right stick" , currentGamepad1.right_stick_y);
-
-            telemetry.addData("angle hold", angleHold);
-
             telemetry.addData("loop time", time.milliseconds());
+            time.reset();
 
             telemetry.update();
 
-            for (LynxModule hub : allHubs) {
-                hub.clearBulkCache();
-            }
+
         }
 
     }
