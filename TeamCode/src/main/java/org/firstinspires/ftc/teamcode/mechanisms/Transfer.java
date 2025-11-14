@@ -91,6 +91,30 @@ public class Transfer {
             }
 
             int movedTicks = Math.abs(transferMotor.getCurrentPosition() - startPos);
+            if (movedTicks >= autoloaddistance+200) {
+                transferMotor.setPower(0);
+                init = false;
+                return false;
+            }
+
+            return true;
+        }
+    }
+    public class farFullLoad implements Action {
+
+        private boolean init = false;
+        private int startPos;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!init) {
+                startPos = transferMotor.getCurrentPosition();
+                transferMotor.setPower(transferPower);
+                intakeMotor.setPower(1);
+                init = true;
+            }
+
+            int movedTicks = Math.abs(transferMotor.getCurrentPosition() - startPos);
             if (movedTicks >= autoloaddistance) {
                 transferMotor.setPower(0);
                 init = false;
@@ -100,9 +124,11 @@ public class Transfer {
             return true;
         }
     }
-
     public Action fullLoad() {
         return new FullLoad();
+    }
+    public Action farfullLoad() {
+        return new farFullLoad();
     }
 
     public class Load implements Action {
