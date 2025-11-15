@@ -20,90 +20,115 @@ import org.firstinspires.ftc.teamcode.mechanisms.*;
 @Autonomous(preselectTeleOp = "Teleop")
 public class Autoblue extends LinearOpMode {
 
-
-
-
     @Override
     public void runOpMode() {
 
-        Pose2d startPose1 = new Pose2d(-52, -50, Math.toRadians(54));
+        Pose2d startPose = new Pose2d(-52, -50, Math.toRadians(54));
 
         Shooter shooter = new Shooter(hardwareMap);
-
         Transfer transfer = new Transfer(hardwareMap);
         Intake intake = new Intake(hardwareMap);
 
-
-
         Context context = new Context();
-        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose1);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
+        // -------------------------------
+        // PATHS BROKEN INTO SEGMENTS
+        // -------------------------------
 
+        // 1: GO TO FIRST SHOOTING POSITION
+        Action toShoot1 = drive.actionBuilder(startPose)
+                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(44))
+                .build();
 
-        TrajectoryActionBuilder path1 =  drive.actionBuilder(startPose1)
-                .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(42))
-                .waitSeconds(0.85)
+        // 2: GO TO FIRST INTAKE POSITION
+        Action toIntake1 = drive.actionBuilder(new Pose2d(-30, -20, Math.toRadians(44)))
                 .strafeToLinearHeading(new Vector2d(-37, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-45)
                 .waitSeconds(0.01)
                 .strafeToLinearHeading(new Vector2d(-25, -48), Math.toRadians(-150))
                 .waitSeconds(0.01)
-                .splineToLinearHeading(new Pose2d(-30, -20, Math.toRadians(42)), Math.toRadians(45))
-                .waitSeconds(0.8)
+                .splineToLinearHeading(new Pose2d(-30, -20, Math.toRadians(44)), Math.toRadians(45))
+                .build();
+
+        // 4: GO TO SECOND INTAKE
+        Action toIntake2 = drive.actionBuilder(new Pose2d(-30, -20, Math.toRadians(44)))
                 .strafeToLinearHeading(new Vector2d(-10, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-51)
                 .waitSeconds(0.01)
                 .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(42))
-                .waitSeconds(1)
+                .build();
+
+
+        // 6: THIRD INTAKE
+        Action toIntake3 = drive.actionBuilder(new Pose2d(-30, -20, Math.toRadians(42)))
                 .strafeToLinearHeading(new Vector2d(10, -20), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-53)
                 .waitSeconds(0.01)
                 .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(42))
-                .waitSeconds(1.5)
-                .strafeToLinearHeading(new Vector2d(0, -30), Math.toRadians(0));
+                .build();
 
-        Action path2 = path1.build();
+        // 7: FINAL RETURN TO SHOOT
+
+        // 8: PARK
+        Action park = drive.actionBuilder(new Pose2d(-30, -20, Math.toRadians(42)))
+                .strafeToLinearHeading(new Vector2d(0, -30), Math.toRadians(0))
+                .build();
 
         waitForStart();
 
+        // ==================================================
+        // MASTER AUTON SEQUENCE
+        // ==================================================
 
-
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(
                 new ParallelAction(
+
+                        // SHOOTER + INTAKE RUN FOR ENTIRE AUTON
                         shooter.run(3120),
+                        intake.run(),
                         Context.updatePosition(drive, 0),
+
+                        // MAIN PATH SEQUENCE
                         new SequentialAction(
-                                intake.run(),
-                                new SleepAction(1.3),
-                                transfer.fullLoad(),
-                                new SleepAction(2.4),
-                                transfer.run(),
-                                new SleepAction(4.3),
-                                transfer.fullLoad(),
-                                new SleepAction(2.0),
-                                transfer.run(),
-                                new SleepAction(2.7),
-                                transfer.fullLoad(),
-                                new SleepAction(2.5),
-                                transfer.run(),
-                                new SleepAction(3.7),
-                                transfer.fullLoad()
 
+                                // ---- SHOOT 1 ----
+                                toShoot1,
+                                transfer.fullLoad(),
 
+                                // ---- INTAKE 1 (TRANSFER RUNS WHILE MOVING) ----
+                                new ParallelAction(
+                                        toIntake1,
+                                        transfer.run()
                                 ),
 
-                        path2
+                                transfer.fullLoad(),
+
+                                // ---- INTAKE 2 ----
+                                new ParallelAction(
+                                        toIntake2,
+                                        transfer.run()
+                                ),
+
+
+                                transfer.fullLoad(),
+
+                                // ---- INTAKE 3 ----
+                                new ParallelAction(
+                                        toIntake3,
+                                        transfer.run()
+                                ),
+
+
+                                transfer.fullLoad(),
+
+                                // ---- PARK ----
+                                park
+                        )
                 )
-
-        ));
-
-
-
-
-
+        );
     }
-
 }

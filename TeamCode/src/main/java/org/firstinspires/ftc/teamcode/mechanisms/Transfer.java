@@ -22,7 +22,7 @@ public class Transfer {
     //how many ticks it takes for the transfer to push the ball into the shooter and bring the next ball into shooting posiition
     public static int loadDistance = 100;
 
-    public static int autoloaddistance = 2200;
+    public static int autoloaddistance = 2500;
 
     public DcMotor transferMotor;
     //public DistanceSensor leftTransferSensor;
@@ -58,7 +58,7 @@ public class Transfer {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
-                transferMotor.setPower(transferPower-0.2);
+                transferMotor.setPower(transferPower+0.1);
                 init = true;
             }
 
@@ -109,7 +109,7 @@ public class Transfer {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!init) {
                 startPos = transferMotor.getCurrentPosition();
-                transferMotor.setPower(transferPower);
+                transferMotor.setPower(transferPower+0.1);
                 intakeMotor.setPower(1);
                 init = true;
             }

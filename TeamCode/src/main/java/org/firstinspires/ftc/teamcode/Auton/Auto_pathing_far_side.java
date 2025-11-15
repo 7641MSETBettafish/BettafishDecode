@@ -69,7 +69,7 @@ public class Auto_pathing_far_side extends LinearOpMode {
                                 transfer.farfullLoad(),
                                 new SleepAction(0.5),
                                 transfer.run(),
-                                new SleepAction(2.8x),
+                                new SleepAction(2.8),
                                 transfer.farfullLoad(),
                                 new SleepAction(0.6),
                                 transfer.run(),

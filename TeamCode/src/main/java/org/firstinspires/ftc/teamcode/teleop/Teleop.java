@@ -133,6 +133,8 @@ public class Teleop extends LinearOpMode {
 
         Control shooterControl = new Control();
 
+        boolean slowMode = false;
+
         waitForStart();
         if (isStopRequested()) return;
 
@@ -156,22 +158,42 @@ public class Teleop extends LinearOpMode {
 //            goalDistance = Math.hypot(pose.position.x - goalPosition.position.x,
 //                    pose.position.y - goalPosition.position.y);
 
+
+
             double y = -currentGamepad1.left_stick_y;
             double x = currentGamepad1.left_stick_x;
             double rx = currentGamepad1.right_stick_x;
 
             if (fieldCentric) {
-                double botHeading = pose.heading.toDouble() +
-                        (goalSide < 100 ? Math.PI / 2 : -Math.PI / 2);
-                double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-                double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+                int directionMode = (goalSide < 100) ? 1 : -1;
+
+// Convert directionMode into radians offset
+                double forwardOffset = directionMode * (Math.PI / 2);
+
+// Robot heading from your localizer
+                double botHeading = pose.heading.toDouble() + forwardOffset;
+
+// Apply field-centric rotation
+                double rotX =  x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                double rotY =  x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
                 rotX *= 1.1;
 
+// Standard mecanum denominator
                 double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-                drive.leftFront.setPower((rotY + rotX + rx) / denominator);
-                drive.leftBack.setPower((rotY - rotX + rx) / denominator);
-                drive.rightFront.setPower((rotY - rotX - rx) / denominator);
-                drive.rightBack.setPower((rotY + rotX - rx) / denominator);
+
+                if (slowMode) {
+                    drive.leftFront.setPower((rotY + rotX + rx) / denominator / 2);
+                    drive.leftBack.setPower((rotY - rotX + rx) / denominator / 2);
+                    drive.rightFront.setPower((rotY - rotX - rx) / denominator / 2);
+                    drive.rightBack.setPower((rotY + rotX - rx) / denominator / 2);
+                } else {
+                    drive.leftFront.setPower((rotY + rotX + rx) / denominator);
+                    drive.leftBack.setPower((rotY - rotX + rx) / denominator);
+                    drive.rightFront.setPower((rotY - rotX - rx) / denominator);
+                    drive.rightBack.setPower((rotY + rotX - rx) / denominator);
+                }
+
             } else {
                 x *= 1.1;
                 double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
@@ -179,6 +201,10 @@ public class Teleop extends LinearOpMode {
                 drive.leftBack.setPower((y - x + rx) / denominator);
                 drive.rightFront.setPower((y - x - rx) / denominator);
                 drive.rightBack.setPower((y + x - rx) / denominator);
+            }
+
+            if (currentGamepad1.y && !previousGamepad1.y) {
+                slowMode = !slowMode;
             }
 
 
@@ -198,6 +224,12 @@ public class Teleop extends LinearOpMode {
                     }
                     break;
             }
+
+//            if (currentGamepad1.left_trigger > 0.6) {
+//                intake.intakeMotor.setPower(Intake.intakePower);
+//            } else {
+//                intake.intakeMotor.setPower(0.15)
+//            }
 
 
             boolean rightTriggerHeld = currentGamepad1.right_trigger > 0.6;
@@ -251,7 +283,7 @@ public class Teleop extends LinearOpMode {
                     shooter.targetRPM = 3000;
                     break;
                 case 3:
-                    shooter.targetRPM = 3300;
+                    shooter.targetRPM = 3200;
                     break;
                 case 4:
                     shooter.targetRPM = 3650;
