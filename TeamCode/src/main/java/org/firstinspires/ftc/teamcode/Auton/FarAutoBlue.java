@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auton;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.*;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,11 +9,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.mechanisms.*;
 
-import java.util.Vector;
+import java.lang.Math;
 
 @Config
 @Autonomous(preselectTeleOp = "Teleop")
-public class Autored extends LinearOpMode {
+public class FarAutoBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -28,18 +23,15 @@ public class Autored extends LinearOpMode {
         Shooter shooter = new Shooter(hardwareMap);
         Transfer transfer = new Transfer(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
-
-        // ================================
-        //      BROKEN INTO SEGMENTS
-        // ================================
+        // -------------------------------
+        // PATHS BROKEN INTO SEGMENTS
+        // -------------------------------
 
         // ---- SHOOT 1 ----
         Action toShoot1 = drive.actionBuilder(startPose)
                 .strafeToLinearHeading(new Vector2d(-32, 20), Math.toRadians(-51))
-
                 .build();
 
         // ---- INTAKE 1 ----
@@ -48,49 +40,72 @@ public class Autored extends LinearOpMode {
                 .waitSeconds(0.01)
                 .lineToY(68)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(0, 83), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(0, 80), Math.toRadians(180))
                 .waitSeconds(0.01)
                 .strafeToLinearHeading(new Vector2d(-32, 20), Math.toRadians(-51))
-
                 .build();
 
         // ---- INTAKE 2 ----
         Action toIntake2 = drive.actionBuilder(new Pose2d(-32, 20, Math.toRadians(-51)))
-                .strafeToLinearHeading(new Vector2d(25, 30), Math.toRadians(90), null, new ProfileAccelConstraint(-60, 100))
+                .strafeToLinearHeading(
+                        new Vector2d(25, 30),
+                        Math.toRadians(90),
+                        null,
+                        new ProfileAccelConstraint(-60, 100)
+                )
                 .waitSeconds(0.01)
-                .lineToY(73)
-                .splineToLinearHeading(new Pose2d(-30, 15, Math.toRadians(-53)), Math.toRadians(135), null, new ProfileAccelConstraint(-60, 100))
-
+                .lineToY(72)
+                .waitSeconds(0.01)
+                .strafeToLinearHeading(
+                        new Vector2d(-30, 15),
+                        Math.toRadians(-53),
+                        null,
+                        new ProfileAccelConstraint(-60, 100)
+                )
                 .build();
 
         // ---- INTAKE 3 ----
         Action toIntake3 = drive.actionBuilder(new Pose2d(-32, 20, Math.toRadians(-53)))
-                .strafeToLinearHeading(new Vector2d(50, 30), Math.toRadians(90), null, new ProfileAccelConstraint(-60, 100))
+                .strafeToLinearHeading(
+                        new Vector2d(50, 30),
+                        Math.toRadians(90),
+                        null,
+                        new ProfileAccelConstraint(-60, 100)
+                )
                 .waitSeconds(0.01)
-                .lineToY(73)
+                .lineToY(70)
                 .waitSeconds(0.01)
-                .strafeToLinearHeading(new Vector2d(-32, 20), Math.toRadians(-53), null, new ProfileAccelConstraint(-60, 100))
+                .strafeToLinearHeading(
+                        new Vector2d(-32, 20),
+                        Math.toRadians(-53),
+                        null,
+                        new ProfileAccelConstraint(-60, 100)
+                )
                 .build();
 
         // ---- PARK ----
         Action park = drive.actionBuilder(new Pose2d(-32, 20, Math.toRadians(-53)))
-                .strafeToLinearHeading(new Vector2d(0, 30), Math.toRadians(0), null, new ProfileAccelConstraint(-60, 100))
+                .strafeToLinearHeading(
+                        new Vector2d(-10, 40),
+                        Math.toRadians(0),
+                        null,
+                        new ProfileAccelConstraint(-60, 100)
+                )
                 .build();
 
 
         waitForStart();
 
-
-        // ================================
-        //       MASTER AUTON LOGIC
-        // ================================
+        // ==================================================
+        // MASTER AUTON SEQUENCE (MATCHES AUTO BLUE)
+        // ==================================================
 
         Actions.runBlocking(
                 new ParallelAction(
 
-                        shooter.run(3130),    // run all auton
-                        intake.run(),         // run all auton
-                        Context.updatePosition(drive, 167),
+                        shooter.run(3175),          // runs whole auton
+                        intake.run(),               // runs whole auton
+                        Context.updatePosition(drive, 0),
 
                         new SequentialAction(
 
@@ -112,6 +127,14 @@ public class Autored extends LinearOpMode {
                                 ),
                                 transfer.farfullLoad(),
 
+                                // ---- INTAKE 3 ----
+                                new ParallelAction(
+                                        toIntake3,
+                                        transfer.run()
+                                ),
+                                transfer.farfullLoad(),
+
+                                // ---- PARK ----
                                 park
                         )
                 )
