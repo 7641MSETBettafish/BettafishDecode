@@ -19,7 +19,7 @@ public class MeepMeepTesting {
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-52, -50, Math.toRadians(54)))
                 .strafeToLinearHeading(new Vector2d(-30, -20), Math.toRadians(45))
                 .waitSeconds(0.85)
-                .strafeToLinearHeading(new Vector2d(-12, -20), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12, -20.01), Math.toRadians(-90))
                 .waitSeconds(0.01)
                 .lineToY(-45)
                 .waitSeconds(0.01)
