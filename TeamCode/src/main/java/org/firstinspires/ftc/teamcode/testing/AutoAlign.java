@@ -46,7 +46,7 @@ public class AutoAlign extends LinearOpMode {
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
         tagProcessor = new AprilTagProcessor.Builder()
-                .setLensIntrinsics(1421.04,1421.04,649.331,357.761)
+                .setLensIntrinsics(908.934,908.934,666.285,355.469)
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
